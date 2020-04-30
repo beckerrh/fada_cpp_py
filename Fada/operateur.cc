@@ -7,8 +7,7 @@
 /**************************************************/
 Operateur::Operateur(int s, int l, int n, int m)
 {
-  omgmem.reinit(2);
-  ocgmem.reinit(2);
+  omgmem.reinit(3);
   o_smoother = s;
   o_n0 = n;
   o_m0 = m;
@@ -21,26 +20,13 @@ Operateur::Operateur(int s, int l, int n, int m)
     o_n(i) = int(pow(2,i))*(n-1)+1;
     o_m(i) = int(pow(2,i))*(m-1)+1;
   }
-}
-
-
-/**************************************************/
-void Operateur::reinit()
-{
-  reinit(umg);
-  
-  for(int i=0;i<ocgmem.n();i++)
-  {
-    ocgmem(i).reinit(umg(levels()-1));
-  }
   for(int i=0;i<omgmem.n();i++)
   {
-    omgmem(i).reinit(umg);
+    reinit(omgmem(i));
   }
 }
 
 /**************************************************/
-
 void Operateur::reinit(VecteurMG& v) const
 {
   int lev = levels();
@@ -54,9 +40,9 @@ void Operateur::reinit(VecteurMG& v) const
 /************************************************/
 void Operateur::solve(Vecteur& out, const Vecteur& in, Info& info)
 {
-  umg(levels()-1).equ(1., in);
-  mg_solve(*this, umg, omgmem, info);
-  out.equ(1.,umg(levels()-1));
+  omgmem(1)(levels()-1).equ(1., in);
+  mg_solve(*this, omgmem(0), omgmem(1), omgmem(2), info);
+  out.equ(1.,omgmem(0)(levels()-1));
 }
 
 /**************************************************/

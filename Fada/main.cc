@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   int n = A.n(), m = A.m();
   u.reinit(n,m);
   f.reinit(u);
-  A.reinit();
+//  A.reinit();
 
   u.boundary();
   f.right();
