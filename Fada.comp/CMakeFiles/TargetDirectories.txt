@@ -1,3 +1,0 @@
-/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles/rebuild_cache.dir
-/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles/edit_cache.dir
-/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles/fada.dir
