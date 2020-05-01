@@ -3,7 +3,7 @@
 
 /**************************************************/
 
-void Operateur::vmult(Vecteur& out, const Vecteur& in) const
+void Operateur::vmult(Vecteur& out, const Vecteur& in, double d) const
 {
   // Laplacien   elements finis q1  (9-point-stencil)
   int n = out.nx(), m = out.ny();
@@ -12,16 +12,16 @@ void Operateur::vmult(Vecteur& out, const Vecteur& in) const
   {
     for(int j=1;j<m-1;j++)
     {
-      out(i,j) = 8. * in(i,j) - in(i-1,j )  - in(i+1,j  ) 
+      out(i,j) += d*(8. * in(i,j) - in(i-1,j )  - in(i+1,j)
       - in(i  ,j-1) - in(i  ,j+1)
       - in(i-1,j-1) - in(i-1,j+1)
-      - in(i+1,j-1) - in(i+1,j+1);
+      - in(i+1,j-1) - in(i+1,j+1));
     } 
   }
   
   // Conditions aux limites ( Dirichlet
   
-  out.boundary(in);
+  out.boundary(in, d);
 }
 
 

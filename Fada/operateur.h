@@ -30,7 +30,7 @@ public:
 
   void reinit (VecteurMG& v) const;
 
-  void vmult(Vecteur& out, const Vecteur& in) const;
+  void vmult(Vecteur& out, const Vecteur& in, double d) const;
   int solve(Vecteur& out, const Vecteur& in, int maxiter, double tol_rel, double tol_abs);
 
   void jacobi            (int l, VecteurMG&, double);

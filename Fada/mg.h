@@ -32,6 +32,7 @@ inline void smooth(int l, MATRIX& A, VECTOR& u, VECTOR& f, VECTOR& d, bool compu
 {
   if(compute_residual) A.residual(l, d, u, f);
   A.smooth_pre(l, d);
+//  u(l) += d(l);
   u(l).add(1., d(l));
 }
 

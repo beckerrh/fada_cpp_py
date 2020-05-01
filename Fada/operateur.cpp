@@ -40,9 +40,11 @@ void Operateur::reinit(VecteurMG& v) const
 /************************************************/
 int Operateur::solve(Vecteur& out, const Vecteur& in, int maxiter, double tol_rel, double tol_abs)
 {
-  omgmem(1)(levels()-1).equ(1., in);
+  omgmem(1)(levels()-1) = in;
+//  omgmem(1)(levels()-1).equ(1., in);
   int iter = mg_solve(*this, omgmem(0), omgmem(1), omgmem(2), maxiter, tol_rel, tol_abs);
-  out.equ(1.,omgmem(0)(levels()-1));
+//  out.equ(1.,omgmem(0)(levels()-1));
+  out = omgmem(0)(levels()-1);
   return iter;
 }
 
@@ -104,6 +106,9 @@ void Operateur::smooth_post(int l, VecteurMG& out)
 /**************************************************/
 void Operateur::residual(int l, VecteurMG& r, VecteurMG& u, VecteurMG& f)
 {
-  vmult(r(l),u(l));
-  r(l).sadd(-1.,1.,f(l));
+  r(l) =  f(l);
+//  r(l).equ(1.0, f(l));
+  vmult(r(l),u(l), -1.0);
+//  vmult(r(l),u(l), 1.0);
+//  r(l).sadd(-1.,1.,f(l));
 }
