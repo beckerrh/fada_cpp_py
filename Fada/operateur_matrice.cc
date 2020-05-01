@@ -5,11 +5,9 @@
 
 void Operateur::vmult(Vecteur& out, const Vecteur& in) const
 {
-  int n = out.n(), m = out.m();
-  
-  
   // Laplacien   elements finis q1  (9-point-stencil)
-  
+  int n = out.nx(), m = out.ny();
+    
   for(int i=1;i<n-1;i++)
   {
     for(int j=1;j<m-1;j++)
@@ -31,7 +29,7 @@ void Operateur::vmult(Vecteur& out, const Vecteur& in) const
 
 void Operateur::jacobi(int l, VecteurMG& out, double omega)
 {
-  int n = out(l).n(), m = out(l).m();
+  int n = out(l).nx(), m = out(l).ny();
   for(int i=1;i<n-1;i++)
   {
     for(int j=1;j<m-1;j++)
@@ -45,7 +43,7 @@ void Operateur::jacobi(int l, VecteurMG& out, double omega)
 
 void Operateur::gauss_seidel_pre(int l, VecteurMG& out)
 {
-  int n = out(l).n(), m = out(l).m();
+  int n = out(l).nx(), m = out(l).ny();
   for(int i=1;i<n-1;i++)
   {
     for(int j=1;j<m-1;j++)
@@ -61,7 +59,7 @@ void Operateur::gauss_seidel_pre(int l, VecteurMG& out)
 
 void Operateur::gauss_seidel_post(int l, VecteurMG& out)
 {
-  int n = out(l).n(), m = out(l).m();
+  int n = out(l).nx(), m = out(l).ny();
   for(int i=n-2;i>=1;i--)
   {
     for(int j=m-2;j>=1;j--)

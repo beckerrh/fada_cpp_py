@@ -9,10 +9,8 @@
 /* Begin PBXBuildFile section */
 		EE00D20F245AC26900C9E49F /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D201245AC26800C9E49F /* main.cc */; };
 		EE00D210245AC26900C9E49F /* operateur_transfer.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D202245AC26800C9E49F /* operateur_transfer.cc */; };
-		EE00D211245AC26900C9E49F /* vecteur.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D205245AC26900C9E49F /* vecteur.cc */; };
 		EE00D212245AC26900C9E49F /* operateur.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D208245AC26900C9E49F /* operateur.cc */; };
 		EE00D213245AC26900C9E49F /* operateur_matrice.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D209245AC26900C9E49F /* operateur_matrice.cc */; };
-		EE00D214245AC26900C9E49F /* info.cc in Sources */ = {isa = PBXBuildFile; fileRef = EE00D20E245AC26900C9E49F /* info.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,14 +31,11 @@
 		EE00D202245AC26800C9E49F /* operateur_transfer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = operateur_transfer.cc; sourceTree = "<group>"; };
 		EE00D203245AC26800C9E49F /* vecteurmg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vecteurmg.h; sourceTree = "<group>"; };
 		EE00D204245AC26800C9E49F /* operateur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = operateur.h; sourceTree = "<group>"; };
-		EE00D205245AC26900C9E49F /* vecteur.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vecteur.cc; sourceTree = "<group>"; };
 		EE00D207245AC26900C9E49F /* vecteur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vecteur.h; sourceTree = "<group>"; };
 		EE00D208245AC26900C9E49F /* operateur.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = operateur.cc; sourceTree = "<group>"; };
 		EE00D209245AC26900C9E49F /* operateur_matrice.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = operateur_matrice.cc; sourceTree = "<group>"; };
 		EE00D20A245AC26900C9E49F /* mg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mg.h; sourceTree = "<group>"; };
 		EE00D20C245AC26900C9E49F /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
-		EE00D20D245AC26900C9E49F /* info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = info.h; sourceTree = "<group>"; };
-		EE00D20E245AC26900C9E49F /* info.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = info.cc; sourceTree = "<group>"; };
 		EE00D216245AC8D500C9E49F /* Fada.profdata */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fada.profdata; sourceTree = "<group>"; };
 		EE00D217245B1CAF00C9E49F /* test.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = test.rtf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,8 +72,6 @@
 			isa = PBXGroup;
 			children = (
 				EE00D20C245AC26900C9E49F /* array.h */,
-				EE00D20E245AC26900C9E49F /* info.cc */,
-				EE00D20D245AC26900C9E49F /* info.h */,
 				EE00D201245AC26800C9E49F /* main.cc */,
 				EE00D20A245AC26900C9E49F /* mg.h */,
 				EE00D217245B1CAF00C9E49F /* test.rtf */,
@@ -86,7 +79,6 @@
 				EE00D202245AC26800C9E49F /* operateur_transfer.cc */,
 				EE00D208245AC26900C9E49F /* operateur.cc */,
 				EE00D204245AC26800C9E49F /* operateur.h */,
-				EE00D205245AC26900C9E49F /* vecteur.cc */,
 				EE00D207245AC26900C9E49F /* vecteur.h */,
 				EE00D203245AC26800C9E49F /* vecteurmg.h */,
 			);
@@ -160,8 +152,6 @@
 			files = (
 				EE00D210245AC26900C9E49F /* operateur_transfer.cc in Sources */,
 				EE00D20F245AC26900C9E49F /* main.cc in Sources */,
-				EE00D211245AC26900C9E49F /* vecteur.cc in Sources */,
-				EE00D214245AC26900C9E49F /* info.cc in Sources */,
 				EE00D213245AC26900C9E49F /* operateur_matrice.cc in Sources */,
 				EE00D212245AC26900C9E49F /* operateur.cc in Sources */,
 			);

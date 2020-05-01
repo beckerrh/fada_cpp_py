@@ -38,11 +38,12 @@ void Operateur::reinit(VecteurMG& v) const
 }
 
 /************************************************/
-void Operateur::solve(Vecteur& out, const Vecteur& in, Info& info)
+int Operateur::solve(Vecteur& out, const Vecteur& in, int maxiter, double tol_rel, double tol_abs)
 {
   omgmem(1)(levels()-1).equ(1., in);
-  mg_solve(*this, omgmem(0), omgmem(1), omgmem(2), info);
+  int iter = mg_solve(*this, omgmem(0), omgmem(1), omgmem(2), maxiter, tol_rel, tol_abs);
   out.equ(1.,omgmem(0)(levels()-1));
+  return iter;
 }
 
 /**************************************************/

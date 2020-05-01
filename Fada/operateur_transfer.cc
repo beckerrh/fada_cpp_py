@@ -4,7 +4,7 @@
 /**************************************************/
 void Operateur::restrict(int l, VecteurMG& v)    //   V_{l+1} --> V_l
 {
-  int n = v(l).n(), m = v(l).m();
+  int n = v(l).nx(), m = v(l).ny();
   for(int i=1;i<n-1;i++)
   {
     for(int j=1;j<m-1;j++)
@@ -22,7 +22,7 @@ void Operateur::restrict(int l, VecteurMG& v)    //   V_{l+1} --> V_l
 /**************************************************/
 void Operateur::prolongate(int l, VecteurMG& v)   //   V_{l-1} --> V_l
 {
-  int n = v(l-1).n(), m = v(l-1).m();
+  int n = v(l-1).nx(), m = v(l-1).ny();
   for(int i=1;i<n-1;i++)
   {
     for(int j=1;j<m-1;j++)

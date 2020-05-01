@@ -3,7 +3,7 @@
 
 #include "vecteur.h"
 #include "vecteurmg.h"
-#include "info.h"
+//#include "info.h"
 
 class Operateur
 {
@@ -31,7 +31,7 @@ public:
   void reinit (VecteurMG& v) const;
 
   void vmult(Vecteur& out, const Vecteur& in) const;
-  void solve(Vecteur& out, const Vecteur& in, Info& info);
+  int solve(Vecteur& out, const Vecteur& in, int maxiter, double tol_rel, double tol_abs);
 
   void jacobi            (int l, VecteurMG&, double);
   void gauss_seidel_pre  (int l, VecteurMG&);

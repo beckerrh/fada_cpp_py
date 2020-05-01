@@ -4,7 +4,7 @@
 #include  "vecteur.h"
 #include  "vecteurmg.h"
 #include  "operateur.h"
-#include  "info.h"
+//#include  "info.h"
 
 inline double seconds(void)
 {
@@ -28,9 +28,9 @@ int main(int argc, char** argv)
 
   Vecteur     u,f;
 
-  int         iterations = 100, print = 1;
+  int         maxiter = 100;
   double      tol_rel = 1e-10, tol_abs = 1e-15;;
-  Info        info(tol_rel,tol_abs,print,iterations,"Fada");
+//  Info        info(tol_rel,tol_abs,print,iterations,"Fada");
 
   int n = A.n(), m = A.m();
   u.reinit(n,m);
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   f.right();
   f.boundary(u);
 
-  A.solve(u, f, info);
+  int iter = A.solve(u, f, maxiter, tol_rel, tol_abs);
 
 //  u.output_plotmtv();
   
@@ -49,7 +49,6 @@ int main(int argc, char** argv)
   if   (A.smoother()==0  ) printf("[Jac]");
   else if(A.smoother()==1) printf("[GS ]");
   else if(A.smoother()==2) printf("[GSS]");
-  printf("\n\nNo. Iterations %3d (N = %6d)  %7.2e\n\n",
-   info.iteration(),A.n()*A.m(),info.residual());
+  printf("\n\nNo. Iterations %3d (N = %6d)\n",iter,A.n()*A.m());
   printf("Total time: %6.2f\n", seconds()-t0);
 }

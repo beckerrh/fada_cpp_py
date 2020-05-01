@@ -29,9 +29,7 @@ inline void VecteurMG::reinit(const VecteurMG& u)
   v_val.reinit(lev);
   for(int l=0;l<lev;l++)
     {
-      int n = u(l).n();
-      int m = u(l).m();
-      (*this)(l).reinit(n,m);
+      (*this)(l).reinit(u(l).nx(),u(l).ny());
     }
 }
 
