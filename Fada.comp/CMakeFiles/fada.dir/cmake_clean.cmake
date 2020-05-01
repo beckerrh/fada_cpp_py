@@ -1,8 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/fada.dir/main.cc.o"
-  "CMakeFiles/fada.dir/operateur.cc.o"
-  "CMakeFiles/fada.dir/operateur_matrice.cc.o"
-  "CMakeFiles/fada.dir/operateur_transfer.cc.o"
+  "CMakeFiles/fada.dir/main.cpp.o"
+  "CMakeFiles/fada.dir/operateur.cpp.o"
+  "CMakeFiles/fada.dir/operateur_matrice.cpp.o"
+  "CMakeFiles/fada.dir/operateur_transfer.cpp.o"
+  "CMakeFiles/fada.dir/vecteur.cpp.o"
   "fada"
   "fada.pdb"
 )

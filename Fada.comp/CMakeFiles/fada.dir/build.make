@@ -77,76 +77,91 @@ include CMakeFiles/fada.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/fada.dir/flags.make
 
-CMakeFiles/fada.dir/main.cc.o: CMakeFiles/fada.dir/flags.make
-CMakeFiles/fada.dir/main.cc.o: /Users/becker/Programs/Fada/Fada/Fada/main.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fada.dir/main.cc.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/main.cc.o -c /Users/becker/Programs/Fada/Fada/Fada/main.cc
+CMakeFiles/fada.dir/main.cpp.o: CMakeFiles/fada.dir/flags.make
+CMakeFiles/fada.dir/main.cpp.o: /Users/becker/Programs/Fada/Fada/Fada/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fada.dir/main.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/main.cpp.o -c /Users/becker/Programs/Fada/Fada/Fada/main.cpp
 
-CMakeFiles/fada.dir/main.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/main.cc.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/main.cc > CMakeFiles/fada.dir/main.cc.i
+CMakeFiles/fada.dir/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/main.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/main.cpp > CMakeFiles/fada.dir/main.cpp.i
 
-CMakeFiles/fada.dir/main.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/main.cc.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/main.cc -o CMakeFiles/fada.dir/main.cc.s
+CMakeFiles/fada.dir/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/main.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/main.cpp -o CMakeFiles/fada.dir/main.cpp.s
 
-CMakeFiles/fada.dir/operateur.cc.o: CMakeFiles/fada.dir/flags.make
-CMakeFiles/fada.dir/operateur.cc.o: /Users/becker/Programs/Fada/Fada/Fada/operateur.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fada.dir/operateur.cc.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur.cc.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur.cc
+CMakeFiles/fada.dir/operateur.cpp.o: CMakeFiles/fada.dir/flags.make
+CMakeFiles/fada.dir/operateur.cpp.o: /Users/becker/Programs/Fada/Fada/Fada/operateur.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fada.dir/operateur.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur.cpp.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur.cpp
 
-CMakeFiles/fada.dir/operateur.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur.cc.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur.cc > CMakeFiles/fada.dir/operateur.cc.i
+CMakeFiles/fada.dir/operateur.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur.cpp > CMakeFiles/fada.dir/operateur.cpp.i
 
-CMakeFiles/fada.dir/operateur.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur.cc.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur.cc -o CMakeFiles/fada.dir/operateur.cc.s
+CMakeFiles/fada.dir/operateur.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur.cpp -o CMakeFiles/fada.dir/operateur.cpp.s
 
-CMakeFiles/fada.dir/operateur_matrice.cc.o: CMakeFiles/fada.dir/flags.make
-CMakeFiles/fada.dir/operateur_matrice.cc.o: /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fada.dir/operateur_matrice.cc.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur_matrice.cc.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cc
+CMakeFiles/fada.dir/operateur_matrice.cpp.o: CMakeFiles/fada.dir/flags.make
+CMakeFiles/fada.dir/operateur_matrice.cpp.o: /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fada.dir/operateur_matrice.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur_matrice.cpp.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cpp
 
-CMakeFiles/fada.dir/operateur_matrice.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur_matrice.cc.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cc > CMakeFiles/fada.dir/operateur_matrice.cc.i
+CMakeFiles/fada.dir/operateur_matrice.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur_matrice.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cpp > CMakeFiles/fada.dir/operateur_matrice.cpp.i
 
-CMakeFiles/fada.dir/operateur_matrice.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur_matrice.cc.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cc -o CMakeFiles/fada.dir/operateur_matrice.cc.s
+CMakeFiles/fada.dir/operateur_matrice.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur_matrice.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cpp -o CMakeFiles/fada.dir/operateur_matrice.cpp.s
 
-CMakeFiles/fada.dir/operateur_transfer.cc.o: CMakeFiles/fada.dir/flags.make
-CMakeFiles/fada.dir/operateur_transfer.cc.o: /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fada.dir/operateur_transfer.cc.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur_transfer.cc.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cc
+CMakeFiles/fada.dir/operateur_transfer.cpp.o: CMakeFiles/fada.dir/flags.make
+CMakeFiles/fada.dir/operateur_transfer.cpp.o: /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fada.dir/operateur_transfer.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/operateur_transfer.cpp.o -c /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cpp
 
-CMakeFiles/fada.dir/operateur_transfer.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur_transfer.cc.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cc > CMakeFiles/fada.dir/operateur_transfer.cc.i
+CMakeFiles/fada.dir/operateur_transfer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/operateur_transfer.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cpp > CMakeFiles/fada.dir/operateur_transfer.cpp.i
 
-CMakeFiles/fada.dir/operateur_transfer.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur_transfer.cc.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cc -o CMakeFiles/fada.dir/operateur_transfer.cc.s
+CMakeFiles/fada.dir/operateur_transfer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/operateur_transfer.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cpp -o CMakeFiles/fada.dir/operateur_transfer.cpp.s
+
+CMakeFiles/fada.dir/vecteur.cpp.o: CMakeFiles/fada.dir/flags.make
+CMakeFiles/fada.dir/vecteur.cpp.o: /Users/becker/Programs/Fada/Fada/Fada/vecteur.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fada.dir/vecteur.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fada.dir/vecteur.cpp.o -c /Users/becker/Programs/Fada/Fada/Fada/vecteur.cpp
+
+CMakeFiles/fada.dir/vecteur.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fada.dir/vecteur.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/becker/Programs/Fada/Fada/Fada/vecteur.cpp > CMakeFiles/fada.dir/vecteur.cpp.i
+
+CMakeFiles/fada.dir/vecteur.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fada.dir/vecteur.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/becker/Programs/Fada/Fada/Fada/vecteur.cpp -o CMakeFiles/fada.dir/vecteur.cpp.s
 
 # Object files for target fada
 fada_OBJECTS = \
-"CMakeFiles/fada.dir/main.cc.o" \
-"CMakeFiles/fada.dir/operateur.cc.o" \
-"CMakeFiles/fada.dir/operateur_matrice.cc.o" \
-"CMakeFiles/fada.dir/operateur_transfer.cc.o"
+"CMakeFiles/fada.dir/main.cpp.o" \
+"CMakeFiles/fada.dir/operateur.cpp.o" \
+"CMakeFiles/fada.dir/operateur_matrice.cpp.o" \
+"CMakeFiles/fada.dir/operateur_transfer.cpp.o" \
+"CMakeFiles/fada.dir/vecteur.cpp.o"
 
 # External object files for target fada
 fada_EXTERNAL_OBJECTS =
 
-fada: CMakeFiles/fada.dir/main.cc.o
-fada: CMakeFiles/fada.dir/operateur.cc.o
-fada: CMakeFiles/fada.dir/operateur_matrice.cc.o
-fada: CMakeFiles/fada.dir/operateur_transfer.cc.o
+fada: CMakeFiles/fada.dir/main.cpp.o
+fada: CMakeFiles/fada.dir/operateur.cpp.o
+fada: CMakeFiles/fada.dir/operateur_matrice.cpp.o
+fada: CMakeFiles/fada.dir/operateur_transfer.cpp.o
+fada: CMakeFiles/fada.dir/vecteur.cpp.o
 fada: CMakeFiles/fada.dir/build.make
 fada: /usr/local/lib/libarmadillo.dylib
 fada: CMakeFiles/fada.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable fada"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable fada"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fada.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -94,12 +94,12 @@ clean: CMakeFiles/fada.dir/clean
 CMakeFiles/fada.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fada.dir/build.make CMakeFiles/fada.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fada.dir/build.make CMakeFiles/fada.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=1,2,3,4,5 "Built target fada"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target fada"
 .PHONY : CMakeFiles/fada.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fada.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fada.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/becker/Programs/Fada/Fada/Fada.comp/CMakeFiles 0
 .PHONY : CMakeFiles/fada.dir/rule

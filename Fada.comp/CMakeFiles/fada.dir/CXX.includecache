@@ -8,7 +8,7 @@
 
 /Users/becker/Programs/Fada/Fada/Fada/array.h
 
-/Users/becker/Programs/Fada/Fada/Fada/main.cc
+/Users/becker/Programs/Fada/Fada/Fada/main.cpp
 stdio.h
 -
 stdlib.h
@@ -26,7 +26,7 @@ operateur.h
 math.h
 -
 
-/Users/becker/Programs/Fada/Fada/Fada/operateur.cc
+/Users/becker/Programs/Fada/Fada/Fada/operateur.cpp
 math.h
 -
 stdio.h
@@ -42,17 +42,21 @@ vecteur.h
 vecteurmg.h
 /Users/becker/Programs/Fada/Fada/Fada/vecteurmg.h
 
-/Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cc
+/Users/becker/Programs/Fada/Fada/Fada/operateur_matrice.cpp
 math.h
 -
 operateur.h
 /Users/becker/Programs/Fada/Fada/Fada/operateur.h
 
-/Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cc
+/Users/becker/Programs/Fada/Fada/Fada/operateur_transfer.cpp
 math.h
 -
 operateur.h
 /Users/becker/Programs/Fada/Fada/Fada/operateur.h
+
+/Users/becker/Programs/Fada/Fada/Fada/vecteur.cpp
+vecteur.h
+/Users/becker/Programs/Fada/Fada/Fada/vecteur.h
 
 /Users/becker/Programs/Fada/Fada/Fada/vecteur.h
 array.h
