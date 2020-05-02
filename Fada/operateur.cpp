@@ -1,114 +1,61 @@
 #include <math.h>
 #include <stdio.h>
-#include "operateur.h"
-#include "mg.h"
+#include "operateur.hpp"
 
 
-/**************************************************/
-Operateur::Operateur(int s, int l, int n, int m)
+/*-------------------------------------------------*/
+Operateur::Operateur(int smoother, int nlevels, const armaicvec& n0) : _smoother(smoother)
 {
-  omgmem.reinit(3);
-  o_smoother = s;
-  o_n0 = n;
-  o_m0 = m;
-  o_levels = l;
-  o_n.reinit(l);
-  o_m.reinit(l);
+  omgmem.set_size(5);
+  int dim = 2;
+  _n.set_size(dim, nlevels);
   
-  for(int i=0;i<l;i++)
+  for(int i=0;i<n0.n_elem;i++)
   {
-    o_n(i) = int(pow(2,i))*(n-1)+1;
-    o_m(i) = int(pow(2,i))*(m-1)+1;
+    for(int l=0;l<nlevels;l++)
+    {
+      _n(i,l) = int(pow(2,l))*(n0[i]-1)+1;
+    }
   }
+  _nall = arma::prod(_n, 0);
   for(int i=0;i<omgmem.n();i++)
   {
-    reinit(omgmem(i));
+    set_size(omgmem(i));
   }
 }
 
-/**************************************************/
-void Operateur::reinit(VecteurMG& v) const
+/*-------------------------------------------------*/
+void Operateur::set_size(VecteurMG& v) const
 {
-  int lev = levels();
-  v.val().reinit(lev);
+  int lev = nlevels();
+  v.val().set_size(lev);
   for(int l=0;l<lev;l++)
   {
-    v(l).reinit(n(l),m(l));
+//    v(l).set_size(nx(l),ny(l));
+    v(l).set_size(n(l));
   }
 }
 
-/************************************************/
-int Operateur::solve(Vecteur& out, const Vecteur& in, int maxiter, double tol_rel, double tol_abs)
-{
-  omgmem(1)(levels()-1) = in;
-//  omgmem(1)(levels()-1).equ(1., in);
-  int iter = mg_solve(*this, omgmem(0), omgmem(1), omgmem(2), maxiter, tol_rel, tol_abs);
-//  out.equ(1.,omgmem(0)(levels()-1));
-  out = omgmem(0)(levels()-1);
-  return iter;
-}
-
-/**************************************************/
-void Operateur::smooth(int l, VecteurMG& out)
+/*-------------------------------------------------*/
+void Operateur::smooth(Vecteur& out, const Vecteur& in) const
 {
   if(smoother()==0)
   {
-    double omega = 0.1;
-    jacobi(l,out,omega);
+    jacobi(out, in);
   }
   else if(smoother()==1)
   {
-    gauss_seidel_pre(l,out);
+    gauss_seidel1(out, in);
   }
   else if(smoother()==2)
   {
-    gauss_seidel_pre (l,out);
-    gauss_seidel_post(l,out);
+    gauss_seidel2(out, in);
   }
 }
 
-/**************************************************/
-void Operateur::smooth_pre(int l, VecteurMG& out)
-{
-  if(smoother()==0)
-  {
-    double omega = 0.1;
-    jacobi(l,out,omega);
-  }
-  else if(smoother()==1)
-  {
-    gauss_seidel_pre(l,out);
-  }
-  else if(smoother()==2)
-  {
-    gauss_seidel_pre(l,out);
-  }
-}
-
-/**************************************************/
-void Operateur::smooth_post(int l, VecteurMG& out)
-{
-  if(smoother()==0)
-  {
-    double omega = 0.05;
-    jacobi(l,out,omega);
-  }
-  else if(smoother()==1)
-  {
-    gauss_seidel_pre(l,out);
-  }
-  else if(smoother()==2)
-  {
-    gauss_seidel_post(l,out);
-  }
-}
-
-/**************************************************/
-void Operateur::residual(int l, VecteurMG& r, VecteurMG& u, VecteurMG& f)
+/*-------------------------------------------------*/
+void Operateur::residual(int l, VecteurMG& r, const VecteurMG& u, const VecteurMG& f) const
 {
   r(l) =  f(l);
-//  r(l).equ(1.0, f(l));
-  vmult(r(l),u(l), -1.0);
-//  vmult(r(l),u(l), 1.0);
-//  r(l).sadd(-1.,1.,f(l));
+  dot(r(l),u(l), -1.0);
 }

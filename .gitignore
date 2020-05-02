@@ -1,6 +1,7 @@
 # local
 out
 Fada.comp
+*.hdf
 
 # Apple
 .DS_store

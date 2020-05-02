@@ -1,6 +1,7 @@
 #ifndef __array_h
 #define __array_h
 
+/*-------------------------------------------------*/
 template<class T>
 class Array
 {
@@ -18,9 +19,10 @@ public:
   int n() const;
   Array<T>& operator=(const Array<T>&);
   Array<T>& operator=(const T);
-  void reinit(int n);
+  void set_size(int n);
 };
 
+/*-------------------------------------------------*/
 template<class T>
 inline void Array<T>::copy(const Array<T>& a)
 {
@@ -83,7 +85,7 @@ inline Array<T>& Array<T>::operator=(const Array<T>& a)
 {
   if(ptr!=a.ptr)
   {
-    reinit(a.dim);
+    set_size(a.dim);
     copy(a);
   }
   return *this;
@@ -98,7 +100,7 @@ inline Array<T>& Array<T>::operator=(const T a)
 }
 
 template<class T>
-inline void Array<T>::reinit(int n)
+inline void Array<T>::set_size(int n)
 {
   if(n!=dim)
   {
@@ -108,4 +110,5 @@ inline void Array<T>::reinit(int n)
    }
 }
 
+/*-------------------------------------------------*/
 #endif
