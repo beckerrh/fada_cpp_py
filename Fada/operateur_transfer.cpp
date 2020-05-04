@@ -3,42 +3,143 @@
 
 /*-------------------------------------------------*/
 void Operateur::restrict(int l, VecteurMG& out, const VecteurMG& in) const
-//   V_{l+1} --> V_l
+//   in_{l+1} --> out_l
 {
-  int n = out(l).nx(), m = out(l).ny();
-  for(int i=1;i<n-1;i++)
+  int dim = out(l).dim();
+  if(dim==2)
   {
-    for(int j=1;j<m-1;j++)
+    int nx = out(l).n(0), ny = out(l).n(1);
+    for(int ix=1;ix<nx-1;ix++)
     {
-      out(l)(i,j) = in(l+1)(2*i  ,2*j  )
-      +  0.5 *( in(l+1)(2*i-1,2*j  ) + in(l+1)(2*i+1,2*j  )
-               + in(l+1)(2*i  ,2*j-1) + in(l+1)(2*i  ,2*j+1) )
-      +  0.25*( in(l+1)(2*i-1,2*j-1) + in(l+1)(2*i-1,2*j+1)
-               + in(l+1)(2*i+1,2*j-1) + in(l+1)(2*i+1,2*j+1) );
+      for(int iy=1;iy<ny-1;iy++)
+      {
+        out(l)(ix,iy) = in(l+1)(2*ix  ,2*iy  )
+        +  0.5 *( in(l+1)(2*ix-1,2*iy  ) + in(l+1)(2*ix+1,2*iy  )
+                 + in(l+1)(2*ix  ,2*iy-1) + in(l+1)(2*ix  ,2*iy+1) )
+        +  0.25*( in(l+1)(2*ix-1,2*iy-1) + in(l+1)(2*ix-1,2*iy+1)
+                 + in(l+1)(2*ix+1,2*iy-1) + in(l+1)(2*ix+1,2*iy+1) );
+      }
     }
   }
-//  boundary(out(l));
+  else if(dim==3)
+  {
+    int nx = out(l).n(0), ny = out(l).n(1), nz = out(l).n(2);
+    for(int ix=1;ix<nx-1;ix++)
+    {
+      for(int iy=1;iy<ny-1;iy++)
+      {
+        for(int iz=1;iz<nz-1;iz++)
+        {
+          out(l)(ix,iy, iz) = in(l+1)(2*ix  ,2*iy,  2*iz  )
+          +  0.5 *(
+                   in(l+1)(2*ix-1,2*iy  ,2*iz  )
+                   + in(l+1)(2*ix+1,2*iy  ,2*iz  )
+                   + in(l+1)(2*ix  ,2*iy-1,2*iz  )
+                   + in(l+1)(2*ix  ,2*iy+1,2*iz  )
+                   + in(l+1)(2*ix  ,2*iy  ,2*iz+1)
+                   + in(l+1)(2*ix  ,2*iy  ,2*iz-1)
+                   )
+          +  0.25*(
+                   in(l+1)(2*ix-1,2*iy-1,2*iz  )
+                   + in(l+1)(2*ix-1,2*iy+1,2*iz  )
+                   + in(l+1)(2*ix+1,2*iy-1,2*iz  )
+                   + in(l+1)(2*ix+1,2*iy+1,2*iz  )
+                   + in(l+1)(2*ix-1,2*iy  ,2*iz-1)
+                   + in(l+1)(2*ix-1,2*iy  ,2*iz+1)
+                   + in(l+1)(2*ix+1,2*iy  ,2*iz-1)
+                   + in(l+1)(2*ix+1,2*iy  ,2*iz+1)
+                   + in(l+1)(2*ix  ,2*iy-1,2*iz-1)
+                   + in(l+1)(2*ix  ,2*iy-1,2*iz+1)
+                   + in(l+1)(2*ix  ,2*iy+1,2*iz-1)
+                   + in(l+1)(2*ix  ,2*iy+1,2*iz+1)
+                   )
+          +  0.125*(
+                    in(l+1)(2*ix-1,2*iy-1,2*iz-1)
+                    + in(l+1)(2*ix-1,2*iy-1,2*iz+1)
+                    + in(l+1)(2*ix-1,2*iy+1,2*iz-1)
+                    + in(l+1)(2*ix-1,2*iy+1,2*iz+1)
+                    + in(l+1)(2*ix+1,2*iy-1,2*iz-1)
+                    + in(l+1)(2*ix+1,2*iy-1,2*iz+1)
+                    + in(l+1)(2*ix+1,2*iy+1,2*iz-1)
+                    + in(l+1)(2*ix+1,2*iy+1,2*iz+1)
+                    );
+        }
+      }
+    }
+  }
+  //  boundary(out(l));
 }
 
 /*-------------------------------------------------*/
 void Operateur::prolongate(int l, VecteurMG& out, const VecteurMG& in) const
-//   V_{l-1} --> V_l
+//   in_{l-1} --> out_l
 {
-  int n = in(l-1).nx(), m = in(l-1).ny();
-  out(l) = 0.0;
-  for(int i=1;i<n-1;i++)
+  int dim = out(l).dim();
+  //  out(l) = 0.0;
+  out(l).fill(0.0);
+  if(dim==2)
   {
-    for(int j=1;j<m-1;j++)
+    int nx = in(l-1).n(0), ny = in(l-1).n(1);
+    for(int ix=1;ix<nx-1;ix++)
     {
-      out(l)(2*i  ,2*j  ) +=        in(l-1)(i,j);
-      out(l)(2*i-1,2*j  ) += 0.5  * in(l-1)(i,j);
-      out(l)(2*i+1,2*j  ) += 0.5  * in(l-1)(i,j);
-      out(l)(2*i  ,2*j-1) += 0.5  * in(l-1)(i,j);
-      out(l)(2*i  ,2*j+1) += 0.5  * in(l-1)(i,j);
-      out(l)(2*i-1,2*j-1) += 0.25 * in(l-1)(i,j);
-      out(l)(2*i-1,2*j+1) += 0.25 * in(l-1)(i,j);
-      out(l)(2*i+1,2*j-1) += 0.25 * in(l-1)(i,j);
-      out(l)(2*i+1,2*j+1) += 0.25 * in(l-1)(i,j);
+      for(int iy=1;iy<ny-1;iy++)
+      {
+        out(l)(2*ix  ,2*iy  ) +=        in(l-1)(ix,iy);
+        out(l)(2*ix-1,2*iy  ) += 0.5  * in(l-1)(ix,iy);
+        out(l)(2*ix+1,2*iy  ) += 0.5  * in(l-1)(ix,iy);
+        out(l)(2*ix  ,2*iy-1) += 0.5  * in(l-1)(ix,iy);
+        out(l)(2*ix  ,2*iy+1) += 0.5  * in(l-1)(ix,iy);
+        out(l)(2*ix-1,2*iy-1) += 0.25 * in(l-1)(ix,iy);
+        out(l)(2*ix-1,2*iy+1) += 0.25 * in(l-1)(ix,iy);
+        out(l)(2*ix+1,2*iy-1) += 0.25 * in(l-1)(ix,iy);
+        out(l)(2*ix+1,2*iy+1) += 0.25 * in(l-1)(ix,iy);
+      }
+    }
+  }
+  else if(dim==3)
+  {
+    int nx = in(l-1).n(0), ny = in(l-1).n(1), nz = in(l-1).n(2);
+    for(int ix=1;ix<nx-1;ix++)
+    {
+      for(int iy=1;iy<ny-1;iy++)
+      {
+        for(int iz=1;iz<nz-1;iz++)
+        {
+          out(l)(2*ix  ,2*iy  ,2*iz  ) +=        in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy  ,2*iz  ) += 0.5  * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy  ,2*iz  ) += 0.5  * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy-1,2*iz  ) += 0.5  * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy+1,2*iz  ) += 0.5  * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy  ,2*iz-1) += 0.5  * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy  ,2*iz+1) += 0.5  * in(l-1)(ix,iy,iz);
+
+          out(l)(2*ix-1,2*iy-1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy+1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy-1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy+1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
+          
+          out(l)(2*ix-1,2*iy  ,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy  ,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy  ,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy  ,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
+          
+          out(l)(2*ix  ,2*iy-1,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy-1,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy+1,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix  ,2*iy+1,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
+
+          
+          out(l)(2*ix-1,2*iy-1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy-1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy+1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix-1,2*iy+1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
+          
+          out(l)(2*ix+1,2*iy-1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy-1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy+1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
+          out(l)(2*ix+1,2*iy+1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
+        }
+      }
     }
   }
 }

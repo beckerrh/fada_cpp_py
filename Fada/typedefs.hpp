@@ -6,6 +6,8 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
+#include  <armadillo>
+
 #ifndef typedefs_h
 #define typedefs_h
 
