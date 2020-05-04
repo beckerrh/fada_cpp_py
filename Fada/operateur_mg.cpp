@@ -13,11 +13,11 @@
 /*-------------------------------------------------*/
 int Operateur::solve()
 {
-  VecteurMG& u = omgmem(0);
-  VecteurMG& f = omgmem(1);
-  VecteurMG& d = omgmem(2);
-  VecteurMG& w = omgmem(3);
-  VecteurMG& Aw = omgmem(4);
+  VecteurMG& u = _mgmem(0);
+  VecteurMG& f = _mgmem(1);
+  VecteurMG& d = _mgmem(2);
+  VecteurMG& w = _mgmem(3);
+  VecteurMG& Aw = _mgmem(4);
 
   int maxlevel = nlevels()-1;
   double res, tol;
@@ -28,8 +28,9 @@ int Operateur::solve()
     if(iter==0)
     {
       tol = fmax(this->tol_abs, this->tol_rel*res);
+      printf("--- %10.3e\n", tol);
     }
-    printf("%3d %10.3e %10.3e\n", iter, res, tol);
+    printf("%3d %10.3e\n", iter, res);
     if(res <= tol)
     {
       return iter;

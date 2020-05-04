@@ -2,21 +2,32 @@
 #include <stdio.h>
 #include "operateur.hpp"
 
-
 /*-------------------------------------------------*/
-Operateur::Operateur() : maxiter(100), smoother("jac"), tol_rel(1e-10), tol_abs(1e-14)
- {}
-
-/*-------------------------------------------------*/
-Operateur::Operateur(int nlevels, const armaicvec& n0) : maxiter(100), smoother("jac"), tol_rel(1e-10), tol_abs(1e-14)
+void Operateur::set_parameters()
 {
+  maxiter = 100;
+  smoother = "jac";
+  tol_rel = 1e-10;
+  tol_abs = 1e-13;
+}
+
+/*-------------------------------------------------*/
+Operateur::Operateur()
+{
+  set_parameters();
+}
+
+/*-------------------------------------------------*/
+Operateur::Operateur(int nlevels, const armaicvec& n0)
+{
+  set_parameters();
   set_size(nlevels, n0);
 }
 
 /*-------------------------------------------------*/
 void Operateur::set_size(int nlevels, const armaicvec& n0)
 {
-  omgmem.set_size(5);
+  _mgmem.set_size(5);
   int dim = n0.n_elem;
   _n.set_size(dim, nlevels);
   
@@ -28,9 +39,9 @@ void Operateur::set_size(int nlevels, const armaicvec& n0)
     }
   }
   _nall = arma::prod(_n, 0);
-  for(int i=0;i<omgmem.n();i++)
+  for(int i=0;i<_mgmem.n();i++)
   {
-    set_size(omgmem(i));
+    set_size(_mgmem(i));
   }
 }
 
@@ -73,8 +84,8 @@ void Operateur::residual(int l, VecteurMG& r, const VecteurMG& u, const VecteurM
 /*-------------------------------------------------*/
 int Operateur::solve(vector& out, const vector& in)
 {
-  VecteurMG& u = omgmem(0);
-  VecteurMG& f = omgmem(1);
+  VecteurMG& u = _mgmem(0);
+  VecteurMG& f = _mgmem(1);
 
   f(nlevels()-1) = in;
   int iter = solve();
@@ -85,10 +96,11 @@ int Operateur::solve(vector& out, const vector& in)
 /*-------------------------------------------------*/
 int Operateur::testsolve()
 {
-  VecteurMG& u = omgmem(0);
-  VecteurMG& f = omgmem(1);
+  VecteurMG& u = _mgmem(0);
+  VecteurMG& f = _mgmem(1);
 
   right(f(nlevels()-1));
+  u(nlevels()-1).fill(0.0);
   boundary(u(nlevels()-1));
   boundary(f(nlevels()-1), u(nlevels()-1));
   return solve();

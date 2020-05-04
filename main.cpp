@@ -24,11 +24,11 @@ inline double seconds(void)
 int main(int argc, char** argv)
 {
   armaicvec n0;
-  int levels=12, dim=3;
+  int levels=12, dim=2;
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-    levels = 6;
+//    levels = 4;
   }
   else
   {
@@ -43,28 +43,21 @@ int main(int argc, char** argv)
   Operateur   A(levels, n0);
   A.smoother = "jac";
 
-//  Vecteur     u,f;
-  vector u,f;
-
-//  std::cerr << "A.n()="<<A.n();
+  int iter = A.testsolve();
   
-  u.set_size(A.n());
-//  std::cerr << "u="<<u;
-  f.set_size(u);
-//  std::cerr << "f="<<f;
-//  exit(1);
+//  vector u,f;
+////  std::cerr << "A.n()="<<A.n();
+//  u.set_size(A.n());
+////  std::cerr << "u="<<u;
+//  f.set_size(u);
+//  A.right(f);
+//  u.fill(0);
+//  A.boundary(u);
+//  A.boundary(f, u);
+//  int iter = A.solve(u, f);
 
-
-  A.right(f);
-  A.boundary(u);
-  A.boundary(f, u);
-
-//  std::cerr << "f="<<f;
-
-  int iter = A.solve(u, f);
-
-  std::string filename("solution.hdf");
-  u.output(filename);
+//  std::string filename("solution.hdf");
+//  u.output(filename);
   
   printf("Vous avez utilise le lisseur %s", A.smoother.c_str());
   printf("\n\nNo. Iterations %3d (N = %6d)\n",iter, A.nall());

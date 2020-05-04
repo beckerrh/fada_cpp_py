@@ -19,7 +19,7 @@ class Operateur
 protected:
   armairvec _nall;
   armaimat  _n;
-  Array<VecteurMG> omgmem;
+  Array<VecteurMG> _mgmem;
   
   void restrict(int l, VecteurMG& out, const VecteurMG& in) const;
   void prolongate(int l, VecteurMG& out, const VecteurMG& in) const;
@@ -37,7 +37,8 @@ public:
   std::string smoother;
   int maxiter;
   double tol_rel, tol_abs;
-  
+
+  void set_parameters();
   Operateur();
   Operateur(int nlevels, const armaicvec& n0);
   void set_size(int nlevels, const armaicvec& n0);
@@ -49,6 +50,8 @@ public:
   arma::subview_col<int>  n(int l) const { return _n.col(l);}
   arma::subview_col<int>  n() const { return _n.col(nlevels()-1);}
   int nall()     const   { return _nall(nlevels()-1);}
+  const vector& get_solution() const {return _mgmem(0)(nlevels()-1);}
+  vector& get_solution() {return _mgmem(0)(nlevels()-1);}
 
   void set_size(VecteurMG& v) const;
 

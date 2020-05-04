@@ -11,13 +11,12 @@
 #include  <pybind11/numpy.h>
 #include  <armadillo>
 #include  "../Fada/operateur.hpp"
+#include  "carma.h"
 
 namespace py = pybind11;
 
-int add(int i, int j) {
-    return i + j;
-}
 
+/*-------------------------------------------------*/
 class OperatorPy : public Operateur
 {
 public:
@@ -34,16 +33,20 @@ public:
     Operateur::set_size(nlevels, n0);
     std::cerr << _n;
   }
+  py::array_t<double> get_solution()
+  {
+    armavec& av = Operateur::get_solution().arma();
+    const armaicvec& n = Operateur::get_solution().n();
+    return carma::col_to_arr<double>(av);
+  }
 };
 
 PYBIND11_MODULE(pyfada, m) {
     m.doc() = "fada plugin";
-    py::class_<armaicvec>(m, "armaivec");
     py::class_<OperatorPy>(m, "Operateur")
     .def(py::init<int, py::array_t<int> >())
     .def("testsolve", &OperatorPy::testsolve)
+    .def("get_solution", &OperatorPy::get_solution)
     .def_readwrite("maxiter", &OperatorPy::maxiter)
     .def_readwrite("smoother", &OperatorPy::smoother);
-//        .def("n", &Operateur::n);
-    m.def("add", &add, "A function which adds two numbers");
 }

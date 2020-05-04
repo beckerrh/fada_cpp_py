@@ -53,6 +53,9 @@
 		EE00D217245B1CAF00C9E49F /* test.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = test.rtf; sourceTree = "<group>"; };
 		EE00D218245C4BCF00C9E49F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		EEA2DA47246035C900F1F872 /* libpyfada.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libpyfada.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEA2DA4B2460BC3A00F1F872 /* carma.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = carma.h; sourceTree = "<group>"; };
+		EEA2DA4C2460BC3A00F1F872 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		EEA2DA4D2460BC3A00F1F872 /* nparray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nparray.h; sourceTree = "<group>"; };
 		EEF40A33245D8F8700AE1541 /* operateur_mg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = operateur_mg.cpp; sourceTree = "<group>"; };
 		EEF40A40245DC6B800AE1541 /* testarma.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = testarma.cpp; sourceTree = "<group>"; };
 		EEF40A46245DCA6F00AE1541 /* testarma */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testarma; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -141,6 +144,9 @@
 		EEF40A522460005A00AE1541 /* pybind */ = {
 			isa = PBXGroup;
 			children = (
+				EEA2DA4B2460BC3A00F1F872 /* carma.h */,
+				EEA2DA4D2460BC3A00F1F872 /* nparray.h */,
+				EEA2DA4C2460BC3A00F1F872 /* utils.h */,
 				EEF40A53246000A000AE1541 /* operator.cpp */,
 			);
 			path = pybind;
