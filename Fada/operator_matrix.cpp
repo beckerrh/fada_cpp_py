@@ -1,8 +1,8 @@
 #include <math.h>
-#include "operateur.hpp"
+#include "operator.hpp"
 
 /*-------------------------------------------------*/
-void Operateur::dot(vector& out, const vector& in, double d) const
+void Operator::dot(vector& out, const vector& in, double d) const
 {
   // Laplacien   elements finis q1  (9-point-stencil)
   int dim = out.dim();
@@ -58,7 +58,7 @@ void Operateur::dot(vector& out, const vector& in, double d) const
 
 
 /*-------------------------------------------------*/
-void Operateur::jacobi(vector& out, const vector& in) const
+void Operator::jacobi(vector& out, const vector& in) const
 {
   int dim = out.dim();
   if(dim==2)
@@ -96,7 +96,7 @@ void Operateur::jacobi(vector& out, const vector& in) const
 }
 
 /*-------------------------------------------------*/
-void Operateur::gauss_seidel1(vector& out, const vector& in) const
+void Operator::gauss_seidel1(vector& out, const vector& in) const
 {
   int dim = out.dim();
   if(dim==2)
@@ -169,7 +169,7 @@ void Operateur::gauss_seidel1(vector& out, const vector& in) const
 }
 
 /*-------------------------------------------------*/
-void Operateur::gauss_seidel2(vector& out, const vector& in) const
+void Operator::gauss_seidel2(vector& out, const vector& in) const
 {
   int dim = out.dim();
   if(dim==2)

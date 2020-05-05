@@ -10,8 +10,7 @@
 #include  <stdlib.h>
 #include  <ctime>
 #include  "Fada/vector.hpp"
-#include  "Fada/vecteurmg.hpp"
-#include  "Fada/operateur.hpp"
+#include  "Fada/operator.hpp"
 
 /*-------------------------------------------------*/
 inline double seconds(void)
@@ -24,37 +23,31 @@ inline double seconds(void)
 int main(int argc, char** argv)
 {
   armaicvec n0;
-  int levels=12, dim=2;
+  int nlevels=12, dim=3;
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-//    levels = 4;
+    nlevels = 8;
   }
   else
   {
     n0 << 3 << 3 << 3 << arma::endr;
-    levels = 6;
+    nlevels = 6;
   }
 
   double t0 = seconds();
   /*
    smoother [0:jacobi 1:gauss_seidel 2:gauss_seidel_symm]
    */
-  Operateur   A(levels, n0);
+//  Operateur   A(nlevels, n0);
+  Operator   A;
+  A.set_size(nlevels, n0);
   A.smoother = "jac";
+//  A.optmem = -1;
 
   int iter = A.testsolve();
-  
-//  vector u,f;
-////  std::cerr << "A.n()="<<A.n();
-//  u.set_size(A.n());
-////  std::cerr << "u="<<u;
-//  f.set_size(u);
-//  A.right(f);
-//  u.fill(0);
-//  A.boundary(u);
-//  A.boundary(f, u);
-//  int iter = A.solve(u, f);
+  vector& u = A.get_solution();
+  printf("u = %10.4e  %10.4e\n", arma::mean(u.arma()), arma::max(u.arma()));
 
 //  std::string filename("solution.hdf");
 //  u.output(filename);

@@ -1,8 +1,8 @@
 #include <math.h>
-#include "operateur.hpp"
+#include "operator.hpp"
 
 /*-------------------------------------------------*/
-void Operateur::restrict(int l, VecteurMG& out, const VecteurMG& in) const
+void Operator::restrict(int l, VectorMG& out, const VectorMG& in) const
 //   in_{l+1} --> out_l
 {
   int dim = out(l).dim();
@@ -71,11 +71,10 @@ void Operateur::restrict(int l, VecteurMG& out, const VecteurMG& in) const
 }
 
 /*-------------------------------------------------*/
-void Operateur::prolongate(int l, VecteurMG& out, const VecteurMG& in) const
+void Operator::prolongate(int l, VectorMG& out, const VectorMG& in) const
 //   in_{l-1} --> out_l
 {
   int dim = out(l).dim();
-  //  out(l) = 0.0;
   out(l).fill(0.0);
   if(dim==2)
   {
@@ -117,23 +116,19 @@ void Operateur::prolongate(int l, VecteurMG& out, const VecteurMG& in) const
           out(l)(2*ix-1,2*iy+1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy-1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy+1,2*iz  ) += 0.25 * in(l-1)(ix,iy,iz);
-          
           out(l)(2*ix-1,2*iy  ,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix-1,2*iy  ,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy  ,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy  ,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
-          
           out(l)(2*ix  ,2*iy-1,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix  ,2*iy-1,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix  ,2*iy+1,2*iz-1) += 0.25 * in(l-1)(ix,iy,iz);
           out(l)(2*ix  ,2*iy+1,2*iz+1) += 0.25 * in(l-1)(ix,iy,iz);
-
           
           out(l)(2*ix-1,2*iy-1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
           out(l)(2*ix-1,2*iy-1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
           out(l)(2*ix-1,2*iy+1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
           out(l)(2*ix-1,2*iy+1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
-          
           out(l)(2*ix+1,2*iy-1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy-1,2*iz+1) += 0.125 * in(l-1)(ix,iy,iz);
           out(l)(2*ix+1,2*iy+1,2*iz-1) += 0.125 * in(l-1)(ix,iy,iz);

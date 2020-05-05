@@ -5,14 +5,14 @@
 #include  "vector.hpp"
 
 /*-------------------------------------------------*/
-class VecteurMG
+class VectorMG
 {
 private:
   Array<vector>  v_val;
 
 public:
 
-  void set_size(const VecteurMG& u);
+  void set_size(const VectorMG& u);
 
   Array<vector>&       val()       {return v_val;}
   const Array<vector>& val() const {return v_val;}
@@ -21,7 +21,7 @@ public:
 };
 
 /*-------------------------------------------------*/
-inline void VecteurMG::set_size(const VecteurMG& u)
+inline void VectorMG::set_size(const VectorMG& u)
 {
   int lev = u.val().n();
   v_val.set_size(lev);
