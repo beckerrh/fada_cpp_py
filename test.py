@@ -2,11 +2,14 @@ import pyfada
 import numpy as np
 import time
 
-def vista(op):
+#-----------------------------------------------------------------#
+def vista(n=[3,3,3], nlevelmax=6):
   import pyvista
+  op = pyfada.Operator(nlevelmax, n)
+  iter = op.testsolve()
   plotter = pyvista.Plotter()
-  plotter.set_background("white")
-  print(f"dims = {op.get_dimensions()}")
+  plotter.set_background("gray")
+  print(f"dims = {op.get_dimensions().flat}")
   grid = pyvista.UniformGrid(op.get_dimensions())
   u = op.get_solution()
   print(f"u: {u.mean()} {u.max()}")
@@ -16,6 +19,7 @@ def vista(op):
   plotter.view_isometric()
   plotter.show()
 
+#-----------------------------------------------------------------#
 def testsmoothers(n, nlevelsmax=12):
   import matplotlib.pyplot as plt
   smoothers = ['jac', 'gs1', 'gs2']
@@ -25,10 +29,11 @@ def testsmoothers(n, nlevelsmax=12):
     times[smoother] = []
     iters[smoother] = []
   for nlevel in nlevels:
-    op = pyfada.Operateur(nlevel, n)
+    op = pyfada.Operator(nlevel, n)
     Ns.append(op.nall())
     for smoother in smoothers:
       op.smoother = smoother;
+#      op.optmem = 0;
       t0 = time.time()
       iter = op.testsolve(print=False)
       t1 = time.time()
@@ -55,5 +60,6 @@ def testsmoothers(n, nlevelsmax=12):
 
 #=================================================================#
 if __name__ == '__main__':
-#  testsmoothers(np.array([3,3]))
-  testsmoothers(np.array([3,3,3]), nlevelsmax=8)
+#  testsmoothers(np.array([3,3]), nlevelsmax=8)
+#  testsmoothers(np.array([3,3,3]), nlevelsmax=8)
+  vista()

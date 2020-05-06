@@ -8,16 +8,18 @@ void Operator::dot(vector& out, const vector& in, double d) const
   int dim = out.dim();
   if(dim==2)
   {
+    double d0 = 8.0/3.0 * d;
+    double d1 = -1.0/3.0 * d;
     int nx = out.n(0), ny = out.n(1);
     for(int ix=1;ix<nx-1;ix++)
     {
       for(int iy=1;iy<ny-1;iy++)
       {
-        out(ix,iy) += d*(8. * in(ix,iy)
-                         - in(ix-1,iy  ) - in(ix+1,iy)
-                         - in(ix  ,iy-1) - in(ix  ,iy+1)
-                         - in(ix-1,iy-1) - in(ix-1,iy+1)
-                         - in(ix+1,iy-1) - in(ix+1,iy+1));
+        out(ix,iy) += d0 * in(ix,iy)
+                         + d1* in(ix-1,iy  ) + d1* in(ix+1,iy)
+                         + d1* in(ix  ,iy-1) + d1* in(ix  ,iy+1)
+                         + d1* in(ix-1,iy-1) + d1* in(ix-1,iy+1)
+                         + d1* in(ix+1,iy-1) + d1* in(ix+1,iy+1);
       }
     }
   }
@@ -25,28 +27,48 @@ void Operator::dot(vector& out, const vector& in, double d) const
   {
     int nx = out.n(0), ny = out.n(1), nz = out.n(2);
     double e = d/arma::mean(out.n());
+    double d0 = 8.0/3.0 * e;
+    double d1 = -0.0/3.0 * e;
+    double d2 = -1.0/6.0 * e;
+    double d3 = -1.0/12.0 * e;
     for(int ix=1;ix<nx-1;ix++)
     {
       for(int iy=1;iy<ny-1;iy++)
       {
         for(int iz=1;iz<nz-1;iz++)
         {
-        out(ix,iy,iz) += e*(
-                      26. * in(ix,iy,iz)
-                         - in(ix-1,iy  ,iz  ) - in(ix+1,iy  ,iz  )
-                         - in(ix  ,iy-1,iz  ) - in(ix  ,iy+1,iz  )
-                         - in(ix  ,iy  ,iz-1) - in(ix+1,iy  ,iz+1)
-                         - in(ix-1,iy-1,iz  ) - in(ix-1,iy+1,iz  )
-                         - in(ix+1,iy-1,iz  ) - in(ix+1,iy+1,iz  )
-                         - in(ix-1,iy  ,iz-1) - in(ix-1,iy  ,iz+1)
-                         - in(ix+1,iy  ,iz-1) - in(ix+1,iy  ,iz+1)
-                         - in(ix  ,iy-1,iz-1) - in(ix  ,iy-1,iz+1)
-                         - in(ix  ,iy+1,iz-1) - in(ix  ,iy+1,iz+1)
-                         - in(ix-1,iy-1,iz-1) - in(ix-1,iy-1,iz+1)
-                         - in(ix-1,iy+1,iz-1) - in(ix-1,iy+1,iz+1)
-                         - in(ix+1,iy-1,iz-1) - in(ix+1,iy-1,iz+1)
-                         - in(ix+1,iy+1,iz-1) - in(ix+1,iy+1,iz+1)
-                            );
+        out(ix,iy,iz) +=
+                      d0* in(ix,iy,iz)
+          
+                      +d1* in(ix-1,iy  ,iz  )
+                      +d1* in(ix+1,iy  ,iz  )
+                      +d1* in(ix  ,iy-1,iz  )
+                      +d1* in(ix  ,iy+1,iz  )
+                      +d1* in(ix  ,iy  ,iz-1)
+                      +d1* in(ix+1,iy  ,iz+1)
+          
+                      +d2* in(ix-1,iy-1,iz  )
+                      +d2* in(ix-1,iy+1,iz  )
+                      +d2* in(ix+1,iy-1,iz  )
+                      +d2* in(ix+1,iy+1,iz  )
+                      +d2* in(ix-1,iy  ,iz-1)
+                      +d2* in(ix-1,iy  ,iz+1)
+                      +d2* in(ix+1,iy  ,iz-1)
+                      +d2* in(ix+1,iy  ,iz+1)
+                      +d2* in(ix  ,iy-1,iz-1)
+                      +d2* in(ix  ,iy-1,iz+1)
+                      +d2* in(ix  ,iy+1,iz-1)
+                      +d2* in(ix  ,iy+1,iz+1)
+          
+                      +d3* in(ix-1,iy-1,iz-1)
+                      +d3* in(ix-1,iy-1,iz+1)
+                      +d3* in(ix-1,iy+1,iz-1)
+                      +d3* in(ix-1,iy+1,iz+1)
+                      +d3* in(ix+1,iy-1,iz-1)
+                      +d3* in(ix+1,iy-1,iz+1)
+                      +d3* in(ix+1,iy+1,iz-1)
+                      +d3* in(ix+1,iy+1,iz+1)
+                          ;
         }
       }
     }
@@ -63,28 +85,29 @@ void Operator::jacobi(vector& out, const vector& in) const
   int dim = out.dim();
   if(dim==2)
   {
-    double omega = 0.1;
+    double omega = 0.8;
+    double d0inv = 3.0/8.0 * omega;
     int nx = out.n(0), ny = out.n(1);
     for(int ix=1;ix<nx-1;ix++)
     {
       for(int iy=1;iy<ny-1;iy++)
       {
-        out(ix,iy) = omega * in(ix,iy);
+        out(ix,iy) = d0inv * in(ix,iy);
       }
     }
   }
   else if(dim==3)
   {
     int nx = out.n(0), ny = out.n(1), nz = out.n(2);
-    double e = 1.0/arma::mean(out.n());
-    double omega = 1./30/e;
+    double omega = 0.8;
+    double d0inv = 3.0/8.0 * arma::mean(out.n()) * omega;
     for(int ix=1;ix<nx-1;ix++)
     {
       for(int iy=1;iy<ny-1;iy++)
       {
         for(int iz=1;iz<nz-1;iz++)
         {
-          out(ix,iy,iz) = omega * in(ix,iy,iz);
+          out(ix,iy,iz) = d0inv * in(ix,iy,iz);
         }
       }
     }
@@ -101,7 +124,10 @@ void Operator::gauss_seidel1(vector& out, const vector& in) const
   int dim = out.dim();
   if(dim==2)
   {
-    /*
+    double omega = 0.8;
+    double d0inv = 3.0/8.0;
+    double d1 = -1.0/3.0;
+/*
      (ix+p)*ny + iy+q < ix*ny + iy
      p*ny +q < 0
      p=-1 q=-1,0,1
@@ -112,7 +138,13 @@ void Operator::gauss_seidel1(vector& out, const vector& in) const
     {
       for(int iy=1;iy<ny-1;iy++)
       {
-        out(ix,iy) = 0.125 * ( in(ix,iy)+ out(ix-1,iy-1) + out(ix-1,iy  )+ out(ix-1,iy+1) + out(ix  ,iy-1) );
+        out(ix,iy) = d0inv * (
+                              in(ix,iy)
+                              -d1* out(ix-1,iy-1)
+                              -d1* out(ix-1,iy  )
+                              -d1* out(ix-1,iy+1)
+                              -d1* out(ix  ,iy-1)
+                              );
       }
     }
   }
@@ -126,41 +158,32 @@ void Operator::gauss_seidel1(vector& out, const vector& in) const
      */
     int nx = out.n(0), ny = out.n(1), nz = out.n(2);
     double e = 1.0/arma::mean(out.n());
-    double omega = 1.0/26.0/e;
+    double d0 = 8.0/3.0 * e;
+    double d1 = -0.0/3.0 * e;
+    double d2 = -1.0/6.0 * e;
+    double d3 = -1.0/12.0 * e;
+    double d0inv = 1.0/d0;
     for(int ix=1;ix<nx-1;ix++)
     {
       for(int iy=1;iy<ny-1;iy++)
       {
         for(int iz=1;iz<nz-1;iz++)
         {
-          out(ix,iy,iz) = omega*(
+          out(ix,iy,iz) = d0inv*(
                              in(ix,iy,iz)
-                           + out(ix-1,iy  ,iz  )
-//                           + out(ix+1,iy  ,iz  )
-                           + out(ix  ,iy-1,iz  )
-//                           + out(ix  ,iy+1,iz  )
-                           + out(ix  ,iy  ,iz-1)
-//                           + out(ix+1,iy  ,iz+1)
-                           + out(ix-1,iy-1,iz  )
-                           + out(ix-1,iy+1,iz  )
-//                           + out(ix+1,iy-1,iz  )
-//                           + out(ix+1,iy+1,iz  )
-                           + out(ix-1,iy  ,iz-1)
-                           + out(ix-1,iy  ,iz+1)
-//                           + out(ix+1,iy  ,iz-1)
-//                           + out(ix+1,iy  ,iz+1)
-                           + out(ix  ,iy-1,iz-1)
-                           + out(ix  ,iy-1,iz+1)
-//                           + out(ix  ,iy+1,iz-1)
-//                           + out(ix  ,iy+1,iz+1)
-                           + out(ix-1,iy-1,iz-1)
-                           + out(ix-1,iy-1,iz+1)
-                           + out(ix-1,iy+1,iz-1)
-                           + out(ix-1,iy+1,iz+1)
-//                           + out(ix+1,iy-1,iz-1)
-//                           + out(ix+1,iy-1,iz+1)
-//                           + out(ix+1,iy+1,iz-1)
-//                           + out(ix+1,iy+1,iz+1)
+                           -d1* out(ix-1,iy  ,iz  )
+                           -d1* out(ix  ,iy-1,iz  )
+                           -d1* out(ix  ,iy  ,iz-1)
+                           -d2* out(ix-1,iy-1,iz  )
+                           -d2* out(ix-1,iy+1,iz  )
+                           -d2* out(ix-1,iy  ,iz-1)
+                           -d2* out(ix-1,iy  ,iz+1)
+                           -d2* out(ix  ,iy-1,iz-1)
+                           -d2* out(ix  ,iy-1,iz+1)
+                           -d3* out(ix-1,iy-1,iz-1)
+                           -d3* out(ix-1,iy-1,iz+1)
+                           -d3* out(ix-1,iy+1,iz-1)
+                           -d3* out(ix-1,iy+1,iz+1)
                               );
         }
       }
@@ -175,14 +198,20 @@ void Operator::gauss_seidel2(vector& out, const vector& in) const
   if(dim==2)
   {
     int nx = out.n(0), ny = out.n(1);
-    double d = 1.0/8.0;
+    double omega = 0.8;
+    double d0inv = 3.0/8.0;
+    double d1 = -1.0/3.0;
     for(int ix=nx-2;ix>=1;ix--)
     {
       for(int iy=ny-2;iy>=1;iy--)
       {
-        out(ix,iy) = d * ( in(ix,iy)
-                          + out(ix+1,iy-1) + out(ix+1,iy  )
-                          + out(ix+1,iy+1) + out(ix  ,iy+1) );
+        out(ix,iy) = d0inv * (
+                            in(ix,iy)
+                          -d1* out(ix+1,iy-1)
+                          -d1* out(ix+1,iy  )
+                          -d1* out(ix+1,iy+1)
+                          -d1* out(ix  ,iy+1)
+                              );
       }
     }
   }
@@ -190,45 +219,33 @@ void Operator::gauss_seidel2(vector& out, const vector& in) const
   {
     int nx = out.n(0), ny = out.n(1), nz = out.n(2);
     double e = 1.0/arma::mean(out.n());
-    double d = 1.0/26.0/e;
-    double omega = 0.99;
-    for(int ix=1;ix<nx-1;ix++)
+    double d0 = 8.0/3.0 * e;
+    double d1 = -0.0/3.0 * e;
+    double d2 = -1.0/6.0 * e;
+    double d3 = -1.0/12.0 * e;
+    double d0inv = 1.0/d0;
+    for(int ix=nx-2;ix>=1;ix--)
     {
-      for(int iy=1;iy<ny-1;iy++)
+      for(int iy=ny-2;iy>=1;iy--)
       {
-        for(int iz=1;iz<nz-1;iz++)
+        for(int iz=nz-2;iz>=1;iz--)
         {
-          out(ix,iy,iz) = (1-omega)*out(ix,iy,iz)
-                        + d*omega*(
+          out(ix,iy,iz) = d0inv*(
                              in(ix,iy,iz)+
-                                   e*(
-//                           + out(ix-1,iy  ,iz  )
-                           + out(ix+1,iy  ,iz  )
-//                           + out(ix  ,iy-1,iz  )
-                           + out(ix  ,iy+1,iz  )
-//                           + out(ix  ,iy  ,iz-1)
-                           + out(ix+1,iy  ,iz+1)
-//                           + out(ix-1,iy-1,iz  )
-//                           + out(ix-1,iy+1,iz  )
-                           + out(ix+1,iy-1,iz  )
-                           + out(ix+1,iy+1,iz  )
-//                           + out(ix-1,iy  ,iz-1)
-//                           + out(ix-1,iy  ,iz+1)
-                           + out(ix+1,iy  ,iz-1)
-                           + out(ix+1,iy  ,iz+1)
-//                           + out(ix  ,iy-1,iz-1)
-//                           + out(ix  ,iy-1,iz+1)
-                           + out(ix  ,iy+1,iz-1)
-                           + out(ix  ,iy+1,iz+1)
-//                           + out(ix-1,iy-1,iz-1)
-//                           + out(ix-1,iy-1,iz+1)
-//                           + out(ix-1,iy+1,iz-1)
-//                           + out(ix-1,iy+1,iz+1)
-                           + out(ix+1,iy-1,iz-1)
-                           + out(ix+1,iy-1,iz+1)
-                           + out(ix+1,iy+1,iz-1)
-                           + out(ix+1,iy+1,iz+1)
-                              ));
+                           -d1* out(ix+1,iy  ,iz  )
+                           -d1* out(ix  ,iy+1,iz  )
+                           -d2* out(ix+1,iy  ,iz+1)
+                           -d2* out(ix+1,iy-1,iz  )
+                           -d2* out(ix+1,iy+1,iz  )
+                           -d2* out(ix+1,iy  ,iz-1)
+                           -d2* out(ix+1,iy  ,iz+1)
+                           -d2* out(ix  ,iy+1,iz-1)
+                           -d2* out(ix  ,iy+1,iz+1)
+                           -d3* out(ix+1,iy-1,iz-1)
+                           -d3* out(ix+1,iy-1,iz+1)
+                           -d3* out(ix+1,iy+1,iz-1)
+                           -d3* out(ix+1,iy+1,iz+1)
+                          );
         }
       }
     }

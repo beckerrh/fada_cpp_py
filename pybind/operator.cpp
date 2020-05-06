@@ -57,5 +57,7 @@ PYBIND11_MODULE(pyfada, m) {
     .def("get_dimensions", &OperatorPy::get_dimensions)
     .def("nall", &OperatorPy::nall)
     .def_readwrite("maxiter", &OperatorPy::maxiter)
-    .def_readwrite("smoother", &OperatorPy::smoother);
+    .def_readwrite("smoother", &OperatorPy::smoother)
+    .def_readwrite("optmem", &OperatorPy::optmem);
 }
+

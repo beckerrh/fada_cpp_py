@@ -27,12 +27,12 @@ int main(int argc, char** argv)
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-    nlevels = 8;
+    nlevels = 6;
   }
   else
   {
     n0 << 3 << 3 << 3 << arma::endr;
-    nlevels = 6;
+    nlevels = 8;
   }
 
   double t0 = seconds();
@@ -42,8 +42,8 @@ int main(int argc, char** argv)
 //  Operateur   A(nlevels, n0);
   Operator   A;
   A.set_size(nlevels, n0);
-  A.smoother = "jac";
-//  A.optmem = -1;
+  A.smoother = "gs1";
+  A.optmem = -1;
 
   int iter = A.testsolve();
   vector& u = A.get_solution();
