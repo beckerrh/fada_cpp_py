@@ -6,14 +6,16 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#include  <armadillo>
-
 #ifndef typedefs_h
 #define typedefs_h
 
+#include  <armadillo>
+
 typedef arma::Col<double> armavec;
+typedef arma::Mat<double> armamat;
 typedef arma::Col<int> armaicvec;
 typedef arma::Row<int> armairvec;
 typedef arma::Mat<int> armaimat;
+
 
 #endif /* typedefs_h */

@@ -25,11 +25,12 @@ int Operator::solve(bool print)
 //  std::cerr << "maxlevel " << maxlevel << std::endl;
   for(int iter=0; iter<this->maxiter+1; iter++)
   {
-//    std::cerr <<arma::norm(d(maxlevel).arma())<<" "<<arma::norm(f(maxlevel).arma())<<" "<<arma::norm(u(maxlevel).arma()) << "\n";
+//    for(int l=0; l <= maxlevel; l++) w(l).fill(0.0);
+//    std::cerr <<d(maxlevel).norm()<<" "<<f(maxlevel).norm()<<" "<<u(maxlevel).norm() << "\n";
     residual(maxlevel, d, u, f);
-//    std::cerr <<arma::norm(d(maxlevel).arma())<<" "<<arma::norm(f(maxlevel).arma())<<" "<<arma::norm(u(maxlevel).arma()) << "\n";
+//    std::cerr <<d(maxlevel).norm()<<" "<<f(maxlevel).norm()<<" "<<u(maxlevel).norm() << "\n";
 
-    res = arma::norm(d(maxlevel).arma());
+    res = d(maxlevel).norm();
     if(iter==0)
     {
       tol = fmax(this->tol_abs, this->tol_rel*res);
@@ -51,12 +52,12 @@ void Operator::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
   if(l==minlevel())
   {
     residual(l, d, u, f);
-    smooth(w(l), d(l));
+    smooth(l, w(l), d(l));
     update(l, u, f, d, w, Aw);
   }
   else
   {
-    smooth(w(l), d(l));
+    smooth(l, w(l), d(l));
     update(l, u, f, d, w, Aw);
     
     restrict(l-1, d, d);
@@ -68,13 +69,17 @@ void Operator::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
     prolongate(l, w, u);
     residual(l, d, u, f);
     update(l, u, f, d, w, Aw);
-    smooth(w(l), d(l));
+    smooth(l, w(l), d(l));
     update(l, u, f, d, w, Aw);
   }
 }
 /*-------------------------------------------------*/
 void Operator::update(int l, VectorMG& u, VectorMG& f, VectorMG& r, VectorMG& w, VectorMG& Aw, bool print) const
 {
+  _mgupdate(l)->addUpdate(w(l), u(l), r(l));
+  return;
+  
+  
   /*
    input:
       d contains the residual (d = f - Au)
@@ -82,7 +87,7 @@ void Operator::update(int l, VectorMG& u, VectorMG& f, VectorMG& r, VectorMG& w,
       d contgains the new residual
    */
   Aw(l).fill(0.0);
-  dot(Aw(l), w(l), 1.0);
+  dot(l, Aw(l), w(l), 1.0);
   double omega = 1.0;
   if(optmem>=0)
   {
@@ -91,10 +96,10 @@ void Operator::update(int l, VectorMG& u, VectorMG& f, VectorMG& r, VectorMG& w,
 //    double d1 = Aw(l).dot(r(l));
 //    double d2 = Aw(l).dot(Aw(l));
     omega = d1/d2;
-    omega = fmax(fmin(omega, 10.0),0.1);
-//    printf("l=%2d '%4.2f' %10.3e\n",l, omega, arma::norm(w(l).arma()));
+//    omega = fmax(fmin(omega, 10.0),0.1);
+//    printf("l=%2d '%4.2f' %10.3e\n",l, omega, w(l).norm());
   }
-  if(print) printf("l=%2d '%4.2f' %10.3e\n",l, omega, arma::norm(w(l).arma()));
+  if(print) printf("l=%2d '%4.2f' %10.3e %10.3e %10.3e\n",l, omega, w(l).norm(), Aw(l).norm(), r(l).norm());
   u(l).add(omega, w(l));
   r(l).add(-omega, Aw(l));
 }

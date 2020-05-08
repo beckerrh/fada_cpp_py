@@ -30,3 +30,4 @@ pybind11_add_module(pyfada  pybind/operator.cpp ${SRC})
 target_link_libraries(pyfada PRIVATE pybind11::module fadalib ${ARMADILLO_LIBRARIES})
 #
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.py ${CMAKE_CURRENT_BINARY_DIR}/test.py COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/time.py ${CMAKE_CURRENT_BINARY_DIR}/time.py COPYONLY)

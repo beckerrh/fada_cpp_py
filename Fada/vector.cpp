@@ -9,7 +9,7 @@
 #include  <stdio.h>
 #include  "vector.hpp"
 
-std::ostream& operator<<(std::ostream& os, const vector& v)
+std::ostream& operator<<(std::ostream& os, const Vector& v)
 {
   const armavec& tarma =static_cast<const armavec&>(v);
   os << tarma.t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();

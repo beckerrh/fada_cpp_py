@@ -1,21 +1,22 @@
 //
-//  vector.hpp
+//  Vector.hpp
 //  Fada
 //
 //  Created by Roland Becker on 02/05/2020.
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#ifndef vector_h
-#define vector_h
+#ifndef Vector_h
+#define Vector_h
 
 #include  "typedefs.hpp"
 
 /*-------------------------------------------------*/
-class vector : public armavec
+class Vector : public armavec
 {
 protected:
   armaicvec _n, _ofs;
+  int _ofsp;
   void set_ofs()
   {
     _ofs.set_size(_n.n_elem);
@@ -27,30 +28,48 @@ protected:
         _ofs[i] *= _n[j];
       }
     }
-//    std::cerr << "_n = " << _n.t();
-//    std::cerr << "_ofs = " << _ofs.t();
+    _ofsp = 1;
+    for(int i=1;i<_n.n_elem;i++)
+    {
+      _ofsp += _ofs[i];
+    }
+    //    std::cerr << "_n = " << _n.t();
+    //    std::cerr << "_ofs = " << _ofs.t();
   }
+
 public:
-  vector() : armavec(), _n(), _ofs() {}
-  vector(const armaicvec& n) : armavec(arma::prod(n)), _n(n)
+  Vector() : armavec(), _n(), _ofs() {}
+  Vector(const armaicvec& n) : armavec(arma::prod(n)), _n(n)
   {
     set_ofs();
     assert(0);
   }
-  vector& operator=(const vector& v)
+  Vector& operator=(const Vector& v)
   {
     armavec::operator=(v);
-    _n = v._n;
-    set_ofs();
+    assert(arma::all(_n==v.n()));
+//    _n = v._n;
+//    set_ofs();
     return *this;
   }
-  vector& operator=(const armavec& v)
+  Vector& operator=(const armavec& v)
   {
     armavec::operator=(v);
     return *this;
+  }
+  void set_size(const armaicvec& n)
+  {
+//    std::cerr << "Vector::set_size() n = " << n.t();
+    _n = n;
+    set_ofs();
+    armavec::set_size(arma::prod(n));
+  }
+  void set_size(const Vector& u)
+  {
+    set_size(u.n());
   }
   int dim() const {return _n.n_elem;}
-  int n(int i) const {return _n[i];}
+//  int n(int i) const {return _n[i];}
   const armaicvec& n() const {return _n;}
   const armaicvec& ofs() const {return _ofs;}
   armavec& arma()
@@ -63,39 +82,74 @@ public:
     const armavec& t = static_cast<const armavec&>(*this);
     return t;
   }
-  double& operator()(int ix, int iy)
+//  double& operator()(int ix, int iy)
+//  {
+//    return (*this)[_ofs[0]*ix+iy];
+//  }
+//  const double& operator()(int ix, int iy) const
+//  {
+//    return (*this)[_ofs[0]*ix+iy];
+//  }
+//  double& operator()(int ix, int iy, int iz)
+//  {
+//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
+//  }
+//  const double& operator()(int ix, int iy, int iz) const
+//  {
+//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
+//  }
+  double& at(int ix, int iy)
   {
     return (*this)[_ofs[0]*ix+iy];
   }
-  const double& operator()(int ix, int iy) const
+  const double& at(int ix, int iy) const
   {
     return (*this)[_ofs[0]*ix+iy];
   }
-  double& operator()(int ix, int iy, int iz)
+  double& at(int ix, int iy, int iz)
   {
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
-  const double& operator()(int ix, int iy, int iz) const
+  const double& at(int ix, int iy, int iz) const
   {
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
-  void set_size(const armaicvec& n)
+  double& atp(int ix, int iy)
   {
-    _n = n;
-    set_ofs();
-    armavec::set_size(arma::prod(n));
+    return (*this)[_ofs[0]*ix+iy+_ofsp];
   }
-  void set_size(const vector& u)
+  const double& atp(int ix, int iy) const
   {
-    set_size(u.n());
+//    return (*this)[_ofs[0]*ix+iy+_ofs[0]+1];
+    return (*this)[_ofs[0]*ix+iy+_ofsp];
   }
-  void add(double d, const vector& v)
+  double& atp(int ix, int iy, int iz)
+  {
+    // apparemment c'est plus rapide comme ça (??)
+//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+1+_ofs[0]+_ofs[1]];
+    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
+  }
+  const double& atp(int ix, int iy, int iz) const
+  {
+    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
+//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+1+_ofs[0]+_ofs[1]];
+//    return (*this)[_ofs[0]*(ix+1)+_ofs[1]*(iy+1)+iz+1];
+  }
+  void add(double d, const Vector& v)
   {
     this->arma() += d*v.arma();
   }
-  double dot(const vector& v) const
+  double dot(const Vector& v) const
   {
     return arma::dot(this->arma(),v.arma());
+  }
+  void scale(double d)
+  {
+    this->arma() *= d;
+  }
+  double norm(double p=2) const
+  {
+    return arma::norm(this->arma(),p);
   }
   void output(const std::string& filename) const
   {
@@ -103,6 +157,6 @@ public:
     this->arma().save(spec);
   }
 };
-std::ostream& operator<<(std::ostream& os, const vector& v);
+std::ostream& operator<<(std::ostream& os, const Vector& v);
 
-#endif /* vector_h */
+#endif /* Vector_h */

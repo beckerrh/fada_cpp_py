@@ -17,14 +17,14 @@ int main(int argc, char** argv)
 {
   armaicvec n;
   n << 4 << 2 << 3 << arma::endr;
-  vector v(n), w(n);
+  Vector v(n), w(n);
   v.fill(2);
   w.randu();
   
-  vector x(v);
+  Vector x(v);
   
   x = 3*v.arma() + w.arma();
   std::cerr << x << std::endl;
-  std::cerr << "x(2,1,2) =" << x(2,1,2) << std::endl;
+  std::cerr << "x(2,1,2) =" << x.at(2,1,2) << std::endl;
   std::cerr << arma::dot(v.arma(),w.arma()) << std::endl;
 }

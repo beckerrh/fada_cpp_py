@@ -20,13 +20,14 @@ public:
   Array<T>& operator=(const Array<T>&);
   Array<T>& operator=(const T);
   void set_size(int n);
+  void set_size(const Array<T>& v);
 };
 
 /*-------------------------------------------------*/
 template<class T>
 inline void Array<T>::copy(const Array<T>& a)
 {
-//  THROW1(dim!=a.dim, IntError(IntError::IllegalDimension, n, "Array"));
+  //  THROW1(dim!=a.dim, IntError(IntError::IllegalDimension, n, "Array"));
   T* p = ptr + dim;
   T* q = a.ptr + dim;
   while(p>ptr) *--p = *--q;
@@ -38,7 +39,7 @@ inline Array<T>::Array(int n)
   dim = n;
   ptr = new T[n];
   //THROWUNCOND(!ptr, Error( Error::NoMem,"Array::Array"));
- }
+}
 
 template<class T>
 inline Array<T>::Array()
@@ -107,7 +108,16 @@ inline void Array<T>::set_size(int n)
     if(ptr) delete[] ptr;
     dim = n;
     ptr = new T[dim];
-   }
+  }
+}
+template<class T>
+void Array<T>::set_size(const Array<T>& v)
+{
+  set_size(v.n());
+  for(int i=0;i<v.n();i++)
+  {
+    (*this)(i).set_size(v(i));
+  }
 }
 
 /*-------------------------------------------------*/

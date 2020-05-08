@@ -23,11 +23,11 @@ inline double seconds(void)
 int main(int argc, char** argv)
 {
   armaicvec n0;
-  int nlevels=12, dim=3;
+  int nlevels=12, dim=2;
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-    nlevels = 6;
+//    nlevels = 3;
   }
   else
   {
@@ -41,18 +41,18 @@ int main(int argc, char** argv)
    */
 //  Operateur   A(nlevels, n0);
   Operator   A;
+  A.optmem = 5;
   A.set_size(nlevels, n0);
-  A.smoother = "gs1";
-  A.optmem = -1;
+//  A.smoother = "gs2";
 
   int iter = A.testsolve();
-  vector& u = A.get_solution();
+  Vector& u = A.get_solution();
   printf("u = %10.4e  %10.4e\n", arma::mean(u.arma()), arma::max(u.arma()));
 
 //  std::string filename("solution.hdf");
 //  u.output(filename);
   
-  printf("Vous avez utilise le lisseur %s", A.smoother.c_str());
-  printf("\n\nNo. Iterations %3d (N = %6d)\n",iter, A.nall());
+  printf("Vous avez utilise le lisseur %s\n", A.smoother.c_str());
+  printf("No. Iterations %3d (N = %6d)\n",iter, A.nall());
   printf("Total time: %6.2f\n", seconds()-t0);
 }
