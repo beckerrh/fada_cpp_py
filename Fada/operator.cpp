@@ -2,8 +2,10 @@
 #include  <stdio.h>
 #include  <armadillo>
 #include  <algorithm>
+#include  "q1.hpp"
 #include  "operator.hpp"
 #include  "updater.hpp"
+#include  "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
 void Operator::set_parameters()
@@ -11,93 +13,163 @@ void Operator::set_parameters()
   maxiter = 100;
   smoother = "jac";
   tol_rel = 1e-8;
-  tol_abs = 1e-13;
-  optmem = 0;
+  tol_abs = 1e-12;
+  _optmem = 0;
 }
 
-Operator::~Operator()
-{
-  for(int l=0;l<nlevels();l++)
-  {
-    delete _mgupdate(l);
-  }
-}
+Operator::~Operator() {}
 
 /*-------------------------------------------------*/
-Operator::Operator()
+Operator::Operator() : _fem(nullptr)
 {
   set_parameters();
 }
 
-/*-------------------------------------------------*/
-Operator::Operator(int nlevels, const armaicvec& n0)
-{
-  set_parameters();
-  set_size(nlevels, n0);
-}
 
 /*-------------------------------------------------*/
-void Operator::set_size(int nlevels, const armaicvec& n0)
+void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, std::string matrixtype)
 {
-  _mgmem.set_size(5);
-  int dim = n0.n_elem;
-  _n.set_size(dim, nlevels);
-  
-  for(int i=0;i<n0.n_elem;i++)
+  _timer.enrol("smooth");
+  _timer.enrol("transfer");
+  _timer.enrol("residual");
+  _timer.enrol("update");
+  _timer.enrol("solvecoarse");
+  _mggrid.set_size(nlevels, n0);
+  if(dim()==2)
   {
-    for(int l=0;l<nlevels;l++)
+    if(femtype=="Q1")
     {
-      _n(i,l) = int(pow(2,l))*(n0[i]-1)+1;
+      _fem = std::unique_ptr<FiniteElementInterface>(new Q12d);
+    }
+    else
+    {
+      std::cerr << "unknown fem '" << femtype<<"'\n";
     }
   }
-  _nall = arma::prod(_n, 0);
+  else if(dim()==3)
+  {
+    if(femtype=="Q1")
+    {
+      _fem = std::unique_ptr<FiniteElementInterface>(new Q13d);
+    }
+    else
+    {
+      std::cerr << "unknown fem '" << femtype<<"'\n";
+    }
+  }
+  _fem->set_grid(_mggrid.grid());
+
+  _mgmem.set_size(4);
   for(int i=0;i<_mgmem.n();i++)
   {
     set_size(_mgmem(i));
   }
-  _mgupdate.set_size(nlevels);
-  std::string type="cyc";
-//  type="coef";
-//  type="ortho";
-//  type="restart";
+  _mgmatrix.set_size(nlevels);
   for(int l=0;l<nlevels;l++)
   {
-    if(optmem==0) _mgupdate(l) = new UpdaterSimple;
-    else _mgupdate(l) = new Updater;
+    _mgmatrix(l) = _fem->newMatrix(matrixtype);
+    _mgmatrix(l)->set_grid(_mggrid.grid(l));
+  }
+//  _spmat = _mgmatrix(0)->set_sparse();
+  _mgtransfer.set_size(nlevels-1);
+  for(int l=0;l<nlevels-1;l++)
+  {
+    _mgtransfer(l) = _fem->newTransfer(matrixtype);
+    _mgtransfer(l)->set_grid(_mggrid.grid(l));
+  }
+  _mgupdate.set_size(nlevels);
+  _mgupdatesmooth.set_size(nlevels);
+  std::string type="cyc";
+  //  type="coef";
+  //  type="ortho";
+  //  type="restart";
+  for(int l=0;l<nlevels;l++)
+  {
+    if(_optmem==0)
+    {
+      _mgupdate(l) = std::unique_ptr<UpdaterInterface>(new UpdaterSimple);
+    }
+    else
+    {
+      _mgupdate(l) = std::unique_ptr<UpdaterInterface>(new Updater);
+    }
+    _mgupdatesmooth(l) = std::unique_ptr<UpdaterInterface>(new UpdaterSimple);
   }
   for(int l=0;l<nlevels;l++)
   {
-    _mgupdate(l)->setParameters(l, this, std::max(0,optmem), type);
-    _mgupdate(l)->set_size(n(l)+2);
+    _mgupdate(l)->setParameters(l, this, std::max(0,_optmem), type);
+    _mgupdate(l)->set_size(_mggrid.n(l)+2);
+    _mgupdatesmooth(l)->setParameters(l, this, std::max(0,_optmem), type);
+    _mgupdatesmooth(l)->set_size(_mggrid.n(l)+2);
   }
 }
 
 /*-------------------------------------------------*/
 void Operator::set_size(VectorMG& v) const
 {
-  v.set_size(nlevels());
-  for(int l=0;l<nlevels();l++)
+  v.set_size(_mggrid.nlevels());
+  for(int l=0;l<_mggrid.nlevels();l++)
   {
-//    v(l).set_size(n(l));
-    v(l).set_size(n(l)+2);
+    v(l).set_size(_mggrid.n(l)+2);
+    v(l).fill_bdry(0);
+    //    std::cerr << "_mggrid.n(l) " << _mggrid.n(l).t() << "\n";
+    //    v(l).fill(7);
+    //    v(l).fill_bdry(1);
+    //    v(l).fill_bdry2(2);
+    //    std::cerr << v(l) << "\n";
+    //    _boundary(l, v(l));
+    //    std::cerr << v(l) << "\n";
+    //    assert(0);
   }
 }
 
 /*-------------------------------------------------*/
-void Operator::smooth(int l, Vector& out, const Vector& in) const
+void Operator::solvecoarse(int l, Vector& out, const Vector& in) const
+{
+  _mgmatrix(l)->jacobi(out, in);
+}
+
+/*-------------------------------------------------*/
+void Operator::smoothpre(int l, Vector& out, const Vector& in) const
+  {
+  out.fill(0.0);
+  if(this->smoother=="jac")
+  {
+    _mgmatrix(l)->jacobi(out, in);
+  }
+  else if(this->smoother=="gs")
+  {
+    _mgmatrix(l)->gauss_seidel1(out, in);
+  }
+  else if(this->smoother=="gs1")
+  {
+    _mgmatrix(l)->gauss_seidel1(out, in);
+  }
+  else if(this->smoother=="gs2")
+  {
+    _mgmatrix(l)->gauss_seidel2(out, in);
+  }
+}
+
+/*-------------------------------------------------*/
+void Operator::smoothpost(int l, Vector& out, const Vector& in) const
 {
   out.fill(0.0);
   if(this->smoother=="jac")
   {
-    jacobi(l, out, in);
+    _mgmatrix(l)->jacobi(out, in);
+  }
+  else if(this->smoother=="gs")
+  {
+    _mgmatrix(l)->gauss_seidel2(out, in);
   }
   else if(this->smoother=="gs1")
   {
-    gauss_seidel1(l, out, in);
+    _mgmatrix(l)->gauss_seidel1(out, in);
   }
   else if(this->smoother=="gs2")
   {
-    gauss_seidel2(l, out, in);
+    _mgmatrix(l)->gauss_seidel2(out, in);
   }
 }
 
@@ -105,32 +177,31 @@ void Operator::smooth(int l, Vector& out, const Vector& in) const
 void Operator::residual(int l, VectorMG& r, const VectorMG& u, const VectorMG& f) const
 {
   r(l) =  f(l);
-  dot(l, r(l),u(l), -1.0);
+  _mgmatrix(l)->dot(r(l),u(l), -1.0);
 }
 
 /*-------------------------------------------------*/
 void Operator::vectormg2vector(int l, Vector& u, const VectorMG& umg) const
 {
-//  u = umg(l);
-    if(dim()==2)
-    {
-      int nx = _n(0,l), ny = _n(1,l);
-      for(int ix=0;ix<nx;ix++)
-      {
-        for(int iy=0;iy<ny;iy++)
-        {
-          u.at(ix,iy) = umg(l).atp(ix,iy);
-        }
-      }
-    }
-  else if(dim()==3)
+  if(_mggrid.dim()==2)
   {
-    int nx = _n(0,l), ny = _n(1,l);
+    int nx = _mggrid.nx(l), ny = _mggrid.ny(l);
     for(int ix=0;ix<nx;ix++)
     {
       for(int iy=0;iy<ny;iy++)
       {
-        for(int iz=0;iz<ny;iz++)
+        u.at(ix,iy) = umg(l).atp(ix,iy);
+      }
+    }
+  }
+  else if(_mggrid.dim()==3)
+  {
+    int nx = _mggrid.nx(l), ny = _mggrid.ny(l), nz = _mggrid.nz(l);
+    for(int ix=0;ix<nx;ix++)
+    {
+      for(int iy=0;iy<ny;iy++)
+      {
+        for(int iz=0;iz<nz;iz++)
         {
           u.at(ix,iy,iz) = umg(l).atp(ix,iy,iz);
         }
@@ -141,26 +212,25 @@ void Operator::vectormg2vector(int l, Vector& u, const VectorMG& umg) const
 /*-------------------------------------------------*/
 void Operator::vector2vectormg(int l, VectorMG& umg, const Vector& u) const
 {
-//  umg(l) = u;
-    if(dim()==2)
-    {
-      int nx = _n(0,l), ny = _n(1,l);
-      for(int ix=0;ix<nx;ix++)
-      {
-        for(int iy=0;iy<ny;iy++)
-        {
-          umg(l).atp(ix,iy) = u.at(ix,iy);
-        }
-      }
-    }
-  else if(dim()==3)
+  if(_mggrid.dim()==2)
   {
-    int nx = _n(0,l), ny = _n(1,l);
+    int nx = _mggrid.nx(l), ny = _mggrid.ny(l);
     for(int ix=0;ix<nx;ix++)
     {
       for(int iy=0;iy<ny;iy++)
       {
-        for(int iz=0;iz<ny;iz++)
+        umg(l).atp(ix,iy) = u.at(ix,iy);
+      }
+    }
+  }
+  else if(_mggrid.dim()==3)
+  {
+    int nx = _mggrid.nx(l), ny = _mggrid.ny(l), nz = _mggrid.nz(l);
+    for(int ix=0;ix<nx;ix++)
+    {
+      for(int iy=0;iy<ny;iy++)
+      {
+        for(int iz=0;iz<nz;iz++)
         {
           umg(l).atp(ix,iy,iz) = u.at(ix,iy,iz);
         }
@@ -170,153 +240,35 @@ void Operator::vector2vectormg(int l, VectorMG& umg, const Vector& u) const
 }
 
 /*-------------------------------------------------*/
-int Operator::testsolve(bool print)
+int Operator::testsolve(bool print, std::string problem)
 {
-  _u.set_size(n());
+  _u.set_size(_mggrid.n());
   _u.fill(0);
   _f.set_size(_u);
-  right(_f);
-  boundary(_u);
-  boundary(_f, _u);
-
+  if(problem=="DirichletRhsOne")
+  {
+    _fem->rhs_one(_f);
+  }
+  else if(problem=="Random")
+  {
+    _fem->rhs_random(_f);
+  }
+  else if(problem=="Linear")
+  {
+    _f.fill(0);
+    _fem->boundary(_u);
+    _fem->boundary(_f);
+  }
   VectorMG& umg = _mgmem(0);
   VectorMG& fmg = _mgmem(1);
 
-  vector2vectormg(nlevels()-1, fmg, _f);
-  vector2vectormg(nlevels()-1, umg, _u);
-//  fmg(nlevels()-1) = _f;
-//  umg(nlevels()-1) = _u;
+  vector2vectormg(_mggrid.nlevels()-1, fmg, _f);
+//  std::cerr << "??? " << fmg(_mggrid.nlevels()-1).norm()<<" "<<_f.norm()<< "\n";
+  vector2vectormg(_mggrid.nlevels()-1, umg, _u);
+  //  fmg(nlevels()-1) = _f;
+  //  umg(nlevels()-1) = _u;
   int iter = solve(print);
-  vectormg2vector(nlevels()-1, _u, umg);
-//  _u = umg(nlevels()-1);
+  vectormg2vector(_mggrid.nlevels()-1, _u, umg);
+  //  _u = umg(nlevels()-1);
   return iter;
-}
-/*-------------------------------------------------*/
-void Operator::boundary(Vector& v, const Vector& w, double d) const
- {
-   if(dim()==2)
-   {
-     int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1);
-     for(int ix=0;ix<nx;ix++)
-     {
-       v.at(ix,0)    = d*w.at(ix,0);
-       v.at(ix,ny-1) = d*w.at(ix,ny-1);
-     }
-     for(int iy=0;iy<ny;iy++)
-     {
-       v.at(0,iy)    = d*w.at(0,iy);
-       v.at(nx-1,iy) = d*w.at(nx-1,iy);
-     }
-   }
-   else if(dim()==3)
-   {
-     int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1), nz = _n(2,_n.n_cols-1);
-     for(int ix=0;ix<nx;ix++)
-     {
-       for(int iy=0;iy<ny;iy++)
-       {
-         v.at(ix,iy,0)    = d*w.at(ix,iy,0);
-         v.at(ix,iy,nz-1) = d*w.at(ix,iy,nz-1);
-       }
-     }
-     for(int ix=0;ix<nx;ix++)
-     {
-       for(int iz=0;iz<nz;iz++)
-       {
-         v.at(ix,0,   iz) = d*w.at(ix,0,   iz);
-         v.at(ix,ny-1,iz) = d*w.at(ix,ny-1,iz);
-       }
-     }
-     for(int iy=0;iy<ny;iy++)
-     {
-       for(int iz=0;iz<nz;iz++)
-       {
-         v.at(0,iy,iz)    = d*w.at(0,iy,iz);
-         v.at(nx-1,iy,iz) = d*w.at(nx-1,iy,iz);
-       }
-     }
-   }
- }
- 
- /*-------------------------------------------------*/
- void Operator::boundary(Vector& v) const
- {
-   if(dim()==2)
-   {
-     int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1);
-     for(int ix=0;ix<nx;ix++)
-     {
-       v.at(ix,0)    = 0.0;
-       v.at(ix,ny-1) = 0.0;
-     }
-     for(int iy=0;iy<ny;iy++)
-     {
-       v.at(0,iy)    = 0.0;
-       v.at(nx-1,iy) = 0.0;
-     }
-   }
-   else if(dim()==3)
-   {
-     int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1), nz = _n(2,_n.n_cols-1);
-     for(int ix=0;ix<nx;ix++)
-     {
-       for(int iy=0;iy<ny;iy++)
-       {
-         v.at(ix,iy,0)    = 0.0;
-         v.at(ix,iy,nz-1) = 0.0;
-       }
-     }
-     for(int ix=0;ix<nx;ix++)
-     {
-       for(int iz=0;iz<nz;iz++)
-       {
-         v.at(ix,0,   iz) = 0.0;
-         v.at(ix,ny-1,iz) = 0.0;
-       }
-     }
-     for(int iy=0;iy<ny;iy++)
-     {
-       for(int iz=0;iz<nz;iz++)
-       {
-         v.at(0,   iy,iz) = 0.0;
-         v.at(nx-1,iy,iz) = 0.0;
-       }
-     }
-   }
- }
-
-/*-------------------------------------------------*/
-void Operator::right(Vector& v) const
-{
-  double d = (4.0*dim()+pow(2.0,dim()))/arma::prod(n());
-  if(dim()==2)
-  {
-    int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1);
-    for(int ix=0;ix<nx;ix++)
-    {
-      for(int iy=0;iy<ny;iy++)
-      {
-        v.at(ix,iy) = d;
-      }
-    }
-  }
-  else if(dim()==3)
-  {
-    int nx = _n(0,_n.n_cols-1), ny = _n(1,_n.n_cols-1), nz = _n(2,_n.n_cols-1);
-    for(int ix=0;ix<nx;ix++)
-    {
-      for(int iy=0;iy<ny;iy++)
-      {
-        for(int iz=0;iz<nz;iz++)
-        {
-          v.at(ix,iy, iz) = d;
-        }
-      }
-    }
-  }
-  else
-  {
-    std::cerr << "wrong dimension " << dim() << std::endl;
-    exit(1);
-  }
 }

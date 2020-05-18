@@ -2,10 +2,10 @@ import pyfada
 import numpy as np
 import time, os, psutil
 #-----------------------------------------------------------------#
-def test(n, nlevels=12):
-  op = pyfada.Operator(nlevels, n)
+def test(n, nlevels=12, matrixtype="Q1"):
+  op = pyfada.Operator(nlevels, n, matrixtype)
   t0 = time.time()
-  iter = op.testsolve()
+  iter = op.testsolve(problem="DirichletRhsOne")
   t1 = time.time()
   process = psutil.Process(os.getpid())
   mem = process.memory_info().rss//10**6

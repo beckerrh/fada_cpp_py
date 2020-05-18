@@ -9,7 +9,11 @@
 #ifndef Vector_h
 #define Vector_h
 
-#include  "typedefs.hpp"
+#include  <armadillo>
+
+typedef arma::Col<double> armavec;
+typedef arma::Col<int> armaicvec;
+//#include  "typedefs.hpp"
 
 /*-------------------------------------------------*/
 class Vector : public armavec
@@ -29,12 +33,13 @@ protected:
       }
     }
     _ofsp = 1;
-    for(int i=1;i<_n.n_elem;i++)
+    for(int i=0;i<_n.n_elem-1;i++)
     {
       _ofsp += _ofs[i];
     }
-    //    std::cerr << "_n = " << _n.t();
-    //    std::cerr << "_ofs = " << _ofs.t();
+//        std::cerr << "_n = " << _n.t();
+//        std::cerr << "_ofs = " << _ofs.t();
+//    std::cerr << "_ofsp = " << _ofsp << "\n";
   }
 
 public:
@@ -68,8 +73,9 @@ public:
   {
     set_size(u.n());
   }
+  void fill_bdry(double d=0);
+  void fill_bdry2(double d=0);
   int dim() const {return _n.n_elem;}
-//  int n(int i) const {return _n[i];}
   const armaicvec& n() const {return _n;}
   const armaicvec& ofs() const {return _ofs;}
   armavec& arma()
@@ -82,22 +88,6 @@ public:
     const armavec& t = static_cast<const armavec&>(*this);
     return t;
   }
-//  double& operator()(int ix, int iy)
-//  {
-//    return (*this)[_ofs[0]*ix+iy];
-//  }
-//  const double& operator()(int ix, int iy) const
-//  {
-//    return (*this)[_ofs[0]*ix+iy];
-//  }
-//  double& operator()(int ix, int iy, int iz)
-//  {
-//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
-//  }
-//  const double& operator()(int ix, int iy, int iz) const
-//  {
-//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
-//  }
   double& at(int ix, int iy)
   {
     return (*this)[_ofs[0]*ix+iy];
@@ -106,34 +96,30 @@ public:
   {
     return (*this)[_ofs[0]*ix+iy];
   }
+  double& atp(int ix, int iy)
+  {
+    // _ofs[0]*(ix+1)+iy+1 = _ofs[0]*ix+iy + _ofs[0]+1
+    return (*this)[_ofs[0]*ix+iy+_ofsp];
+  }
+  const double& atp(int ix, int iy) const
+  {
+    return (*this)[_ofs[0]*ix+iy+_ofsp];
+  }
   double& at(int ix, int iy, int iz)
   {
-    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
+    return (*this)[_ofs[0]*ix+iy+iz];
   }
   const double& at(int ix, int iy, int iz) const
   {
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
-  double& atp(int ix, int iy)
-  {
-    return (*this)[_ofs[0]*ix+iy+_ofsp];
-  }
-  const double& atp(int ix, int iy) const
-  {
-//    return (*this)[_ofs[0]*ix+iy+_ofs[0]+1];
-    return (*this)[_ofs[0]*ix+iy+_ofsp];
-  }
   double& atp(int ix, int iy, int iz)
   {
-    // apparemment c'est plus rapide comme ça (??)
-//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+1+_ofs[0]+_ofs[1]];
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
   }
   const double& atp(int ix, int iy, int iz) const
   {
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
-//    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+1+_ofs[0]+_ofs[1]];
-//    return (*this)[_ofs[0]*(ix+1)+_ofs[1]*(iy+1)+iz+1];
   }
   void add(double d, const Vector& v)
   {

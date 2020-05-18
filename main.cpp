@@ -11,6 +11,7 @@
 #include  <ctime>
 #include  "Fada/vector.hpp"
 #include  "Fada/operator.hpp"
+#include  "Fada/uniformmultigrid.hpp"
 
 /*-------------------------------------------------*/
 inline double seconds(void)
@@ -36,12 +37,12 @@ int main(int argc, char** argv)
   }
 
   double t0 = seconds();
-  /*
-   smoother [0:jacobi 1:gauss_seidel 2:gauss_seidel_symm]
-   */
+//  UniformMultiGrid mggrid;
+//  mggrid.set_size(nlevels, n0);
+
+  
 //  Operateur   A(nlevels, n0);
   Operator   A;
-  A.optmem = 5;
   A.set_size(nlevels, n0);
 //  A.smoother = "gs2";
 
