@@ -47,7 +47,7 @@ public:
   Vector(const armaicvec& n) : armavec(arma::prod(n)), _n(n)
   {
     set_ofs();
-    assert(0);
+//    assert(0);
   }
   Vector& operator=(const Vector& v)
   {

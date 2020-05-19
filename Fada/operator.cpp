@@ -70,7 +70,7 @@ void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, s
     _mgmatrix(l) = _fem->newMatrix(matrixtype);
     _mgmatrix(l)->set_grid(_mggrid.grid(l));
   }
-//  _spmat = _mgmatrix(0)->set_sparse();
+  _spmat = _mgmatrix(0)->set_sparse();
   _mgtransfer.set_size(nlevels-1);
   for(int l=0;l<nlevels-1;l++)
   {

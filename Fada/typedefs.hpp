@@ -9,6 +9,9 @@
 #ifndef typedefs_h
 #define typedefs_h
 
+//#define ARMA_USE_SUPERLU 1
+//#define ARMA_SUPERLU_INCLUDE_DIR /usr/local/include/superlu/
+
 #include  <armadillo>
 #include  "array.hpp"
 #include  "vector.hpp"

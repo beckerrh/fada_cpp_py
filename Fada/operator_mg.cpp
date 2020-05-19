@@ -10,6 +10,7 @@
 #include <math.h>
 #include "operator.hpp"
 
+
 /*-------------------------------------------------*/
 int Operator::solve(bool print)
 {
@@ -52,15 +53,18 @@ void Operator::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
 {
   if(l==_mggrid.minlevel())
   {
-    _timer.start("residual");
-    residual(l, d, u, f);
-    _timer.stop("residual");
-    _timer.start("solvecoarse");
-    solvecoarse(l, w(l), d(l));
-    _timer.stop("solvecoarse");
-    _timer.start("update");
-    _mgupdatesmooth(l)->addUpdate(w(l), u(l), d(l));
-    _timer.stop("update");
+      _timer.start("solvecoarse");
+      arma::spsolve(u(l), _spmat, f(l));
+      _timer.stop("solvecoarse");
+//    _timer.start("residual");
+//    residual(l, d, u, f);
+//    _timer.stop("residual");
+//    _timer.start("solvecoarse");
+//    solvecoarse(l, w(l), d(l));
+//    _timer.stop("solvecoarse");
+//    _timer.start("update");
+//    _mgupdatesmooth(l)->addUpdate(w(l), u(l), d(l));
+//    _timer.stop("update");
   }
   else
   {
@@ -84,7 +88,9 @@ void Operator::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
     _timer.start("transfer");
     _mgtransfer(l-1)->prolongate(w(l), u(l-1));
     _timer.stop("transfer");
+    _timer.start("residual");
     residual(l, d, u, f);
+    _timer.stop("residual");
     _timer.start("update");
     _mgupdate(l)->addUpdate(w(l), u(l), d(l));
     _timer.stop("update");

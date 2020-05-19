@@ -1,7 +1,7 @@
 #
 #-----------------------------#
 #
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.15)
 PROJECT(fada)
 #
 #-----------------------------#
@@ -14,20 +14,27 @@ SET(CMAKE_CXX_FLAGS "-O3")
 ##
 #
 find_package(Armadillo REQUIRED)
+
+find_library(SUPERLU_LIBRARY NAMES "superlu")
+message("SUPERLU_LIBRARY ${SUPERLU_LIBRARY}")
+
 INCLUDE_DIRECTORIES(${ARMADILLO_INCLUDE_DIRS})
 AUX_SOURCE_DIRECTORY(Fada SRC)
 #
 ADD_LIBRARY(fadalib ${SRC})
+#TARGET_LINK_LIBRARIES(fadalib ${SUPERLU_LIBRARY} ${ARMADILLO_LIBRARIES} )
 #
-ADD_EXECUTABLE(fada main.cpp)
-TARGET_LINK_LIBRARIES(fada fadalib ${ARMADILLO_LIBRARIES})
+#ADD_EXECUTABLE(fada main.cpp)
+#TARGET_LINK_LIBRARIES(fada fadalib ${ARMADILLO_LIBRARIES} )
 #
 ADD_EXECUTABLE(testarma testarma.cpp)
-TARGET_LINK_LIBRARIES(testarma fadalib ${ARMADILLO_LIBRARIES})
+TARGET_LINK_LIBRARIES(testarma fadalib ${ARMADILLO_LIBRARIES} ${SUPERLU_LIBRARY})
 #
 find_package(pybind11 REQUIRED)
 pybind11_add_module(pyfada  pybind/operator.cpp ${SRC})
 target_link_libraries(pyfada PRIVATE pybind11::module fadalib ${ARMADILLO_LIBRARIES})
+#
+#-- copy .py files
 #
 FILE(GLOB PYBINFILES ${CMAKE_CURRENT_SOURCE_DIR}/*.py)
 FOREACH(PYBINFILE ${PYBINFILES})

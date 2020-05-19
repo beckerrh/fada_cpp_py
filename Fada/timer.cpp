@@ -50,23 +50,23 @@ double Timer::total() const
 void Timer::print(std::ostream& os) const
 {
   double totaltime = total();
-  os << "   Total        :  "  << "   " << std::setiosflags(std::ios::fixed)<< std::setprecision(4) << totaltime << " s\n";
+  os << "----- Total -----:  "  << std::setiosflags(std::ios::fixed)<< std::setprecision(3) << totaltime << " s\n";
   for(const_iterator p = begin(); p != end(); p++)
   {
     double singletime = p->second;
     if(_sum.find(p->first)->second)
     {
       os << std::setiosflags(std::ios::left);
-      os << std::setw(30) << p->first << "\t" << std::setiosflags(std::ios::fixed) << std::setprecision(5);
+      os << std::setw(15) << p->first << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(3);
       os << std::resetiosflags(std::ios::left);
-      os << std::setw(15) << singletime  << std::setw(12) << std::setiosflags(std::ios::fixed) << std::setprecision(2)<<  100.0*singletime/totaltime << "\% \n";
+      os << std::setw(5) << singletime  << std::setw(12) << std::setiosflags(std::ios::fixed) << std::setprecision(1)<<  100.0*singletime/totaltime << " \% \n";
     }
     else
     {
       os << std::setiosflags(std::ios::left);
-      os << std::setw(30) << p->first << "\t" << std::setiosflags(std::ios::fixed) << std::setprecision(5);
+      os << std::setw(15) << p->first << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(3);
       os << std::resetiosflags(std::ios::left);
-      os << std::setw(15) << singletime  << std::setw(12) << "---\n";
+      os << std::setw(5) << singletime  << std::setw(12) << "---\n";
     }
   }
   os << "\n";
