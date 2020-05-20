@@ -16,6 +16,7 @@
 #include  "transferinterface.hpp"
 #include  "uniformmultigrid.hpp"
 #include  "timer.hpp"
+#include  "umfmatrix.hpp"
 
 /*-------------------------------------------------*/
 class Operator
@@ -25,7 +26,7 @@ protected:
   int _optmem;
   UniformMultiGrid _mggrid;
   std::shared_ptr<FiniteElementInterface> _fem;
-  arma::sp_mat _spmat;
+  UmfMatrix _spmat;
   Array<std::shared_ptr<MatrixInterface> > _mgmatrix;
   Array<std::shared_ptr<TransferInterface> > _mgtransfer;
   Array<VectorMG> _mgmem;
@@ -34,13 +35,13 @@ protected:
 
   void vectormg2vector(int l, Vector& u, const VectorMG& umg) const;
   void vector2vectormg(int l, VectorMG& umg, const Vector& u) const;
-  void residual(int l, VectorMG& r, const VectorMG& u, const VectorMG& f) const;
+  void residual(int l, Vector& r, const Vector& u, const Vector& f) const;
 
-  void solvecoarse(int l, Vector& out, const Vector& in) const;
   void smoothpre(int l, Vector& out, const Vector& in) const;
   void smoothpost(int l, Vector& out, const Vector& in) const;
   void mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol);
   int solve(bool print=true);
+  void solve_coarse(int l, Vector& u, const Vector& f, Vector& d, Vector& w) const;
 
 public:
   std::string smoother;

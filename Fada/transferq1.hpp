@@ -17,7 +17,8 @@ class TransferQ12d : public TransferInterface
 {
 protected:
   int _nx, _ny;
-  
+  void _boundary(Vector& u) const;
+
 public:
   TransferQ12d() : TransferInterface() {}
   TransferQ12d(const TransferQ12d& transfer) : TransferInterface(transfer) {}
@@ -33,6 +34,7 @@ class TransferQ13d : public TransferInterface
 {
 protected:
   int _nx, _ny, _nz;
+  void _boundary(Vector& u) const;
   
 public:
   TransferQ13d() : TransferInterface() {}

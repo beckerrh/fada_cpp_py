@@ -70,7 +70,8 @@ void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, s
     _mgmatrix(l) = _fem->newMatrix(matrixtype);
     _mgmatrix(l)->set_grid(_mggrid.grid(l));
   }
-  _spmat = _mgmatrix(0)->set_sparse();
+  _mgmatrix(0)->get_sparse_matrix(_spmat.getSparseMatrix());
+  _spmat.computeLu();
   _mgtransfer.set_size(nlevels-1);
   for(int l=0;l<nlevels-1;l++)
   {
@@ -124,12 +125,6 @@ void Operator::set_size(VectorMG& v) const
 }
 
 /*-------------------------------------------------*/
-void Operator::solvecoarse(int l, Vector& out, const Vector& in) const
-{
-  _mgmatrix(l)->jacobi(out, in);
-}
-
-/*-------------------------------------------------*/
 void Operator::smoothpre(int l, Vector& out, const Vector& in) const
   {
   out.fill(0.0);
@@ -174,10 +169,10 @@ void Operator::smoothpost(int l, Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void Operator::residual(int l, VectorMG& r, const VectorMG& u, const VectorMG& f) const
+void Operator::residual(int l, Vector& r, const Vector& u, const Vector& f) const
 {
-  r(l) =  f(l);
-  _mgmatrix(l)->dot(r(l),u(l), -1.0);
+  r =  f;
+  _mgmatrix(l)->dot(r, u, -1.0);
 }
 
 /*-------------------------------------------------*/

@@ -32,7 +32,7 @@ public:
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 /*-------------------------------------------------*/
@@ -53,7 +53,7 @@ public:
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 #endif /* fullmatrix_h */

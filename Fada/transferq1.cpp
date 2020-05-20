@@ -30,6 +30,50 @@ void TransferQ13d::set_grid(const GridInterface& grid)
   _nz = ug->nz();
 }
 /*-------------------------------------------------*/
+void TransferQ12d::_boundary(Vector& v) const
+{
+  for(int ix=0;ix<_nx;ix++)
+  {
+    v.atp(ix,0)    = 0;
+    v.atp(ix,_ny-1) = 0;
+  }
+  for(int iy=0;iy<_ny;iy++)
+  {
+    v.atp(0,iy)    = 0;
+    v.atp(_nx-1,iy) = 0;
+  }
+
+}
+/*-------------------------------------------------*/
+void TransferQ13d::_boundary(Vector& v) const
+{
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      v.atp(ix,iy,0)    = 0;
+      v.atp(ix,iy,_nz-1) = 0;
+    }
+  }
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iz=0;iz<_nz;iz++)
+    {
+      v.atp(ix,0,   iz) = 0;
+      v.atp(ix,_ny-1,iz) = 0;
+    }
+  }
+  for(int iy=0;iy<_ny;iy++)
+  {
+    for(int iz=0;iz<_nz;iz++)
+    {
+      v.atp(0,   iy,iz) = 0;
+      v.atp(_nx-1,iy,iz) = 0;
+    }
+  }
+}
+
+/*-------------------------------------------------*/
 void TransferQ12d::restrict(Vector& out, const Vector& in) const
 {
   out.fill(0.0);
@@ -44,6 +88,7 @@ void TransferQ12d::restrict(Vector& out, const Vector& in) const
                + in.atp(2*ix+1,2*iy-1) + in.atp(2*ix+1,2*iy+1) );
     }
   }
+  _boundary(out);
 }
 /*-------------------------------------------------*/
 void TransferQ12d::prolongate(Vector& out, const Vector& in) const
@@ -111,6 +156,7 @@ void TransferQ13d::restrict(Vector& out, const Vector& in) const
       }
     }
   }
+  _boundary(out);
 }
 /*-------------------------------------------------*/
 void TransferQ13d::prolongate(Vector& out, const Vector& in) const

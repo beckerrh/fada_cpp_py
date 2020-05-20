@@ -8,6 +8,7 @@
 
 #include  "trapezmatrix.hpp"
 #include  <math.h>
+#include  "sparsematrix.hpp"
 
 /*-------------------------------------------------*/
 void TrapezMatrix2d::set_grid(const GridInterface& grid)
@@ -30,12 +31,12 @@ void TrapezMatrix3d::set_grid(const GridInterface& grid)
   _nz = ug->nz();
 }
 /*-------------------------------------------------*/
-arma::sp_mat TrapezMatrix2d::set_sparse() const
+void TrapezMatrix2d::get_sparse_matrix(SparseMatrix& sp) const
 {
   assert(0);
 }
 /*-------------------------------------------------*/
-arma::sp_mat TrapezMatrix3d::set_sparse() const
+void TrapezMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 {
   assert(0);
 }

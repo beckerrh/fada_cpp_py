@@ -10,6 +10,7 @@
 #include  "fullmatrix.hpp"
 #include  "uniformgrid.hpp"
 #include  "typedefs.hpp"
+#include  "sparsematrix.hpp"
 
 /*-------------------------------------------------*/
 void FullMatrix2d::set_grid(const GridInterface& grid)
@@ -42,7 +43,7 @@ void FullMatrix3d::set_grid(const GridInterface& grid)
   assert(_dx==_dz);
 }
 /*-------------------------------------------------*/
-arma::sp_mat FullMatrix2d::set_sparse() const
+void FullMatrix2d::get_sparse_matrix(SparseMatrix& sp) const
 {
   double d0 = 8.0/3.0;
   double d1 = -1.0/3.0;
@@ -108,28 +109,28 @@ arma::sp_mat FullMatrix2d::set_sparse() const
   for(int ix=0;ix<_nx+2;ix++)
   {
     i = ofsx*ix + 0;
-    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 2;
+    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 1;
     count++;
     i = ofsx*ix + _ny+1;
-    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 2;
+    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 1;
     count++;
   }
   for(int iy=1;iy<_ny+1;iy++)
   {
     i = ofsx*0 + iy;
-    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 3;
+    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 1;
     count++;
     i = ofsx*(_nx+1) + iy;
-    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 3;
+    locations(0, count ) = i;      locations(1, count ) = i;      values(count) = 1;
     count++;
   }
 //  std::cerr << "locations i " << locations.row(0);
 //  std::cerr << "locations j " << locations.row(1);
 //  std::cerr << "values " << values.t();
-  return arma::sp_mat(locations, values);
+  sp.set_elements(locations, values);
 }
 /*-------------------------------------------------*/
-arma::sp_mat FullMatrix3d::set_sparse() const
+void FullMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 {
   double e = _dx;
   double d0 = 8.0/3.0 * e;
@@ -139,7 +140,7 @@ arma::sp_mat FullMatrix3d::set_sparse() const
   arma::umat locations(2, (_nx+2)*(_ny+2)*(_nz+2));
   armavec values((_nx+2)*(_ny+2)*(_nz+2));
   assert(0);
-  return arma::sp_mat(locations, values);
+  sp.set_elements(locations, values);
 }
 
 /*-------------------------------------------------*/

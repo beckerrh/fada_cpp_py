@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EE00D20F245AC26900C9E49F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE00D201245AC26800C9E49F /* main.cpp */; };
+		EE00D20F245AC26900C9E49F /* fadamain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE00D201245AC26800C9E49F /* fadamain.cpp */; };
 		EE00D212245AC26900C9E49F /* operator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE00D208245AC26900C9E49F /* operator.cpp */; };
+		EE0ABF1824740B57007D2339 /* umfmatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE0ABF1624740B57007D2339 /* umfmatrix.cpp */; };
+		EE106B1F2475114E00070A59 /* sparsematrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE106B1D2475114E00070A59 /* sparsematrix.cpp */; };
 		EE5E76222464A1FD0061AC64 /* updater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E76212464A1FD0061AC64 /* updater.cpp */; };
 		EE5E763B246E8EF50061AC64 /* uniformmultigrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E7639246E8EF40061AC64 /* uniformmultigrid.cpp */; };
 		EE5E763E246EE89C0061AC64 /* fullmatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E763D246EE89C0061AC64 /* fullmatrix.cpp */; };
@@ -48,13 +50,17 @@
 
 /* Begin PBXFileReference section */
 		EE00D1F7245AC1E500C9E49F /* Fada */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Fada; sourceTree = BUILT_PRODUCTS_DIR; };
-		EE00D201245AC26800C9E49F /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		EE00D201245AC26800C9E49F /* fadamain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fadamain.cpp; sourceTree = "<group>"; };
 		EE00D204245AC26800C9E49F /* operator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = operator.hpp; sourceTree = "<group>"; };
 		EE00D208245AC26900C9E49F /* operator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = operator.cpp; sourceTree = "<group>"; };
 		EE00D20C245AC26900C9E49F /* array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = array.hpp; sourceTree = "<group>"; };
 		EE00D216245AC8D500C9E49F /* Fada.profdata */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fada.profdata; sourceTree = "<group>"; };
 		EE00D217245B1CAF00C9E49F /* test.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = test.rtf; sourceTree = "<group>"; };
 		EE00D218245C4BCF00C9E49F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		EE0ABF1624740B57007D2339 /* umfmatrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = umfmatrix.cpp; sourceTree = "<group>"; };
+		EE0ABF1724740B57007D2339 /* umfmatrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = umfmatrix.hpp; sourceTree = "<group>"; };
+		EE106B1D2475114E00070A59 /* sparsematrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sparsematrix.cpp; sourceTree = "<group>"; };
+		EE106B1E2475114E00070A59 /* sparsematrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sparsematrix.hpp; sourceTree = "<group>"; };
 		EE5E75FC2463D9700061AC64 /* time.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = time.py; sourceTree = "<group>"; };
 		EE5E76202464A1FD0061AC64 /* updater.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = updater.hpp; sourceTree = "<group>"; };
 		EE5E76212464A1FD0061AC64 /* updater.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = updater.cpp; sourceTree = "<group>"; };
@@ -127,7 +133,7 @@
 				EE5E75FC2463D9700061AC64 /* time.py */,
 				EEF40A522460005A00AE1541 /* pybind */,
 				EEF40A40245DC6B800AE1541 /* testarma.cpp */,
-				EE00D201245AC26800C9E49F /* main.cpp */,
+				EE00D201245AC26800C9E49F /* fadamain.cpp */,
 				EE00D218245C4BCF00C9E49F /* CMakeLists.txt */,
 				EE00D1F9245AC1E500C9E49F /* Fada */,
 				EE00D1F8245AC1E500C9E49F /* Products */,
@@ -177,6 +183,10 @@
 				EE5E76212464A1FD0061AC64 /* updater.cpp */,
 				EEA5943C2472EF08000DF82E /* timer.cpp */,
 				EEA5943D2472EF08000DF82E /* timer.hpp */,
+				EE0ABF1624740B57007D2339 /* umfmatrix.cpp */,
+				EE0ABF1724740B57007D2339 /* umfmatrix.hpp */,
+				EE106B1D2475114E00070A59 /* sparsematrix.cpp */,
+				EE106B1E2475114E00070A59 /* sparsematrix.hpp */,
 			);
 			path = Fada;
 			sourceTree = "<group>";
@@ -341,14 +351,16 @@
 				EEF40A34245D8F8700AE1541 /* operator_mg.cpp in Sources */,
 				EE9091AE2471708A008D3AE5 /* transferq1.cpp in Sources */,
 				EEF40A50245E2DFE00AE1541 /* vector.cpp in Sources */,
+				EE106B1F2475114E00070A59 /* sparsematrix.cpp in Sources */,
 				EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */,
 				EE5E763B246E8EF50061AC64 /* uniformmultigrid.cpp in Sources */,
-				EE00D20F245AC26900C9E49F /* main.cpp in Sources */,
+				EE00D20F245AC26900C9E49F /* fadamain.cpp in Sources */,
 				EE5E7641246F22E60061AC64 /* uniformgrid.cpp in Sources */,
 				EE5E763E246EE89C0061AC64 /* fullmatrix.cpp in Sources */,
 				EEA5943E2472EF08000DF82E /* timer.cpp in Sources */,
 				EE9091A924712734008D3AE5 /* trapezmatrix.cpp in Sources */,
 				EE5E76222464A1FD0061AC64 /* updater.cpp in Sources */,
+				EE0ABF1824740B57007D2339 /* umfmatrix.cpp in Sources */,
 				EE00D212245AC26900C9E49F /* operator.cpp in Sources */,
 				EEF40A54246000A000AE1541 /* operator.cpp in Sources */,
 			);
@@ -432,7 +444,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-larmadillo",
-					"-lsuperlu",
+					"-lumfpack",
 				);
 				OTHER_LIBTOOLFLAGS = "";
 				SDKROOT = macosx;
@@ -491,7 +503,7 @@
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
 					"-larmadillo",
-					"-lsuperlu",
+					"-lumfpack",
 				);
 				OTHER_LIBTOOLFLAGS = "";
 				SDKROOT = macosx;
@@ -504,7 +516,7 @@
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
-					pybind/operator.cpp,
+					"pybind/*",
 					testarma.cpp,
 				);
 				NEW_SETTING = "";
@@ -518,7 +530,7 @@
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
-					pybind/operator.cpp,
+					"pybind/*",
 					testarma.cpp,
 				);
 				NEW_SETTING = "";
@@ -534,7 +546,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					main.cc,
-					arma.cc,
+					testarma.cc,
 				);
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -550,7 +562,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					main.cc,
-					arma.cc,
+					testarma.cc,
 				);
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -562,7 +574,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				EXCLUDED_SOURCE_FILE_NAMES = main.cpp;
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					"pybind/*",
+					main.cpp,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -571,7 +586,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				EXCLUDED_SOURCE_FILE_NAMES = main.cpp;
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					"pybind/*",
+					main.cpp,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
