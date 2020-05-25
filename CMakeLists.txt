@@ -7,8 +7,6 @@ PROJECT(fada)
 #-----------------------------#
 #
 #
-MESSAGE("....... bonjour ...... fada ....")
-#
 SET(CMAKE_C_FLAGS "-O3")
 SET(CMAKE_CXX_FLAGS "-O3")
 ##
@@ -36,8 +34,9 @@ ADD_EXECUTABLE(testarma testarma.cpp)
 TARGET_LINK_LIBRARIES(testarma fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
 #
 find_package(pybind11 REQUIRED)
-pybind11_add_module(pyfada  pybind/operator.cpp ${SRC})
-target_link_libraries(pyfada PRIVATE pybind11::module fadalib ${ARMADILLO_LIBRARIES})
+AUX_SOURCE_DIRECTORY(pybind SRCPY)
+pybind11_add_module(pyfada  ${SRCPY} ${SRC})
+target_link_libraries(pyfada PRIVATE pybind11::module ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
 #
 #-- copy .py files
 #

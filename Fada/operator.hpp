@@ -33,6 +33,8 @@ protected:
   Vector _u, _f;
   mutable Array<std::shared_ptr<UpdaterInterface> > _mgupdate, _mgupdatesmooth;
 
+  void _set_size(std::string femtype, std::string matrixtype);
+
   void vectormg2vector(int l, Vector& u, const VectorMG& umg) const;
   void vector2vectormg(int l, VectorMG& umg, const Vector& u) const;
   void residual(int l, Vector& r, const Vector& u, const Vector& f) const;
@@ -50,8 +52,9 @@ public:
 
   void set_parameters();
   ~Operator();
-  Operator();
-  void set_size(int nlevels, const armaicvec& n0, std::string femtype="Q1", std::string matrixtype="Q1");
+  Operator(bool printtimer=true);
+  void set_size(int nlevelmax, int nlevels, const armaicvec& n0, std::string femtype="Q1", std::string matrixtype="Full");
+  void set_size(const UniformMultiGrid& umg, std::string femtype="Q1", std::string matrixtype="Full");
 
   int nall() const { return _mggrid.nall();}
   int dim() const { return _mggrid.dim();}

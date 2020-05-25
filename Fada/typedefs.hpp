@@ -9,6 +9,8 @@
 #ifndef typedefs_h
 #define typedefs_h
 
+//#define _LONG_LONG
+
 #include  <armadillo>
 #include  "array.hpp"
 #include  "vector.hpp"

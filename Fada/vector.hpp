@@ -75,7 +75,7 @@ public:
   }
   void fill_bdry(double d=0);
   void fill_bdry2(double d=0);
-  int dim() const {return _n.n_elem;}
+  int dim() const {return (int) _n.n_elem;}
   const armaicvec& n() const {return _n;}
   const armaicvec& ofs() const {return _ofs;}
   armavec& arma()
@@ -107,7 +107,7 @@ public:
   }
   double& at(int ix, int iy, int iz)
   {
-    return (*this)[_ofs[0]*ix+iy+iz];
+    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
   const double& at(int ix, int iy, int iz) const
   {

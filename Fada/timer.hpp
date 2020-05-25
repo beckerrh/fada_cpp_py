@@ -17,6 +17,7 @@
 class Timer : public std::map<std::string, double>
 {
 protected:
+    bool _print;
     std::map<std::string, double> _sum;
     std::map<std::string, double> _temp;
     inline double seconds(void)
@@ -30,7 +31,7 @@ public:
     typedef std::map<std::string, double>::const_iterator const_iterator;
     typedef std::map<std::string, double>::iterator iterator;
     ~Timer();
-    Timer() : std::map<std::string, double>() {}
+    Timer(bool print) : std::map<std::string, double>(), _print(print) {}
     void enrol(std::string name, bool sum = true);
     void start(std::string name);
     void stop(std::string name);

@@ -19,12 +19,14 @@
 		EE9091AE2471708A008D3AE5 /* transferq1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE9091AD2471708A008D3AE5 /* transferq1.cpp */; };
 		EE9091B22471AD82008D3AE5 /* q1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE9091B02471AD82008D3AE5 /* q1.cpp */; };
 		EEA5943E2472EF08000DF82E /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEA5943C2472EF08000DF82E /* timer.cpp */; };
+		EEE325AB2478442100FF1CD4 /* uniformmultigridpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */; };
+		EEE325AD2478495400FF1CD4 /* bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325AC2478495400FF1CD4 /* bindings.cpp */; };
 		EEF40A34245D8F8700AE1541 /* operator_mg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A33245D8F8700AE1541 /* operator_mg.cpp */; };
 		EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A40245DC6B800AE1541 /* testarma.cpp */; };
 		EEF40A50245E2DFE00AE1541 /* vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* vector.cpp */; };
 		EEF40A51245E2DFE00AE1541 /* vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* vector.cpp */; };
-		EEF40A54246000A000AE1541 /* operator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operator.cpp */; };
-		EEF40A55246000A000AE1541 /* operator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operator.cpp */; };
+		EEF40A54246000A000AE1541 /* operatorpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operatorpy.cpp */; };
+		EEF40A55246000A000AE1541 /* operatorpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operatorpy.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -89,13 +91,18 @@
 		EEA2DA4D2460BC3A00F1F872 /* nparray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nparray.h; sourceTree = "<group>"; };
 		EEA5943C2472EF08000DF82E /* timer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
 		EEA5943D2472EF08000DF82E /* timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
+		EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uniformmultigridpy.cpp; sourceTree = "<group>"; };
+		EEE325AA2478442100FF1CD4 /* uniformmultigridpy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uniformmultigridpy.hpp; sourceTree = "<group>"; };
+		EEE325AC2478495400FF1CD4 /* bindings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bindings.cpp; sourceTree = "<group>"; };
+		EEE325AE247849C900FF1CD4 /* operatorpy.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = operatorpy.hpp; sourceTree = "<group>"; };
+		EEE325AF247AC27200FF1CD4 /* todo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = todo.rtf; sourceTree = "<group>"; };
 		EEF40A33245D8F8700AE1541 /* operator_mg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = operator_mg.cpp; sourceTree = "<group>"; };
 		EEF40A40245DC6B800AE1541 /* testarma.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = testarma.cpp; sourceTree = "<group>"; };
 		EEF40A46245DCA6F00AE1541 /* testarma */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testarma; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEF40A4D245DED9500AE1541 /* vector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vector.hpp; sourceTree = "<group>"; };
 		EEF40A4E245E194700AE1541 /* typedefs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = typedefs.hpp; sourceTree = "<group>"; };
 		EEF40A4F245E2DFE00AE1541 /* vector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vector.cpp; sourceTree = "<group>"; };
-		EEF40A53246000A000AE1541 /* operator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = operator.cpp; sourceTree = "<group>"; };
+		EEF40A53246000A000AE1541 /* operatorpy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = operatorpy.cpp; sourceTree = "<group>"; };
 		EEF40A5A24601DEF00AE1541 /* test.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -127,6 +134,7 @@
 		EE00D1EE245AC1E500C9E49F = {
 			isa = PBXGroup;
 			children = (
+				EEE325AF247AC27200FF1CD4 /* todo.rtf */,
 				EEA5943B2472ED65000DF82E /* doc */,
 				EEF40A5A24601DEF00AE1541 /* test.py */,
 				EE9091AA247162D7008D3AE5 /* testsmoothers.py */,
@@ -213,7 +221,11 @@
 				EEA2DA4B2460BC3A00F1F872 /* carma.h */,
 				EEA2DA4D2460BC3A00F1F872 /* nparray.h */,
 				EEA2DA4C2460BC3A00F1F872 /* utils.h */,
-				EEF40A53246000A000AE1541 /* operator.cpp */,
+				EEF40A53246000A000AE1541 /* operatorpy.cpp */,
+				EEE325AE247849C900FF1CD4 /* operatorpy.hpp */,
+				EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */,
+				EEE325AA2478442100FF1CD4 /* uniformmultigridpy.hpp */,
+				EEE325AC2478495400FF1CD4 /* bindings.cpp */,
 			);
 			path = pybind;
 			sourceTree = "<group>";
@@ -304,7 +316,7 @@
 		EE00D1EF245AC1E500C9E49F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1150;
 				ORGANIZATIONNAME = "Roland Becker";
 				TargetAttributes = {
 					EE00D1F6245AC1E500C9E49F = {
@@ -350,6 +362,7 @@
 				EE9091B22471AD82008D3AE5 /* q1.cpp in Sources */,
 				EEF40A34245D8F8700AE1541 /* operator_mg.cpp in Sources */,
 				EE9091AE2471708A008D3AE5 /* transferq1.cpp in Sources */,
+				EEE325AB2478442100FF1CD4 /* uniformmultigridpy.cpp in Sources */,
 				EEF40A50245E2DFE00AE1541 /* vector.cpp in Sources */,
 				EE106B1F2475114E00070A59 /* sparsematrix.cpp in Sources */,
 				EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */,
@@ -362,7 +375,8 @@
 				EE5E76222464A1FD0061AC64 /* updater.cpp in Sources */,
 				EE0ABF1824740B57007D2339 /* umfmatrix.cpp in Sources */,
 				EE00D212245AC26900C9E49F /* operator.cpp in Sources */,
-				EEF40A54246000A000AE1541 /* operator.cpp in Sources */,
+				EEF40A54246000A000AE1541 /* operatorpy.cpp in Sources */,
+				EEE325AD2478495400FF1CD4 /* bindings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,7 +392,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EEF40A51245E2DFE00AE1541 /* vector.cpp in Sources */,
-				EEF40A55246000A000AE1541 /* operator.cpp in Sources */,
+				EEF40A55246000A000AE1541 /* operatorpy.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,12 +528,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					"pybind/*",
 					testarma.cpp,
 				);
 				NEW_SETTING = "";
+				OTHER_CFLAGS = "-D_LONG_LONG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -528,12 +544,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					"pybind/*",
 					testarma.cpp,
 				);
 				NEW_SETTING = "";
+				OTHER_CFLAGS = "-D_LONG_LONG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -573,6 +591,7 @@
 		EEF40A4B245DCA6F00AE1541 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					"pybind/*",
@@ -585,6 +604,7 @@
 		EEF40A4C245DCA6F00AE1541 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				EXCLUDED_SOURCE_FILE_NAMES = (
 					"pybind/*",

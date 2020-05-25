@@ -3,48 +3,75 @@ import numpy as np
 import time
 
 #-----------------------------------------------------------------#
-def testsmoothers(n, nlevelsmax=12, matrixtype="Q1"):
+def testsparameters(nlevelmin, nlevelmax, parameters, paramname, getOperator, title):
   import matplotlib.pyplot as plt
-  smoothers = ['jac', 'gs1', 'gs2', 'gs']
-  nlevels = np.arange(3, nlevelsmax)
+  nlevelmaxs = np.arange(nlevelmin, nlevelmax)
   times, iters, Ns = {}, {}, []
-  for smoother in smoothers:
-    times[smoother] = []
-    iters[smoother] = []
-  for nlevel in nlevels:
-    op = pyfada.Operator(nlevel, n, matrixtype)
-    Ns.append(op.nall())
-    for smoother in smoothers:
-      op.smoother = smoother;
-#      op.optmem = 0;
+  for param in parameters:
+    times[param] = []
+    iters[param] = []
+  for nlevelmax in nlevelmaxs:
+    for param in parameters:
+      op = getOperator(nlevelmax, param)
+      print("nlevelmax", nlevelmax, "nall", op.nall())
       t0 = time.time()
       iter = op.testsolve(print=False)
       t1 = time.time()
-      iters[smoother].append(iter)
-      times[smoother].append(t1-t0)
+      iters[param].append(iter)
+      times[param].append(t1-t0)
+    Ns.append(op.nall())
+#  print("Ns", Ns)
   fig = plt.figure()
   ax = fig.add_subplot(211)
   ax.set_xlabel(r'$\log_{10}(N)$')
   ax.set_ylabel(r'it')
   ax.set_title(f"iter")
-  for smoother in smoothers:
-      ax.plot(np.log10(Ns), iters[smoother], '-x', label=f"{smoother}")
+  for param in parameters:
+      ax.plot(np.log10(Ns), iters[param], '-x', label=f"{param}")
   ax.legend()
   ax = fig.add_subplot(212)
   ax.set_xlabel(r'$\log_{10}(N)$')
   ax.set_ylabel(r't')
   ax.set_title(f"time")
-  for smoother in smoothers:
-      ax.plot(np.log10(Ns), np.log10(times[smoother]), '-x', label=f"{smoother}")
+  for param in parameters:
+      ax.plot(np.log10(Ns), times[param], '-x', label=f"{param}")
+#      ax.plot(np.log10(Ns), np.log10(times[param]), '-x', label=f"{param}")
   ax.legend()
-  fig.suptitle(f"{matrixtype} {op.dim()}d")
+  fig.suptitle(f"{title} {op.dim()}d param={paramname}")
   plt.show()
 
+#-----------------------------------------------------------------#
+def testsmoothers(n, nlevelmax=12, femtype="Q1", matrixtype="Full"):
+  def get(nlevelmax, param):
+    nlevels = nlevelmax
+    op = pyfada.Operator(nlevelmax, nlevels, n, femtype, matrixtype)
+    op.smoother = param
+    return op
+  smoothers = ['jac', 'gs1', 'gs2', 'gs']
+  pname = "smoother"
+  title = f"fem={femtype} {matrixtype}"
+  testsparameters(nlevelmin=3, nlevelmax=nlevelmax, parameters=smoothers, paramname=pname, getOperator=get, title=title)
+
+
+#-----------------------------------------------------------------#
+def testcoarsesolve(n, nlevelmin, nlevelmax, femtype="Q1", matrixtype="Full"):
+  def get(nlevelmax, param):
+    nlevels = param
+    if param==-1: nlevels=nlevelmax
+    op = pyfada.Operator(nlevelmax, nlevels, n, femtype, matrixtype)
+    return op
+  nlevels = np.arange(1,nlevelmin)
+  nlevels = [1, -1]
+  pname = "nlevels"
+  title = f"fem={femtype} {matrixtype}"
+  testsparameters(nlevelmin=nlevelmin, nlevelmax=nlevelmax, parameters=nlevels, paramname=pname, getOperator=get, title=title)
 
 
 #=================================================================#
 if __name__ == '__main__':
-  testsmoothers(np.array([3,3]), nlevelsmax=9)
-  testsmoothers(np.array([3,3]), nlevelsmax=9, matrixtype="Q1Trapez")
-  testsmoothers(np.array([3,3,3]), nlevelsmax=7)
-  testsmoothers(np.array([3,3,3]), nlevelsmax=7, matrixtype="Q1Trapez")
+  testcoarsesolve(np.array([3,3]), nlevelmin=6, nlevelmax=11)
+  testcoarsesolve(np.array([3,3,3]), nlevelmin=3, nlevelmax=6)
+#  testsmoothers(np.array([3,3]), nlevelmax=9)
+#  testsmoothers(np.array([3,3]), nlevelmax=9, matrixtype="Q1Trapez")
+#  testsmoothers(np.array([3,3,3]), nlevelmax=7)
+#  testsmoothers(np .array([3,3,3]), nlevelmax=7, matrixtype="Q1Trapez")

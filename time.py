@@ -2,8 +2,9 @@ import pyfada
 import numpy as np
 import time, os, psutil
 #-----------------------------------------------------------------#
-def test(n, nlevels=12, matrixtype="Q1"):
-  op = pyfada.Operator(nlevels, n, matrixtype)
+def test(n, nlevelmax=12, femtype="Q1", matrixtype="Full"):
+  nlevels = nlevelmax
+  op = pyfada.Operator(nlevelmax, nlevels, n, femtype, matrixtype)
   t0 = time.time()
   iter = op.testsolve(problem="DirichletRhsOne")
   t1 = time.time()
@@ -16,5 +17,5 @@ def test(n, nlevels=12, matrixtype="Q1"):
 
 #=================================================================#
 if __name__ == '__main__':
-  test(np.array([3,3]), nlevels=12)
-  test(np.array([3,3,3]), nlevels=8)
+  test(np.array([3,3]), nlevelmax=12)
+  test(np.array([3,3,3]), nlevelmax=8)

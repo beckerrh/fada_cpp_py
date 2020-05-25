@@ -10,19 +10,22 @@
 #include  "uniformgrid.hpp"
 #include  "vector.hpp"
 
+TransferQ12d::~TransferQ12d() {}
+TransferQ13d::~TransferQ13d() {}
+
 /*-------------------------------------------------*/
-void TransferQ12d::set_grid(const GridInterface& grid)
+void TransferQ12d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==2);
   _nx = ug->nx();
   _ny = ug->ny();
 }
 /*-------------------------------------------------*/
-void TransferQ13d::set_grid(const GridInterface& grid)
+void TransferQ13d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==3);
   _nx = ug->nx();

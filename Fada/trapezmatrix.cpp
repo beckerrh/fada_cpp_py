@@ -10,10 +10,13 @@
 #include  <math.h>
 #include  "sparsematrix.hpp"
 
+TrapezMatrix2d::~TrapezMatrix2d() {}
+TrapezMatrix3d::~TrapezMatrix3d() {}
+
 /*-------------------------------------------------*/
-void TrapezMatrix2d::set_grid(const GridInterface& grid)
+void TrapezMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==2);
   _nx = ug->nx();
@@ -21,9 +24,9 @@ void TrapezMatrix2d::set_grid(const GridInterface& grid)
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::set_grid(const GridInterface& grid)
+void TrapezMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==3);
   _nx = ug->nx();

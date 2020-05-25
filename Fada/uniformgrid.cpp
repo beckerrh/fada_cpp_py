@@ -9,7 +9,8 @@
 #include "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
-void UniformGrid::set_size(const armaicvec& n, const armamat* bounds)
+//void UniformGrid::set_size(const armaicvec& n, const armamat* bounds)
+void UniformGrid::set_size(const armaicvec& n, std::shared_ptr<armamat> bounds)
 {
   _n = n;
   int dim = _n.n_elem;

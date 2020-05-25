@@ -24,18 +24,20 @@ inline double seconds(void)
 int main(int argc, char** argv)
 {
   armaicvec n0;
-  int nlevels=12, dim=2;
+  int nlevelmax=12, dim=3;
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-//    nlevels = 3;
+    nlevelmax = 2;
   }
   else
   {
     n0 << 3 << 3 << 3 << arma::endr;
-    nlevels = 8;
+//    nlevels = 8;
+//    n0 << 2 << 2 << 2 << arma::endr;
+    nlevelmax = 2;
   }
-
+  int nlevels=nlevelmax;
   double t0 = seconds();
 //  UniformMultiGrid mggrid;
 //  mggrid.set_size(nlevels, n0);
@@ -43,7 +45,7 @@ int main(int argc, char** argv)
   
 //  Operateur   A(nlevels, n0);
   Operator   A;
-  A.set_size(nlevels, n0);
+  A.set_size(nlevelmax, nlevels, n0);
 //  A.smoother = "gs2";
 
   int iter = A.testsolve();
@@ -54,6 +56,6 @@ int main(int argc, char** argv)
 //  u.output(filename);
   
   printf("Vous avez utilise le lisseur %s\n", A.smoother.c_str());
-  printf("No. Iterations %3d (N = %6d)\n",iter, A.nall());
+  printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, A.nall(), A.dim());
   printf("Total time: %6.2f\n", seconds()-t0);
 }

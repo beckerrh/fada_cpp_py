@@ -18,22 +18,28 @@
 double lin2d(double x, double y) {return 3.0*x+2.0*y;}
 double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
 
+Q12d::~Q12d(){}
+Q13d::~Q13d(){}
+
 /*-------------------------------------------------*/
-void Q12d::set_grid(const GridInterface& grid)
+void Q12d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
+//  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(grid);
   assert(ug);
   assert(ug->dim()==2);
   _nx = ug->nx();
   _ny = ug->ny();
   _vol = arma::prod(ug->dx());
   _ug = ug;
+//  std::cerr << "Q12d::set_grid() " <<_nx << " " << _ny << "\n";
+//  std::cerr << "_ug->n()="<<_ug->n().t();
 }
 
 /*-------------------------------------------------*/
-void Q13d::set_grid(const GridInterface& grid)
+void Q13d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==3);
   _nx = ug->nx();
@@ -45,11 +51,11 @@ void Q13d::set_grid(const GridInterface& grid)
 /*-------------------------------------------------*/
 std::unique_ptr<MatrixInterface> Q12d::newMatrix(std::string matrixtype) const
 {
-  if(matrixtype=="Q1")
+  if(matrixtype=="Full")
   {
     return std::unique_ptr<MatrixInterface>(new FullMatrix2d);
   }
-  else if(matrixtype=="Q1Trapez")
+  else if(matrixtype=="Trapez")
   {
     return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d);
   }
@@ -68,11 +74,11 @@ std::unique_ptr<TransferInterface> Q12d::newTransfer(std::string matrixtype) con
 /*-------------------------------------------------*/
 std::unique_ptr<MatrixInterface> Q13d::newMatrix(std::string matrixtype) const
 {
-  if(matrixtype=="Q1")
+  if(matrixtype=="Full")
   {
     return std::unique_ptr<MatrixInterface>(new FullMatrix3d);
   }
-  else if(matrixtype=="Q1Trapez")
+  else if(matrixtype=="Trapez")
   {
     return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d);
   }
@@ -91,6 +97,10 @@ std::unique_ptr<TransferInterface> Q13d::newTransfer(std::string matrixtype) con
 /*-------------------------------------------------*/
 void Q12d::rhs_one(Vector& v) const
 {
+//  std::cerr << "v.n()="<<v.n().t();
+//  assert(_ug);
+//  std::cerr << "_ug->n()="<<_ug->nx();
+//  assert(arma::all(v.n()==_ug->n()));
   double d = _vol*12.0;
   for(int ix=0;ix<_nx;ix++)
   {

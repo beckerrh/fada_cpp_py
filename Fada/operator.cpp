@@ -16,25 +16,23 @@ void Operator::set_parameters()
   tol_abs = 1e-12;
   _optmem = 0;
 }
-
-Operator::~Operator() {}
-
 /*-------------------------------------------------*/
-Operator::Operator() : _fem(nullptr)
+Operator::~Operator() {}
+/*-------------------------------------------------*/
+Operator::Operator(bool printtimer) : _fem(nullptr), _timer(printtimer)
 {
   set_parameters();
 }
-
-
 /*-------------------------------------------------*/
-void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, std::string matrixtype)
+void Operator::_set_size(std::string femtype, std::string matrixtype)
 {
   _timer.enrol("smooth");
   _timer.enrol("transfer");
   _timer.enrol("residual");
   _timer.enrol("update");
   _timer.enrol("solvecoarse");
-  _mggrid.set_size(nlevels, n0);
+  //  std::cerr << "_mggrid" << _mggrid << "\n";
+  int nlevels = _mggrid.nlevels();
   if(dim()==2)
   {
     if(femtype=="Q1")
@@ -70,13 +68,15 @@ void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, s
     _mgmatrix(l) = _fem->newMatrix(matrixtype);
     _mgmatrix(l)->set_grid(_mggrid.grid(l));
   }
-  _mgmatrix(0)->get_sparse_matrix(_spmat.getSparseMatrix());
+//  _mgmatrix(0)->get_sparse_matrix(_spmat.getSparseMatrix());
+  _mgmatrix(nlevels-1)->get_sparse_matrix(_spmat.getSparseMatrix());
   _spmat.computeLu();
   _mgtransfer.set_size(nlevels-1);
   for(int l=0;l<nlevels-1;l++)
   {
     _mgtransfer(l) = _fem->newTransfer(matrixtype);
-    _mgtransfer(l)->set_grid(_mggrid.grid(l));
+//    _mgtransfer(l)->set_grid(_mggrid.grid(l));
+    _mgtransfer(l)->set_grid(_mggrid.grid(l+1));
   }
   _mgupdate.set_size(nlevels);
   _mgupdatesmooth.set_size(nlevels);
@@ -104,6 +104,19 @@ void Operator::set_size(int nlevels, const armaicvec& n0, std::string femtype, s
     _mgupdatesmooth(l)->set_size(_mggrid.n(l)+2);
   }
 }
+/*-------------------------------------------------*/
+void Operator::set_size(const UniformMultiGrid& umg, std::string femtype, std::string matrixtype)
+{
+  _mggrid = umg;
+  _set_size(femtype, matrixtype);
+}
+
+/*-------------------------------------------------*/
+void Operator::set_size(int nlevelmax, int nlevels, const armaicvec& n0, std::string femtype, std::string matrixtype)
+{
+  _mggrid.set_size(nlevelmax, nlevels, n0);
+  _set_size(femtype, matrixtype);
+}
 
 /*-------------------------------------------------*/
 void Operator::set_size(VectorMG& v) const
@@ -113,6 +126,7 @@ void Operator::set_size(VectorMG& v) const
   {
     v(l).set_size(_mggrid.n(l)+2);
     v(l).fill_bdry(0);
+    v(l).fill_bdry2(0);
     //    std::cerr << "_mggrid.n(l) " << _mggrid.n(l).t() << "\n";
     //    v(l).fill(7);
     //    v(l).fill_bdry(1);
@@ -237,7 +251,7 @@ void Operator::vector2vectormg(int l, VectorMG& umg, const Vector& u) const
 /*-------------------------------------------------*/
 int Operator::testsolve(bool print, std::string problem)
 {
-  _u.set_size(_mggrid.n());
+  _u.set_size(_mggrid.n(0));
   _u.fill(0);
   _f.set_size(_u);
   if(problem=="DirichletRhsOne")
@@ -257,13 +271,12 @@ int Operator::testsolve(bool print, std::string problem)
   VectorMG& umg = _mgmem(0);
   VectorMG& fmg = _mgmem(1);
 
-  vector2vectormg(_mggrid.nlevels()-1, fmg, _f);
-//  std::cerr << "??? " << fmg(_mggrid.nlevels()-1).norm()<<" "<<_f.norm()<< "\n";
-  vector2vectormg(_mggrid.nlevels()-1, umg, _u);
-  //  fmg(nlevels()-1) = _f;
-  //  umg(nlevels()-1) = _u;
+//  vector2vectormg(_mggrid.nlevels()-1, fmg, _f);
+//  vector2vectormg(_mggrid.nlevels()-1, umg, _u);
+  vector2vectormg(0, fmg, _f);
+  vector2vectormg(0, umg, _u);
   int iter = solve(print);
-  vectormg2vector(_mggrid.nlevels()-1, _u, umg);
-  //  _u = umg(nlevels()-1);
+//  vectormg2vector(_mggrid.nlevels()-1, _u, umg);
+  vectormg2vector(0, _u, umg);
   return iter;
 }

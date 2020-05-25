@@ -27,7 +27,6 @@ void SparseMatrix::save(std::ostream& out, arma::file_type datatype) const
 /*-------------------------------------------------*/
 void SparseMatrix::dot(armavec& x, const armavec& b, double d) const
 {
-//  x.fill(0);
   for(int i=0;i<nrows();i++)
   {
     for(int pos=_rows[i];pos<_rows[i+1];pos++)

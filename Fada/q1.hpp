@@ -18,13 +18,14 @@ class Q12d : public FiniteElementInterface
 protected:
   int _nx, _ny;
   double _vol;
-  const UniformGrid* _ug;
+  std::shared_ptr<UniformGrid> _ug;
 
 public:
-  Q12d() : FiniteElementInterface() {}
-  Q12d(const Q12d& fem) : FiniteElementInterface(fem) {}
+  ~Q12d();
+  Q12d() : FiniteElementInterface(), _ug(nullptr) {}
+  Q12d(const Q12d& fem) : FiniteElementInterface(fem), _ug(fem._ug) {}
 
-  void set_grid(const GridInterface& grid);
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void rhs_one(Vector& v) const;
   void rhs_random(Vector& v) const;
   void boundary(Vector& v) const;
@@ -38,13 +39,14 @@ class Q13d : public FiniteElementInterface
 protected:
   int _nx, _ny, _nz;
   double _vol;
-  const UniformGrid* _ug;
+  std::shared_ptr<UniformGrid> _ug;
 
 public:
-  Q13d() : FiniteElementInterface() {}
-  Q13d(const Q13d& fem) : FiniteElementInterface(fem) {}
+  ~Q13d();
+  Q13d() : FiniteElementInterface(), _ug(nullptr) {}
+  Q13d(const Q13d& fem) : FiniteElementInterface(fem), _ug(fem._ug) {}
 
-  void set_grid(const GridInterface& grid);
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void rhs_one(Vector& v) const;
   void rhs_random(Vector& v) const;
   void boundary(Vector& v) const;

@@ -22,10 +22,13 @@ protected:
   void* Symbolic, * Numeric;
   SparseMatrix _sp;
   arma::uword n;
-//  const int* sb;
-//  const int* cb;
-  const long long* sb;
-  const long long* cb;
+  #ifdef _LONG_LONG
+    const long long* sb;
+    const long long* cb;
+  #else
+    const int* sb;
+    const int* cb;
+  #endif
   const double* mb;
 
   void init();
