@@ -70,7 +70,7 @@ void Vector::fill_bdry2(double d)
   if(dim()==2)
   {
     int nx = _n[0], ny = _n[1];
-    std::cerr << nx << " " << ny << "\n";
+//    std::cerr << "Vector::fill_bdry2() " << nx << " " << ny << "\n";
     for(int ix=1;ix<nx-1;ix++)
     {
       this->at(ix,1)    = d;

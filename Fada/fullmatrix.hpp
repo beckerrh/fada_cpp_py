@@ -23,16 +23,16 @@ protected:
   void _boundary(Vector& out) const;
 
 public:
+  ~FullMatrix2d();
   FullMatrix2d() : MatrixInterface() {}
   FullMatrix2d(const FullMatrix2d& fullmatrix) : MatrixInterface(fullmatrix) {}
 
-  void set_grid(const GridInterface& grid);
-
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 /*-------------------------------------------------*/
@@ -44,16 +44,16 @@ protected:
   void _boundary(Vector& out) const;
 
 public:
+  ~FullMatrix3d();
   FullMatrix3d() : MatrixInterface() {}
   FullMatrix3d(const FullMatrix3d& fullmatrix) : MatrixInterface(fullmatrix) {}
 
-  void set_grid(const GridInterface& grid);
-
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 #endif /* fullmatrix_h */

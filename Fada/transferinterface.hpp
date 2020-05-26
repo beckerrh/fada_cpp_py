@@ -10,6 +10,8 @@
 #ifndef transferinterface_h
 #define transferinterface_h
 
+#include  <memory>
+
 class GridInterface;
 class Vector;
 /*-------------------------------------------------*/
@@ -20,7 +22,7 @@ public:
   TransferInterface() {}
   TransferInterface(const TransferInterface& updater) {}
 
-  virtual void set_grid(const GridInterface& grid)=0;
+  virtual void set_grid(std::shared_ptr<GridInterface> grid)=0;
   virtual void restrict(Vector& out, const Vector& in) const=0;
   virtual void prolongate(Vector& out, const Vector& in) const=0;
 };

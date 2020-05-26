@@ -22,7 +22,7 @@ public:
   FiniteElementInterface() {}
   FiniteElementInterface(const FiniteElementInterface& fem) {}
 
-  virtual void set_grid(const GridInterface& grid)=0;
+  virtual void set_grid(std::shared_ptr<GridInterface> grid)=0;
   virtual void rhs_one(Vector& v) const=0;
   virtual void rhs_random(Vector& v) const=0;
   virtual void boundary(Vector& v) const=0;

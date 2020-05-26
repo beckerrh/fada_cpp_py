@@ -23,16 +23,16 @@ protected:
   void _boundary(Vector& out) const;
 
 public:
+  ~TrapezMatrix2d();
   TrapezMatrix2d() : MatrixInterface() {}
   TrapezMatrix2d(const TrapezMatrix2d& trapezmatrix) : MatrixInterface(trapezmatrix) {}
 
-  void set_grid(const GridInterface& grid);
-
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 /*-------------------------------------------------*/
@@ -43,16 +43,16 @@ protected:
   void _boundary(Vector& out) const;
 
 public:
+  ~TrapezMatrix3d();
   TrapezMatrix3d() : MatrixInterface() {}
   TrapezMatrix3d(const TrapezMatrix3d& trapezmatrix) : MatrixInterface(trapezmatrix) {}
 
-  void set_grid(const GridInterface& grid);
-
+  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
   void dot(Vector& out, const Vector& in, double d) const;
-  arma::sp_mat set_sparse() const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 #endif /* trapezmatrix_h */

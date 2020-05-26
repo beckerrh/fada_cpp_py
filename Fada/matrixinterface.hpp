@@ -14,6 +14,7 @@
 
 class GridInterface;
 class Vector;
+class SparseMatrix;
 /*-------------------------------------------------*/
 class MatrixInterface
 {
@@ -22,12 +23,12 @@ public:
   MatrixInterface() {}
   MatrixInterface(const MatrixInterface& updater) {}
 
-  virtual void set_grid(const GridInterface& grid)=0;
+  virtual void set_grid(std::shared_ptr<GridInterface> grid)=0;
   virtual void jacobi       (Vector& out, const Vector& in) const=0;
   virtual void gauss_seidel1(Vector& out, const Vector& in) const=0;
   virtual void gauss_seidel2(Vector& out, const Vector& in) const=0;
   virtual void dot(Vector& out, const Vector& in, double d) const=0;
-  virtual arma::sp_mat set_sparse() const=0;
+  virtual void get_sparse_matrix(SparseMatrix& sp) const=0;
 };
 
 

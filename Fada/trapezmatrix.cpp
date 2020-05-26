@@ -8,11 +8,15 @@
 
 #include  "trapezmatrix.hpp"
 #include  <math.h>
+#include  "sparsematrix.hpp"
+
+TrapezMatrix2d::~TrapezMatrix2d() {}
+TrapezMatrix3d::~TrapezMatrix3d() {}
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::set_grid(const GridInterface& grid)
+void TrapezMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==2);
   _nx = ug->nx();
@@ -20,9 +24,9 @@ void TrapezMatrix2d::set_grid(const GridInterface& grid)
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::set_grid(const GridInterface& grid)
+void TrapezMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
 {
-  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
   assert(ug);
   assert(ug->dim()==3);
   _nx = ug->nx();
@@ -30,12 +34,12 @@ void TrapezMatrix3d::set_grid(const GridInterface& grid)
   _nz = ug->nz();
 }
 /*-------------------------------------------------*/
-arma::sp_mat TrapezMatrix2d::set_sparse() const
+void TrapezMatrix2d::get_sparse_matrix(SparseMatrix& sp) const
 {
   assert(0);
 }
 /*-------------------------------------------------*/
-arma::sp_mat TrapezMatrix3d::set_sparse() const
+void TrapezMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 {
   assert(0);
 }

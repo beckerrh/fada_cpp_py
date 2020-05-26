@@ -9,13 +9,11 @@
 #ifndef typedefs_h
 #define typedefs_h
 
-//#define ARMA_USE_SUPERLU 1
-//#define ARMA_SUPERLU_INCLUDE_DIR /usr/local/include/superlu/
+//#define _LONG_LONG
 
 #include  <armadillo>
 #include  "array.hpp"
 #include  "vector.hpp"
-
 
 typedef arma::Col<double> armavec;
 typedef arma::Mat<double> armamat;

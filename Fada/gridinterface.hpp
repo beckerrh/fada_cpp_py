@@ -10,6 +10,8 @@
 #ifndef gridinterface_h
 #define gridinterface_h
 
+#include  <memory>
+
 /*-------------------------------------------------*/
 class GridInterface
 {
