@@ -12,8 +12,6 @@
 //#define _LONG_LONG
 
 #include  <armadillo>
-#include  "array.hpp"
-#include  "vector.hpp"
 
 typedef arma::Col<double> armavec;
 typedef arma::Mat<double> armamat;
@@ -22,7 +20,6 @@ typedef arma::Row<int> armairvec;
 typedef arma::Mat<int> armaimat;
 typedef double (*function2d)(double, double);
 typedef double (*function3d)(double, double, double);
-typedef Array<Vector> VectorMG;
 
 
 #endif /* typedefs_h */

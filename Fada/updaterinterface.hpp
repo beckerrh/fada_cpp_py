@@ -9,7 +9,7 @@
 #ifndef updaterinterface_h
 #define updaterinterface_h
 
-class Operator;
+class MatrixInterface;
 class Vector;
 /*-------------------------------------------------*/
 class UpdaterInterface
@@ -19,7 +19,7 @@ public:
   UpdaterInterface() {}
   UpdaterInterface(const UpdaterInterface& updater) {}
 
-  virtual void setParameters(int level, const Operator* op, int nvectors, const std::string& type="cyc", const std::string& solutiontype="gal")=0;  
+  virtual void setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="gal")=0;  
   virtual void set_size(const armaicvec& n)=0;
   virtual void addUpdate(const Vector& w, Vector& u, Vector& r, bool print=false)=0;
 };

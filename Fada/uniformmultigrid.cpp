@@ -13,84 +13,58 @@
 /*-------------------------------------------------*/
 UniformMultiGrid& UniformMultiGrid::operator=(const UniformMultiGrid& umg)
 {
-  _n = umg._n;
-  _dx = umg._dx;
-  _bounds = umg._bounds;
-  _nall = umg._nall;
+  assert(0);
   return *this;
 }
 
 /*-------------------------------------------------*/
 std::ostream& operator<<(std::ostream& os, const UniformMultiGrid& mg)
 {
-  os << "nlevels = " << mg.nlevels() << "\n";
-  for(int l=0;l<mg.nlevels();l++)
-  {
-    os << mg.n(l).t();
-  }
+  os << mg.toString();
   return os;
 }
 /*-------------------------------------------------*/
 std::string UniformMultiGrid::toString() const
 {
   std::stringstream ss;
-  ss << *this;
+  ss << "nlevels = " << nlevels() << "\n";
+  for(int l=0;l<nlevels();l++)
+  {
+    ss << get(l)->toString();
+  }
   return ss.str();
 }
 /*-------------------------------------------------*/
-void UniformMultiGrid::_set_size(std::shared_ptr<armamat> bounds)
-{
-  int dim = (int) _n.n_rows;
-  _nall = arma::prod(_n, 0);
-  if(bounds==nullptr)
-  {
-    _bounds.set_size(2, dim);
-    for(int i=0;i<dim;i++)
-    {
-      _bounds(0, i) = 0.0;
-      _bounds(1, i) = 1.0;
-    }
-  }
-  else _bounds = *bounds;
-  _dx.set_size(dim, _n.n_cols);
-  for(int l=0;l<_n.n_cols;l++)
-  {
-    for(int i=0;i<dim;i++) _dx(i,l) = (_bounds(1,i)-_bounds(0,i))/(_n(i,l)-1);
-  }
-}
-/*-------------------------------------------------*/
-void UniformMultiGrid::set_size(const armaimat&  n, std::shared_ptr<armamat> bounds)
-{
-  _n = n;
-  _set_size(bounds);
-}
-
-/*-------------------------------------------------*/
-void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bounds)
+void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bp)
 {
   if(nlevels>nlevelmax)
   {
     std::cerr << nlevels << " = nlevels > nlevelmax = " << nlevelmax << "\n";
     exit(1);
   }
-  int dim = (int) n0.n_elem;
-  _n.set_size(dim, nlevels);
-  for(int i=0;i<dim;i++)
+  arma::uword dim = n0.n_elem;
+  armaicvec n(dim);
+  std::shared_ptr<armamat> bounds;
+  if(bp==nullptr)
   {
-    for(int l=0;l<nlevels;l++)
+    bounds = std::unique_ptr<armamat>(new armamat(2, dim));
+    for(int i=0;i<dim;i++)
     {
-//      _n(i,l) = int(pow(2,l))*(n0[i]-1)+1;
-      _n(i,l) = int(pow(2,nlevelmax-1-l))*(n0[i]-1)+1;
+      (*bounds)(0, i) = 0.0;
+      (*bounds)(1, i) = 1.0;
     }
   }
-  _set_size(bounds);
-}
-
-/*-------------------------------------------------*/
-std::shared_ptr<UniformGrid> UniformMultiGrid::grid(int l) const
-{
-  std::shared_ptr<armamat> p = std::make_shared<armamat>(std::move(_bounds));
-  return std::shared_ptr<UniformGrid>(new UniformGrid(n(l), p));
-  // ne marche pas à cause du premier argument ('expects an lvalue')
-//  return std::make_shared<UniformGrid>(n(l), p);
+  else
+  {
+    bounds = bp;
+  }
+  _grids.resize(nlevels);
+  for(int l=0;l<nlevels;l++)
+  {
+    for(int i=0;i<dim;i++)
+    {
+      n[i] = int(pow(2,nlevelmax-1-l))*(n0[i]-1)+1;
+    }
+    _grids[l] = std::unique_ptr<GridInterface>(new UniformGrid(n, bounds));
+  }
 }

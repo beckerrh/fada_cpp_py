@@ -20,14 +20,14 @@ int main(int argc, char** argv)
     n << 4 << 2 << 3 << arma::endr;
     Vector v(n), w(n);
     v.fill(2);
-    w.randu();
+    w.data().randu();
     
     Vector u(v);
     
-    u = 3*v.arma() + w.arma();
+    u = 3*v.data() + w.data();
     std::cerr << u << std::endl;
     std::cerr << "u(2,1,2) =" << u.at(2,1,2) << std::endl;
-    std::cerr << arma::dot(v.arma(),w.arma()) << std::endl;
+    std::cerr << arma::dot(v.data(),w.data()) << std::endl;
 
   
   int size = 3;

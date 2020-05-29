@@ -14,6 +14,8 @@
 #include  "fullmatrix.hpp"
 #include  "trapezmatrix.hpp"
 #include  "transferq1.hpp"
+#include  "smoothersimple.hpp"
+#include  "smootherumf.hpp"
 
 double lin2d(double x, double y) {return 3.0*x+2.0*y;}
 double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
@@ -49,49 +51,146 @@ void Q13d::set_grid(std::shared_ptr<GridInterface> grid)
   _ug = ug;
 }
 /*-------------------------------------------------*/
-std::unique_ptr<MatrixInterface> Q12d::newMatrix(std::string matrixtype) const
+void Q12d::set_size_mgvector(const GridInterface& grid, Vector& u) const
 {
-  if(matrixtype=="Full")
+  u.set_size(grid.n()+2);
+  u.fill_bdry(0);
+  u.fill_bdry2(0);
+}
+/*-------------------------------------------------*/
+void Q13d::set_size_mgvector(const GridInterface& grid, Vector& u) const
+{
+  u.set_size(grid.n()+2);
+  u.fill_bdry(0);
+  u.fill_bdry2(0);
+}
+
+/*-------------------------------------------------*/
+std::unique_ptr<MatrixInterface> Q12d::newMatrix() const
+{
+  if(_matrixtype=="Full")
   {
     return std::unique_ptr<MatrixInterface>(new FullMatrix2d);
   }
-  else if(matrixtype=="Trapez")
+  else if(_matrixtype=="Trapez")
   {
     return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d);
   }
   else
   {
-    std::cerr << "unknown matrix '" << matrixtype<<"'\n";
+    std::cerr << "unknown matrix '" << _matrixtype<<"'\n";
     std::exit(1);
   }
 }
 /*-------------------------------------------------*/
-std::unique_ptr<TransferInterface> Q12d::newTransfer(std::string matrixtype) const
+std::unique_ptr<SmootherInterface> Q12d::newSmoother(std::string type) const
+{
+  return std::unique_ptr<SmootherInterface>(new SmootherSimple(type));
+}
+/*-------------------------------------------------*/
+std::unique_ptr<SmootherInterface> Q12d::newCoarseSolver(std::string type) const
+{
+  return std::unique_ptr<SmootherInterface>(new SmootherUmf);
+}
+
+/*-------------------------------------------------*/
+std::unique_ptr<TransferInterface> Q12d::newTransfer() const
 {
   return std::unique_ptr<TransferInterface>(new TransferQ12d);
 }
 
 /*-------------------------------------------------*/
-std::unique_ptr<MatrixInterface> Q13d::newMatrix(std::string matrixtype) const
+std::unique_ptr<MatrixInterface> Q13d::newMatrix() const
 {
-  if(matrixtype=="Full")
+  if(_matrixtype=="Full")
   {
     return std::unique_ptr<MatrixInterface>(new FullMatrix3d);
   }
-  else if(matrixtype=="Trapez")
+  else if(_matrixtype=="Trapez")
   {
     return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d);
   }
   else
   {
-    std::cerr << "unknown matrix '" << matrixtype<<"'\n";
+    std::cerr << "unknown matrix '" << _matrixtype<<"'\n";
     std::exit(1);
   }
 }
 /*-------------------------------------------------*/
-std::unique_ptr<TransferInterface> Q13d::newTransfer(std::string matrixtype) const
+std::unique_ptr<SmootherInterface> Q13d::newSmoother(std::string type) const
+{
+  return std::unique_ptr<SmootherInterface>(new SmootherSimple(type));
+}
+/*-------------------------------------------------*/
+std::unique_ptr<SmootherInterface> Q13d::newCoarseSolver(std::string type) const
+{
+  return std::unique_ptr<SmootherInterface>(new SmootherUmf);
+}
+
+/*-------------------------------------------------*/
+std::unique_ptr<TransferInterface> Q13d::newTransfer() const
 {
   return std::unique_ptr<TransferInterface>(new TransferQ13d);
+}
+
+/*-------------------------------------------------*/
+//void  Q12d::vectormg2vector(const UniformMultiGrid& mggrid, int l, Vector& u, const Vector& umg) const
+void  Q12d::vectormg2vector(Vector& u, const Vector& umg) const
+{
+//  int nx = mggrid.nx(l), ny = mggrid.ny(l);
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      u.at(ix,iy) = umg.atp(ix,iy);
+    }
+  }
+}
+/*-------------------------------------------------*/
+//void  Q12d::vector2vectormg(const UniformMultiGrid& mggrid, int l, Vector& umg, const Vector& u) const
+void  Q12d::vector2vectormg(Vector& umg, const Vector& u) const
+{
+//  int nx = mggrid.nx(l), ny = mggrid.ny(l);
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      umg.atp(ix,iy) = u.at(ix,iy);
+    }
+  }
+}
+
+/*-------------------------------------------------*/
+//void  Q13d::vectormg2vector(const UniformMultiGrid& mggrid, int l, Vector& u, const Vector& umg) const
+void  Q13d::vectormg2vector(Vector& u, const Vector& umg) const
+{
+//  int nx = mggrid.nx(l), ny = mggrid.ny(l), nz = mggrid.nz(l);
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      for(int iz=0;iz<_nz;iz++)
+      {
+        u.at(ix,iy,iz) = umg.atp(ix,iy,iz);
+      }
+    }
+  }
+}
+/*-------------------------------------------------*/
+//void  Q13d::vector2vectormg(const UniformMultiGrid& mggrid, int l, Vector& umg, const Vector& u) const
+void  Q13d::vector2vectormg(Vector& umg, const Vector& u) const
+{
+//  int nx = mggrid.nx(l), ny = mggrid.ny(l), nz = mggrid.nz(l);
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      for(int iz=0;iz<_nz;iz++)
+      {
+        umg.atp(ix,iy,iz) = u.at(ix,iy,iz);
+      }
+    }
+  }
 }
 
 /*-------------------------------------------------*/
@@ -114,7 +213,7 @@ void Q12d::rhs_one(Vector& v) const
 void Q12d::rhs_random(Vector& v) const
 {
   arma::arma_rng::set_seed_random();
-  v.randu();
+  v.data().randu();
   v *= 100*_vol;
 }
 /*-------------------------------------------------*/
@@ -151,7 +250,7 @@ void Q13d::rhs_one(Vector& v) const
 void Q13d::rhs_random(Vector& v) const
 {
   arma::arma_rng::set_seed_random();
-  v.randu();
+  v.data().randu();
   v *= 100*_vol;
 }
 /*-------------------------------------------------*/

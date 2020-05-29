@@ -6,14 +6,24 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
+#include  <sstream>
 #include "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
-//void UniformGrid::set_size(const armaicvec& n, const armamat* bounds)
+std::string UniformGrid::toString() const
+{
+  std::stringstream ss;
+  ss << "n="<<_n.t();
+  ss << "dx="<<_dx.t();
+  ss << "bounds="<<_bounds.t();
+  return ss.str();
+}
+
+/*-------------------------------------------------*/
 void UniformGrid::set_size(const armaicvec& n, std::shared_ptr<armamat> bounds)
 {
   _n = n;
-  int dim = _n.n_elem;
+  arma::uword dim = _n.n_elem;
   _dx.set_size(dim);
   if(bounds==nullptr)
   {

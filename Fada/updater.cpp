@@ -7,13 +7,13 @@
 //
 
 #include  "updater.hpp"
-#include  "operator.hpp"
+#include  "mgsolver.hpp"
 
 /*--------------------------------------------------------------------------*/
-void UpdaterSimple::setParameters(int level, const Operator* op, int nvectors, const std::string& type, const std::string& solutiontype)
+void UpdaterSimple::setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
 {
-  _op = op;
-  _level = level;
+  _mat = mat;
+//  _level = level;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -25,7 +25,8 @@ void UpdaterSimple::set_size(const armaicvec& n)
 void UpdaterSimple::addUpdate(const Vector& w, Vector& u, Vector& r, bool print)
 {
   _mem.fill(0.0);
-  _op->dot(_level, _mem, w, 1.0);
+//  _op->dot(_level, _mem, w, 1.0);
+  _mat->dot(_mem, w, 1.0);
   double d1 = w.dot(r);
   double d2 = w.dot(_mem);
   double omega = d1/d2;
@@ -38,7 +39,7 @@ void UpdaterSimple::addUpdate(const Vector& w, Vector& u, Vector& r, bool print)
 
 /*--------------------------------------------------------------------------*/
 Updater::~Updater(){}
-Updater::Updater() : UpdaterInterface(), _op(nullptr) {}
+Updater::Updater() : UpdaterInterface(), _mat(nullptr) {}
 Updater::Updater(const Updater& updater) : UpdaterInterface()
 {
   assert(0);
@@ -48,11 +49,11 @@ Updater& Updater::operator=(const Updater& updater)
   assert(0);
   return *this;
 }
-void Updater::setParameters(int level, const Operator* op, int nvectors, const std::string& type, const std::string& solutiontype)
+void Updater::setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
 {
   _scale = false;
-  _level = level;
-  _op = op;
+//  _level = level;
+  _mat = mat;
   _nvectors = nvectors;
   assert(nvectors>0);
   _nextupdate = _nextproduct = _nmemory = _nextmemory = _niterafterrestar = 0;
@@ -71,18 +72,18 @@ void Updater::setParameters(int level, const Operator* op, int nvectors, const s
 void Updater::set_size(const armaicvec& n)
 {
   //  std::cerr << "Updater::set_size() n = " << n.t()<< "_nvectors = " << _nvectors << std::endl;
-  _mem.set_size(2*_nvectors);
-  for(int i=0;i<_mem.n();i++) _mem(i).set_size(n);
+  _mem.resize(2*_nvectors);
+  for(int i=0;i<_mem.size();i++) _mem[i].set_size(n);
 }
 
 /*--------------------------------------------------------------------------*/
 Vector& Updater::getV(int i)
 {
-  return _mem(_nshift*i);
+  return _mem[_nshift*i];
 }
 Vector& Updater::getAV(int i)
 {
-  return _mem(_nshift*i+1);
+  return _mem[_nshift*i+1];
 }
 
 /*--------------------------------------------------------------------------*/
@@ -116,13 +117,14 @@ void Updater::addUpdate(const Vector& w, Vector& u, Vector& res, bool print)
   // cela ne change pas la solution, ni le résidu
   getV(_nextmemory).scale(1.0/wnorm);
   getAV(_nextmemory).fill(0.0);
-  _op->dot(_level, getAV(_nextmemory), getV(_nextmemory), 1.0);
-  
+//  _op->dot(_level, getAV(_nextmemory), getV(_nextmemory), 1.0);
+  _mat->dot(getAV(_nextmemory), getV(_nextmemory), 1.0);
+
   double nmemory = _nmemory+1;
   _computeSmallSystem(_nextmemory, nmemory, res);
   _x = arma::solve( _H, _b, arma::solve_opts::fast);
 //  _x = arma::pinv(_H)*_b;
-  if(print) printf("l=%2d '%4.2f' %10.3e %10.3e %10.3e\n",_level, _x[0]/wnorm, w.norm(), getAV(_nextmemory).norm()*wnorm, _rnorm);
+  if(print) printf("'%4.2f' %10.3e %10.3e %10.3e\n", _x[0]/wnorm, w.norm(), getAV(_nextmemory).norm()*wnorm, _rnorm);
   for(int i = 0; i < nmemory; i++)
   {
     if(_scale)

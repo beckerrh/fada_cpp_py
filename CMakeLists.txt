@@ -6,12 +6,15 @@ PROJECT(fada)
 #
 #-----------------------------#
 #
+SET(CMAKE_BUILD_TYPE "Release")
 #
+SET(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_C_FLAGS "-O3")
 SET(CMAKE_CXX_FLAGS "-O3")
 ##
 #
 find_package(Armadillo REQUIRED)
+message("ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIRS}")
 
 find_library(SUPERLU_LIBRARY NAMES "superlu")
 message("SUPERLU_LIBRARY ${SUPERLU_LIBRARY}")
@@ -34,6 +37,7 @@ ADD_EXECUTABLE(testarma testarma.cpp)
 TARGET_LINK_LIBRARIES(testarma fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
 #
 find_package(pybind11 REQUIRED)
+message("pybind11 ${ARMADILLO_INCLUDE_DIRS}")
 AUX_SOURCE_DIRECTORY(pybind SRCPY)
 pybind11_add_module(pyfada  ${SRCPY} ${SRC})
 target_link_libraries(pyfada PRIVATE pybind11::module ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})

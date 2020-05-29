@@ -20,7 +20,7 @@ class TransferInterface
 public:
   virtual ~TransferInterface() {}
   TransferInterface() {}
-  TransferInterface(const TransferInterface& updater) {}
+  TransferInterface(const TransferInterface& transfer) {}
 
   virtual void set_grid(std::shared_ptr<GridInterface> grid)=0;
   virtual void restrict(Vector& out, const Vector& in) const=0;

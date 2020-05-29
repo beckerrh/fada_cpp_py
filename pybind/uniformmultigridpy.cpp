@@ -7,48 +7,47 @@
 //
 
 #include  "uniformmultigridpy.hpp"
-#include  "carma.h"
+#include  "carma/carma.h"
+//#include  "arma2py.hpp"
 
 /*-------------------------------------------------*/
-UniformMultiGridPy::UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int> n) : UniformMultiGrid()
+UniformMultiGridPy::UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n) : UniformMultiGrid()
 {
-  armaicvec n0(py::len(n));
+  armaicvec n0(pybind11::len(n));
   auto buf = n.request();
   int* ptr = (int *) buf.ptr;
-  for (int i=0;i<py::len(n);i++)
+  for (int i=0;i<pybind11::len(n);i++)
   {
-    n0[i] = ptr[i];
+    n0[i] =  ptr[i];
   }
+//  std::cerr << "UniformMultiGridPy::UniformMultiGridPy() " << nlevelmax << " " << nlevels << " " << n0<<"\n";
   UniformMultiGrid::set_size(nlevelmax, nlevels, n0);
+//  std::cerr << "UniformMultiGridPy::UniformMultiGridPy() n = " << UniformMultiGrid::n()<<"\n";
 }
-
+//
 /*-------------------------------------------------*/
 pybind11::array_t<int> UniformMultiGridPy::get_dimensions() const
 {
     arma::Col<int> dims; dims.ones(3);
-    for(int i=0;i<UniformMultiGrid::dim();i++) dims[i] =  UniformMultiGrid::nmax(i);
-    return carma::col_to_arr<int>(dims);
+    for(int i=0;i<UniformMultiGrid::dim();i++) dims[i] =  UniformMultiGrid::get(0)->n(i);
+    return carma::col_to_arr<int>(dims, true);
 }
-
-/*-------------------------------------------------*/
-pybind11::array_t<int> UniformMultiGridPy::n()
-{
-//  std::cerr << "UniformMultiGridPy::n() " << UniformMultiGrid::n();
-//  arma::Mat<int> nmat = UniformMultiGrid::n();
-//  pybind11::array_t<int> pn = carma::mat_to_arr<int>(nmat);
-//  std::cerr << "UniformMultiGridPy::n() " << py::len(pn);
-  return carma::mat_to_arr<int>(UniformMultiGrid::n(), true);
-}
-
-/*-------------------------------------------------*/
-pybind11::array_t<double> UniformMultiGridPy::dx()
-{
-  return carma::mat_to_arr<double>(UniformMultiGrid::dx(), true);
-}
-
-/*-------------------------------------------------*/
-pybind11::array_t<double> UniformMultiGridPy::bounds() 
-{
-  return carma::mat_to_arr<double>(&UniformMultiGrid::bounds(), true);
-}
+//
+///*-------------------------------------------------*/
+//pybind11::array_t<int> UniformMultiGridPy::n()
+//{
+//  return carma::mat_to_arr<int>(UniformMultiGrid::n(), true);
+//}
+//
+///*-------------------------------------------------*/
+//pybind11::array_t<double> UniformMultiGridPy::dx()
+//{
+//  return carma::mat_to_arr<double>(UniformMultiGrid::dx(), true);
+//}
+//
+///*-------------------------------------------------*/
+//pybind11::array_t<double> UniformMultiGridPy::bounds()
+//{
+//  return carma::mat_to_arr<double>(&UniformMultiGrid::bounds(), true);
+//}
 
