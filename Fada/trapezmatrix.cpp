@@ -14,24 +14,32 @@ TrapezMatrix2d::~TrapezMatrix2d() {}
 TrapezMatrix3d::~TrapezMatrix3d() {}
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
+void TrapezMatrix2d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==2);
-  _nx = ug->nx();
-  _ny = ug->ny();
+  assert(n.n_elem==2);
+  _nx = n[0];
+  _ny = n[1];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
+  assert(_dx==_dy);
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
+//void TrapezMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
+void TrapezMatrix3d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==3);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _nz = ug->nz();
+  assert(n.n_elem==2);
+  _nx = n[0];
+  _ny = n[1];
+  _nz = n[2];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
+  _dz = dx[2];
+  assert(_dx==_dy);
+  assert(_dx==_dz);
+  assert(_dy==_dz);
 }
 /*-------------------------------------------------*/
 void TrapezMatrix2d::get_sparse_matrix(SparseMatrix& sp) const

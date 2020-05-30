@@ -31,10 +31,10 @@ public:
   virtual void rhs_one(Vector& v) const=0;
   virtual void rhs_random(Vector& v) const=0;
   virtual void boundary(Vector& v) const=0;
-  virtual std::unique_ptr<MatrixInterface> newMatrix() const=0;
-  virtual std::unique_ptr<SmootherInterface> newSmoother(std::string type) const=0;
-  virtual std::unique_ptr<SmootherInterface> newCoarseSolver(std::string type) const=0;
-  virtual std::unique_ptr<TransferInterface> newTransfer() const=0;
+  virtual std::unique_ptr<MatrixInterface> newMatrix(const GridInterface& grid) const=0;
+  virtual std::unique_ptr<SmootherInterface> newSmoother(std::string type,const GridInterface& grid) const=0;
+  virtual std::unique_ptr<SmootherInterface> newCoarseSolver(std::string type,const GridInterface& grid) const=0;
+  virtual std::unique_ptr<TransferInterface> newTransfer(const GridInterface& grid) const=0;
   virtual void vectormg2vector(Vector& u, const Vector& umg) const=0;
   virtual void vector2vectormg(Vector& umg, const Vector& u) const=0;
   virtual void set_size_mgvector(const GridInterface& grid, Vector& u) const=0;

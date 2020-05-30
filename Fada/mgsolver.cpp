@@ -11,7 +11,6 @@ std::string MgSolver::toString() const
 {
   std::stringstream ss;
   ss << "nlevels = " << _nlevels;
-  //  ss << "mggrid: " << _mggrid.toString();
   return ss.str();
 }
 /*-------------------------------------------------*/
@@ -20,13 +19,6 @@ void MgSolver::set_parameters()
   maxiter = 100;
   tol_rel = 1e-8;
   tol_abs = 1e-12;
-}
-/*-------------------------------------------------*/
-MgSolver::~MgSolver() {}
-/*-------------------------------------------------*/
-MgSolver::MgSolver(bool printtimer) : _fem(nullptr), _timer(printtimer)
-{
-  set_parameters();
 }
 /*-------------------------------------------------*/
 void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<FiniteElementInterface> fem, std::string smoothertype, int updatemem)
@@ -47,27 +39,27 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   _mgmatrix.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
-    _mgmatrix[l] = _fem->newMatrix();
-    _mgmatrix[l]->set_grid(mgrid->get(l));
+    _mgmatrix[l] = _fem->newMatrix(*mgrid->get(l));
+//    _mgmatrix[l]->set_grid(mgrid->get(l));
   }
   _mgsmoother.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
     if(l<_nlevels-1)
     {
-      _mgsmoother[l] = _fem->newSmoother(smoothertype);
+      _mgsmoother[l] = _fem->newSmoother(smoothertype, *mgrid->get(l));
     }
     else
     {
-      _mgsmoother[l] = _fem->newCoarseSolver("direct");
+      _mgsmoother[l] = _fem->newCoarseSolver("direct", *mgrid->get(l));
     }
     _mgsmoother[l]->set_matrix(_mgmatrix[l]);
   }
   _mgtransfer.resize(_nlevels-1);
   for(int l=0;l<_nlevels-1;l++)
   {
-    _mgtransfer[l] = _fem->newTransfer();
-    _mgtransfer[l]->set_grid(mgrid->get(l+1));
+    _mgtransfer[l] = _fem->newTransfer(*mgrid->get(l+1));
+//    _mgtransfer[l]->set_grid(mgrid->get(l+1));
   }
   _mgupdate.resize(_nlevels);
   _mgupdatesmooth.resize(_nlevels);

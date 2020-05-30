@@ -8,7 +8,7 @@
 
 #include  <math.h>
 #include  "fullmatrix.hpp"
-#include  "uniformgrid.hpp"
+//#include  "uniformgrid.hpp"
 #include  "typedefs.hpp"
 #include  "sparsematrix.hpp"
 
@@ -16,34 +16,32 @@ FullMatrix2d::~FullMatrix2d() {}
 FullMatrix3d::~FullMatrix3d() {}
 
 /*-------------------------------------------------*/
-void FullMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
+//void FullMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
+void FullMatrix2d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==2);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _vol = arma::prod(ug->dx());
-  _dx =ug->dx(0);
-  _dy =ug->dx(1);
+  assert(n.n_elem==2);
+  _nx = n[0];
+  _ny = n[1];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
   assert(_dx==_dy);
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
+void FullMatrix3d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==3);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _nz = ug->nz();
-  _vol = arma::prod(ug->dx());
-  _dx =ug->dx(0);
-  _dy =ug->dx(1);
-  _dz =ug->dx(2);
+  assert(n.n_elem==3);
+  _nx = n[0];
+  _ny = n[1];
+  _nz = n[2];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
+  _dz = dx[2];
   assert(_dx==_dy);
   assert(_dx==_dz);
+  assert(_dy==_dz);
 }
 /*-------------------------------------------------*/
 void FullMatrix2d::get_sparse_matrix(SparseMatrix& sp) const

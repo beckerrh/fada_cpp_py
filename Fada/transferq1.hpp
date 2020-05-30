@@ -11,6 +11,7 @@
 #define transferq1_h
 
 #include  "transferinterface.hpp"
+#include  "typedefs.hpp"
 
 /*-------------------------------------------------*/
 class TransferQ12d : public TransferInterface
@@ -23,8 +24,12 @@ public:
   ~TransferQ12d();
   TransferQ12d() : TransferInterface() {}
   TransferQ12d(const TransferQ12d& transfer) : TransferInterface(transfer) {}
+  TransferQ12d(const armaicvec& n, const armavec& dx) : TransferInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
   void restrict(Vector& out, const Vector& in) const;
   void prolongate(Vector& out, const Vector& in) const;
 };
@@ -41,8 +46,12 @@ public:
   ~TransferQ13d();
   TransferQ13d() : TransferInterface() {}
   TransferQ13d(const TransferQ13d& transfer) : TransferInterface(transfer) {}
+  TransferQ13d(const armaicvec& n, const armavec& dx) : TransferInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
   void restrict(Vector& out, const Vector& in) const;
   void prolongate(Vector& out, const Vector& in) const;
 };

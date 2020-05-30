@@ -20,14 +20,20 @@ class TrapezMatrix2d : public MatrixInterface
 {
 protected:
   int _nx, _ny;
+  double _vol, _dx, _dy;
   void _boundary(Vector& out) const;
 
 public:
   ~TrapezMatrix2d();
   TrapezMatrix2d() : MatrixInterface() {}
   TrapezMatrix2d(const TrapezMatrix2d& trapezmatrix) : MatrixInterface(trapezmatrix) {}
+  TrapezMatrix2d(const armaicvec& n, const armavec& dx) : MatrixInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
@@ -40,14 +46,20 @@ class TrapezMatrix3d : public MatrixInterface
 {
 protected:
   int _nx, _ny, _nz;
+  double _vol, _dx, _dy, _dz;
   void _boundary(Vector& out) const;
 
 public:
   ~TrapezMatrix3d();
   TrapezMatrix3d() : MatrixInterface() {}
   TrapezMatrix3d(const TrapezMatrix3d& trapezmatrix) : MatrixInterface(trapezmatrix) {}
+  TrapezMatrix3d(const armaicvec& n, const armavec& dx) : MatrixInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;

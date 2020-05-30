@@ -51,12 +51,14 @@ public:
   double tol_rel, tol_abs;
 
   void set_parameters();
-  ~MgSolver();
-  MgSolver(bool printtimer=true);
+  ~MgSolver() {}
+  MgSolver(bool printtimer=true): _fem(nullptr), _timer(printtimer)
+  {
+    set_parameters();
+  }
   void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<FiniteElementInterface> fem, std::string smoothertype, int updatemem=0);
   std::string toString() const;
   int solve(Vector& u, const Vector& f, bool print=true);
-
 };
 
 #endif

@@ -26,8 +26,13 @@ public:
   ~FullMatrix2d();
   FullMatrix2d() : MatrixInterface() {}
   FullMatrix2d(const FullMatrix2d& fullmatrix) : MatrixInterface(fullmatrix) {}
+  FullMatrix2d(const armaicvec& n, const armavec& dx) : MatrixInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;
@@ -47,8 +52,13 @@ public:
   ~FullMatrix3d();
   FullMatrix3d() : MatrixInterface() {}
   FullMatrix3d(const FullMatrix3d& fullmatrix) : MatrixInterface(fullmatrix) {}
+  FullMatrix3d(const armaicvec& n, const armavec& dx) : MatrixInterface()
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
   void jacobi       (Vector& out, const Vector& in) const;
   void gauss_seidel1(Vector& out, const Vector& in) const;
   void gauss_seidel2(Vector& out, const Vector& in) const;

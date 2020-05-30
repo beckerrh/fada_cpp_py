@@ -66,15 +66,19 @@ void Q13d::set_size_mgvector(const GridInterface& grid, Vector& u) const
 }
 
 /*-------------------------------------------------*/
-std::unique_ptr<MatrixInterface> Q12d::newMatrix() const
+std::unique_ptr<MatrixInterface> Q12d::newMatrix(const GridInterface& grid) const
 {
+  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  assert(ug);
+  const armaicvec& n = ug->n();
+  const armavec& dx = ug->dx();
   if(_matrixtype=="Full")
   {
-    return std::unique_ptr<MatrixInterface>(new FullMatrix2d);
+    return std::unique_ptr<MatrixInterface>(new FullMatrix2d(n, dx));
   }
   else if(_matrixtype=="Trapez")
   {
-    return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d);
+    return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d(n, dx));
   }
   else
   {
@@ -83,32 +87,40 @@ std::unique_ptr<MatrixInterface> Q12d::newMatrix() const
   }
 }
 /*-------------------------------------------------*/
-std::unique_ptr<SmootherInterface> Q12d::newSmoother(std::string type) const
+std::unique_ptr<SmootherInterface> Q12d::newSmoother(std::string type, const GridInterface& grid) const
 {
   return std::unique_ptr<SmootherInterface>(new SmootherSimple(type));
 }
 /*-------------------------------------------------*/
-std::unique_ptr<SmootherInterface> Q12d::newCoarseSolver(std::string type) const
+std::unique_ptr<SmootherInterface> Q12d::newCoarseSolver(std::string type, const GridInterface& grid) const
 {
   return std::unique_ptr<SmootherInterface>(new SmootherUmf);
 }
 
 /*-------------------------------------------------*/
-std::unique_ptr<TransferInterface> Q12d::newTransfer() const
+std::unique_ptr<TransferInterface> Q12d::newTransfer(const GridInterface& grid) const
 {
-  return std::unique_ptr<TransferInterface>(new TransferQ12d);
+  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  assert(ug);
+  const armaicvec& n = ug->n();
+  const armavec& dx = ug->dx();
+  return std::unique_ptr<TransferInterface>(new TransferQ12d(n, dx));
 }
 
 /*-------------------------------------------------*/
-std::unique_ptr<MatrixInterface> Q13d::newMatrix() const
+std::unique_ptr<MatrixInterface> Q13d::newMatrix(const GridInterface& grid) const
 {
+  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  assert(ug);
+  const armaicvec& n = ug->n();
+  const armavec& dx = ug->dx();
   if(_matrixtype=="Full")
   {
-    return std::unique_ptr<MatrixInterface>(new FullMatrix3d);
+    return std::unique_ptr<MatrixInterface>(new FullMatrix3d(n,dx));
   }
   else if(_matrixtype=="Trapez")
   {
-    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d);
+    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d(n,dx));
   }
   else
   {
@@ -117,24 +129,27 @@ std::unique_ptr<MatrixInterface> Q13d::newMatrix() const
   }
 }
 /*-------------------------------------------------*/
-std::unique_ptr<SmootherInterface> Q13d::newSmoother(std::string type) const
+std::unique_ptr<SmootherInterface> Q13d::newSmoother(std::string type, const GridInterface& grid) const
 {
   return std::unique_ptr<SmootherInterface>(new SmootherSimple(type));
 }
 /*-------------------------------------------------*/
-std::unique_ptr<SmootherInterface> Q13d::newCoarseSolver(std::string type) const
+std::unique_ptr<SmootherInterface> Q13d::newCoarseSolver(std::string type, const GridInterface& grid) const
 {
   return std::unique_ptr<SmootherInterface>(new SmootherUmf);
 }
 
 /*-------------------------------------------------*/
-std::unique_ptr<TransferInterface> Q13d::newTransfer() const
+std::unique_ptr<TransferInterface> Q13d::newTransfer(const GridInterface& grid) const
 {
-  return std::unique_ptr<TransferInterface>(new TransferQ13d);
+  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(&grid);
+  assert(ug);
+  const armaicvec& n = ug->n();
+  const armavec& dx = ug->dx();
+  return std::unique_ptr<TransferInterface>(new TransferQ13d(n, dx));
 }
 
 /*-------------------------------------------------*/
-//void  Q12d::vectormg2vector(const UniformMultiGrid& mggrid, int l, Vector& u, const Vector& umg) const
 void  Q12d::vectormg2vector(Vector& u, const Vector& umg) const
 {
 //  int nx = mggrid.nx(l), ny = mggrid.ny(l);

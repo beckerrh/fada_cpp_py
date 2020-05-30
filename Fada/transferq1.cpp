@@ -7,30 +7,28 @@
 //
 
 #include  "transferq1.hpp"
-#include  "uniformgrid.hpp"
+//#include  "uniformgrid.hpp"
 #include  "vector.hpp"
 
 TransferQ12d::~TransferQ12d() {}
 TransferQ13d::~TransferQ13d() {}
 
 /*-------------------------------------------------*/
-void TransferQ12d::set_grid(std::shared_ptr<GridInterface> grid)
+void TransferQ12d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==2);
-  _nx = ug->nx();
-  _ny = ug->ny();
+//  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
+//  assert(ug);
+  assert(n.n_elem==2);
+  _nx = n[0];
+  _ny = n[1];
 }
 /*-------------------------------------------------*/
-void TransferQ13d::set_grid(std::shared_ptr<GridInterface> grid)
+void TransferQ13d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==3);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _nz = ug->nz();
+  assert(n.n_elem==3);
+  _nx = n[0];
+  _ny = n[1];
+  _nz = n[2];
 }
 /*-------------------------------------------------*/
 void TransferQ12d::_boundary(Vector& v) const

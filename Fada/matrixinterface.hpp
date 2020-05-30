@@ -10,7 +10,7 @@
 #ifndef matrixinterface_h
 #define matrixinterface_h
 
-#include  <armadillo>
+#include  "typedefs.hpp"
 
 class GridInterface;
 class Vector;
@@ -23,7 +23,7 @@ public:
   MatrixInterface() {}
   MatrixInterface(const MatrixInterface& updater) {}
 
-  virtual void set_grid(std::shared_ptr<GridInterface> grid)=0;
+  virtual void set_grid(const armaicvec& n, const armavec& dx)=0;
   virtual void jacobi       (Vector& out, const Vector& in) const=0;
   virtual void gauss_seidel1(Vector& out, const Vector& in) const=0;
   virtual void gauss_seidel2(Vector& out, const Vector& in) const=0;
