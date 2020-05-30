@@ -8,7 +8,7 @@
 
 #include "smoothersimple.hpp"
 #include "matrixinterface.hpp"
-#include "vector.hpp"
+#include "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 void SmootherSimple::set_matrix(std::shared_ptr<MatrixInterface> matrix)
@@ -16,7 +16,7 @@ void SmootherSimple::set_matrix(std::shared_ptr<MatrixInterface> matrix)
   _matrix = matrix;
 }
 /*-------------------------------------------------*/
-void SmootherSimple::pre(Vector& out, const Vector& in) const
+void SmootherSimple::pre(VectorInterface& out, const VectorInterface& in) const
 {
   out.fill(0.0);
   if(_type=="Jac")
@@ -41,7 +41,7 @@ void SmootherSimple::pre(Vector& out, const Vector& in) const
   }
 }
 /*-------------------------------------------------*/
-void SmootherSimple::post(Vector& out, const Vector& in) const
+void SmootherSimple::post(VectorInterface& out, const VectorInterface& in) const
 {
   out.fill(0.0);
   if(_type=="Jac")

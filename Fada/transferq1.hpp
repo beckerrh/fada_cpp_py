@@ -12,48 +12,49 @@
 
 #include  "transferinterface.hpp"
 #include  "typedefs.hpp"
+#include  "nodevector.hpp"
 
 /*-------------------------------------------------*/
-class TransferQ12d : public TransferInterface
+class TransferQ12d
 {
 protected:
   int _nx, _ny;
-  void _boundary(Vector& u) const;
+  void _boundary(NodeVector& u) const;
 
 public:
   ~TransferQ12d();
-  TransferQ12d() : TransferInterface() {}
-  TransferQ12d(const TransferQ12d& transfer) : TransferInterface(transfer) {}
-  TransferQ12d(const armaicvec& n, const armavec& dx) : TransferInterface()
+  TransferQ12d() {}
+  TransferQ12d(const TransferQ12d& transfer) {}
+  TransferQ12d(const armaicvec& n, const armavec& dx)
   {
     set_grid(n, dx);
   }
 
   void set_grid(const armaicvec& n, const armavec& dx);
-  void restrict(Vector& out, const Vector& in) const;
-  void prolongate(Vector& out, const Vector& in) const;
+  void restrict(NodeVector& out, const NodeVector& in) const;
+  void prolongate(NodeVector& out, const NodeVector& in) const;
 };
 
 
 /*-------------------------------------------------*/
-class TransferQ13d : public TransferInterface
+class TransferQ13d
 {
 protected:
   int _nx, _ny, _nz;
-  void _boundary(Vector& u) const;
+  void _boundary(NodeVector& u) const;
   
 public:
   ~TransferQ13d();
-  TransferQ13d() : TransferInterface() {}
-  TransferQ13d(const TransferQ13d& transfer) : TransferInterface(transfer) {}
-  TransferQ13d(const armaicvec& n, const armavec& dx) : TransferInterface()
+  TransferQ13d() {}
+  TransferQ13d(const TransferQ13d& transfer) {}
+  TransferQ13d(const armaicvec& n, const armavec& dx)
   {
     set_grid(n, dx);
   }
 
   void set_grid(const armaicvec& n, const armavec& dx);
-  void restrict(Vector& out, const Vector& in) const;
-  void prolongate(Vector& out, const Vector& in) const;
+  void restrict(NodeVector& out, const NodeVector& in) const;
+  void prolongate(NodeVector& out, const NodeVector& in) const;
 };
 
 #endif /* transferq1_h */

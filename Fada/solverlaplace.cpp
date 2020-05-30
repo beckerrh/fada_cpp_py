@@ -34,7 +34,9 @@ void SolverLaplace::set_data (std::shared_ptr<MultiGridInterface> mggrid, std::s
   {
     if(femtype=="Q1")
     {
-      _fem = std::unique_ptr<FiniteElementInterface>(new Q12d(matrixtype));
+//      _fem = std::unique_ptr<FiniteElementInterface>(new Q12d(matrixtype));
+      _fem = std::unique_ptr<FiniteElementInterface>(new FiniteElement<Q12d,NodeVector>(matrixtype));
+//      matrixtype
     }
     else
     {
@@ -45,7 +47,8 @@ void SolverLaplace::set_data (std::shared_ptr<MultiGridInterface> mggrid, std::s
   {
     if(femtype=="Q1")
     {
-      _fem = std::unique_ptr<FiniteElementInterface>(new Q13d(matrixtype));
+//      _fem = std::unique_ptr<FiniteElementInterface>(new Q13d(matrixtype));
+      _fem = std::unique_ptr<FiniteElementInterface>(new FiniteElement<Q13d,NodeVector>(matrixtype));
     }
     else
     {

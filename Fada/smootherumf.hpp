@@ -25,7 +25,7 @@ public:
   SmootherUmf(const SmootherUmf& smoother) {}
 
   void set_matrix(std::shared_ptr<MatrixInterface> matrix);
-  void solve(Vector& out, const Vector& in) const;
+  void solve(VectorInterface& out, const VectorInterface& in) const;
 };
 
 #endif /* smootherumf_hpp */

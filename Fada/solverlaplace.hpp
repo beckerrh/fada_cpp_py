@@ -12,6 +12,7 @@
 #include  "finiteelementinterface.hpp"
 #include  "multigridinterface.hpp"
 #include  "mgsolver.hpp"
+#include  "nodevector.hpp"
 
 /*-------------------------------------------------*/
 class SolverLaplace
@@ -20,7 +21,7 @@ protected:
   std::shared_ptr<FiniteElementInterface> _fem;
   std::shared_ptr<MultiGridInterface> _mggrid;
   MgSolver _mgsolver;
-  Vector _u, _f;
+  NodeVector _u, _f;
 
 public:
   SolverLaplace() : _fem(nullptr), _mggrid(nullptr) {}
@@ -30,8 +31,8 @@ public:
   std::string toString() const;
 
   int testsolve(bool print=true, std::string problem="DirichletRhsOne");
-  const Vector& get_solution() const {return _u;}
-  Vector& get_solution() {return _u;}
+  const NodeVector& get_solution() const {return _u;}
+  NodeVector& get_solution() {return _u;}
 };
 
 

@@ -17,16 +17,17 @@
 #include  "finiteelementinterface.hpp"
 #include  "updaterinterface.hpp"
 #include  "matrixinterface.hpp"
+#include  "multigridinterface.hpp"
 #include  "smootherinterface.hpp"
 #include  "transferinterface.hpp"
 #include  "vectorinterface.hpp"
 
-#include  "uniformmultigrid.hpp"
+//#include  "uniformmultigrid.hpp"
 #include  "timer.hpp"
-#include  "vector.hpp"
+//#include  "vector.hpp"
 
-//typedef Array<std::shared_ptr<VectorInterface>> VectorMG;
-typedef std::vector<Vector> VectorMG;
+typedef std::vector<std::shared_ptr<VectorInterface>> VectorMG;
+//typedef std::vector<Vector> VectorMG;
 
 /*-------------------------------------------------*/
 class MgSolver
@@ -43,7 +44,7 @@ protected:
   std::vector<VectorMG> _mgmem;
 
   void _set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, VectorMG& v) const;
-  void residual(int l, Vector& r, const Vector& u, const Vector& f) const;
+  void residual(int l, VectorInterface& r, const VectorInterface& u, const VectorInterface& f) const;
   void mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol);
 
 public:
@@ -58,7 +59,7 @@ public:
   }
   void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<FiniteElementInterface> fem, std::string smoothertype, int updatemem=0);
   std::string toString() const;
-  int solve(Vector& u, const Vector& f, bool print=true);
+  int solve(VectorInterface& u, const VectorInterface& f, bool print=true);
 };
 
 #endif

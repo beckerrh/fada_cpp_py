@@ -9,7 +9,7 @@
 #include  <stdio.h>
 #include  <iostream>
 #include  <armadillo>
-#include  "Fada/vector.hpp"
+#include  "Fada/nodevector.hpp"
 #include  "Fada/umfmatrix.hpp"
 
 
@@ -18,11 +18,11 @@ int main(int argc, char** argv)
 {
     armaicvec n;
     n << 4 << 2 << 3 << arma::endr;
-    Vector v(n), w(n);
+    NodeVector v(n), w(n);
     v.fill(2);
     w.data().randu();
     
-    Vector u(v);
+    NodeVector u(v);
     
     u = 3*v.data() + w.data();
     std::cerr << u << std::endl;

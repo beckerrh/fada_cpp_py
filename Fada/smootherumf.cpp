@@ -8,7 +8,7 @@
 
 #include  "smootherumf.hpp"
 #include  "matrixinterface.hpp"
-#include  "vector.hpp"
+#include  "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface> matrix)
@@ -18,7 +18,7 @@ void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface> matrix)
   _umfmat.computeLu();
 }
 /*-------------------------------------------------*/
-void SmootherUmf::solve(Vector& out, const Vector& in) const
+void SmootherUmf::solve(VectorInterface& out, const VectorInterface& in) const
 {
   _umfmat.solve(out.data(), in.data());
 //    u.fill(0);

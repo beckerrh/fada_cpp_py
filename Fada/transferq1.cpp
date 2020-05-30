@@ -7,8 +7,6 @@
 //
 
 #include  "transferq1.hpp"
-//#include  "uniformgrid.hpp"
-#include  "vector.hpp"
 
 TransferQ12d::~TransferQ12d() {}
 TransferQ13d::~TransferQ13d() {}
@@ -31,7 +29,7 @@ void TransferQ13d::set_grid(const armaicvec& n, const armavec& dx)
   _nz = n[2];
 }
 /*-------------------------------------------------*/
-void TransferQ12d::_boundary(Vector& v) const
+void TransferQ12d::_boundary(NodeVector& v) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -46,7 +44,7 @@ void TransferQ12d::_boundary(Vector& v) const
 
 }
 /*-------------------------------------------------*/
-void TransferQ13d::_boundary(Vector& v) const
+void TransferQ13d::_boundary(NodeVector& v) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -75,7 +73,7 @@ void TransferQ13d::_boundary(Vector& v) const
 }
 
 /*-------------------------------------------------*/
-void TransferQ12d::restrict(Vector& out, const Vector& in) const
+void TransferQ12d::restrict(NodeVector& out, const NodeVector& in) const
 {
   out.fill(0.0);
   for(int ix=0;ix<_nx;ix++)
@@ -92,7 +90,7 @@ void TransferQ12d::restrict(Vector& out, const Vector& in) const
   _boundary(out);
 }
 /*-------------------------------------------------*/
-void TransferQ12d::prolongate(Vector& out, const Vector& in) const
+void TransferQ12d::prolongate(NodeVector& out, const NodeVector& in) const
 {
   out.fill(0.0);
   for(int ix=0;ix<_nx;ix++)
@@ -112,7 +110,7 @@ void TransferQ12d::prolongate(Vector& out, const Vector& in) const
   }
 }
 /*-------------------------------------------------*/
-void TransferQ13d::restrict(Vector& out, const Vector& in) const
+void TransferQ13d::restrict(NodeVector& out, const NodeVector& in) const
 {
   out.fill(0.0);
   for(int ix=0;ix<_nx;ix++)
@@ -160,7 +158,7 @@ void TransferQ13d::restrict(Vector& out, const Vector& in) const
   _boundary(out);
 }
 /*-------------------------------------------------*/
-void TransferQ13d::prolongate(Vector& out, const Vector& in) const
+void TransferQ13d::prolongate(NodeVector& out, const NodeVector& in) const
 {
   out.fill(0.0);
   for(int ix=0;ix<_nx;ix++)

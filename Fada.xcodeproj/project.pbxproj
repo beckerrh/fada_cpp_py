@@ -28,8 +28,8 @@
 		EEE325AB2478442100FF1CD4 /* uniformmultigridpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */; };
 		EEE325AD2478495400FF1CD4 /* bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325AC2478495400FF1CD4 /* bindings.cpp */; };
 		EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A40245DC6B800AE1541 /* testarma.cpp */; };
-		EEF40A50245E2DFE00AE1541 /* vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* vector.cpp */; };
-		EEF40A51245E2DFE00AE1541 /* vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* vector.cpp */; };
+		EEF40A50245E2DFE00AE1541 /* nodevector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* nodevector.cpp */; };
+		EEF40A51245E2DFE00AE1541 /* nodevector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A4F245E2DFE00AE1541 /* nodevector.cpp */; };
 		EEF40A54246000A000AE1541 /* operatorpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operatorpy.cpp */; };
 		EEF40A55246000A000AE1541 /* operatorpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A53246000A000AE1541 /* operatorpy.cpp */; };
 /* End PBXBuildFile section */
@@ -113,9 +113,9 @@
 		EEE325AF247AC27200FF1CD4 /* todo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = todo.rtf; sourceTree = "<group>"; };
 		EEF40A40245DC6B800AE1541 /* testarma.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = testarma.cpp; sourceTree = "<group>"; };
 		EEF40A46245DCA6F00AE1541 /* testarma */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testarma; sourceTree = BUILT_PRODUCTS_DIR; };
-		EEF40A4D245DED9500AE1541 /* vector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vector.hpp; sourceTree = "<group>"; };
+		EEF40A4D245DED9500AE1541 /* nodevector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = nodevector.hpp; sourceTree = "<group>"; };
 		EEF40A4E245E194700AE1541 /* typedefs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = typedefs.hpp; sourceTree = "<group>"; };
-		EEF40A4F245E2DFE00AE1541 /* vector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vector.cpp; sourceTree = "<group>"; };
+		EEF40A4F245E2DFE00AE1541 /* nodevector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = nodevector.cpp; sourceTree = "<group>"; };
 		EEF40A53246000A000AE1541 /* operatorpy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = operatorpy.cpp; sourceTree = "<group>"; };
 		EEF40A5A24601DEF00AE1541 /* test.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -187,6 +187,8 @@
 				EE2FEB8B248019960072EEED /* multigrid.cpp */,
 				EE2FEB8C248019960072EEED /* multigrid.hpp */,
 				EE5E7637246DA15B0061AC64 /* multigridinterface.hpp */,
+				EEF40A4F245E2DFE00AE1541 /* nodevector.cpp */,
+				EEF40A4D245DED9500AE1541 /* nodevector.hpp */,
 				EE9091B02471AD82008D3AE5 /* q1.cpp */,
 				EE9091B12471AD82008D3AE5 /* q1.hpp */,
 				EE2FEB81247EEAF50072EEED /* smootherinterface.hpp */,
@@ -215,8 +217,6 @@
 				EE5E76212464A1FD0061AC64 /* updater.cpp */,
 				EE5E76202464A1FD0061AC64 /* updater.hpp */,
 				EE5E76232465D63A0061AC64 /* updaterinterface.hpp */,
-				EEF40A4F245E2DFE00AE1541 /* vector.cpp */,
-				EEF40A4D245DED9500AE1541 /* vector.hpp */,
 				EE2FEB80247EBBCC0072EEED /* vectorinterface.hpp */,
 			);
 			path = Fada;
@@ -396,7 +396,7 @@
 				EE9091AE2471708A008D3AE5 /* transferq1.cpp in Sources */,
 				EE2FEB8A247FF9CB0072EEED /* solverlaplace.cpp in Sources */,
 				EEE325AB2478442100FF1CD4 /* uniformmultigridpy.cpp in Sources */,
-				EEF40A50245E2DFE00AE1541 /* vector.cpp in Sources */,
+				EEF40A50245E2DFE00AE1541 /* nodevector.cpp in Sources */,
 				EE106B1F2475114E00070A59 /* sparsematrix.cpp in Sources */,
 				EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */,
 				EE5E763B246E8EF50061AC64 /* uniformmultigrid.cpp in Sources */,
@@ -427,7 +427,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EEF40A51245E2DFE00AE1541 /* vector.cpp in Sources */,
+				EEF40A51245E2DFE00AE1541 /* nodevector.cpp in Sources */,
 				EEF40A55246000A000AE1541 /* operatorpy.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

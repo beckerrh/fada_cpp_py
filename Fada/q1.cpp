@@ -10,7 +10,7 @@
 #include  <armadillo>
 #include  "q1.hpp"
 #include  "uniformgrid.hpp"
-#include  "vector.hpp"
+#include  "nodevector.hpp"
 #include  "fullmatrix.hpp"
 #include  "trapezmatrix.hpp"
 #include  "transferq1.hpp"
@@ -51,18 +51,22 @@ void Q13d::set_grid(std::shared_ptr<GridInterface> grid)
   _ug = ug;
 }
 /*-------------------------------------------------*/
-void Q12d::set_size_mgvector(const GridInterface& grid, Vector& u) const
+std::unique_ptr<VectorInterface> Q12d::newMgvector(const GridInterface& grid) const
 {
-  u.set_size(grid.n()+2);
-  u.fill_bdry(0);
-  u.fill_bdry2(0);
+  std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
+  p->set_size(grid.n()+2);
+  p->fill_bdry(0);
+  p->fill_bdry2(0);
+  return p;
 }
 /*-------------------------------------------------*/
-void Q13d::set_size_mgvector(const GridInterface& grid, Vector& u) const
+std::unique_ptr<VectorInterface> Q13d::newMgvector(const GridInterface& grid) const
 {
-  u.set_size(grid.n()+2);
-  u.fill_bdry(0);
-  u.fill_bdry2(0);
+  std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
+  p->set_size(grid.n()+2);
+  p->fill_bdry(0);
+  p->fill_bdry2(0);
+  return p;
 }
 
 /*-------------------------------------------------*/
@@ -74,11 +78,12 @@ std::unique_ptr<MatrixInterface> Q12d::newMatrix(const GridInterface& grid) cons
   const armavec& dx = ug->dx();
   if(_matrixtype=="Full")
   {
-    return std::unique_ptr<MatrixInterface>(new FullMatrix2d(n, dx));
+    return std::unique_ptr<MatrixInterface>(new Matrix<FullMatrix2d,NodeVector>(n, dx));
   }
   else if(_matrixtype=="Trapez")
   {
-    return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d(n, dx));
+//    return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d(n, dx));
+    return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix2d,NodeVector>(n, dx));
   }
   else
   {
@@ -104,7 +109,8 @@ std::unique_ptr<TransferInterface> Q12d::newTransfer(const GridInterface& grid) 
   assert(ug);
   const armaicvec& n = ug->n();
   const armavec& dx = ug->dx();
-  return std::unique_ptr<TransferInterface>(new TransferQ12d(n, dx));
+//  return std::unique_ptr<TransferInterface>(new TransferQ12d(n, dx));
+  return std::unique_ptr<TransferInterface>(new Transfer<TransferQ12d,NodeVector>(n, dx));
 }
 
 /*-------------------------------------------------*/
@@ -116,11 +122,13 @@ std::unique_ptr<MatrixInterface> Q13d::newMatrix(const GridInterface& grid) cons
   const armavec& dx = ug->dx();
   if(_matrixtype=="Full")
   {
-    return std::unique_ptr<MatrixInterface>(new FullMatrix3d(n,dx));
+//    return std::unique_ptr<MatrixInterface>(new FullMatrix3d(n,dx));
+    return std::unique_ptr<MatrixInterface>(new Matrix<FullMatrix3d,NodeVector>(n, dx));
   }
   else if(_matrixtype=="Trapez")
   {
-    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d(n,dx));
+//    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d(n,dx));
+    return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix3d,NodeVector>(n, dx));
   }
   else
   {
@@ -146,11 +154,12 @@ std::unique_ptr<TransferInterface> Q13d::newTransfer(const GridInterface& grid) 
   assert(ug);
   const armaicvec& n = ug->n();
   const armavec& dx = ug->dx();
-  return std::unique_ptr<TransferInterface>(new TransferQ13d(n, dx));
+//  return std::unique_ptr<TransferInterface>(new TransferQ13d(n, dx));
+  return std::unique_ptr<TransferInterface>(new Transfer<TransferQ13d,NodeVector>(n, dx));
 }
 
 /*-------------------------------------------------*/
-void  Q12d::vectormg2vector(Vector& u, const Vector& umg) const
+void  Q12d::vectormg2vector(NodeVector& u, const NodeVector& umg) const
 {
 //  int nx = mggrid.nx(l), ny = mggrid.ny(l);
   for(int ix=0;ix<_nx;ix++)
@@ -162,8 +171,7 @@ void  Q12d::vectormg2vector(Vector& u, const Vector& umg) const
   }
 }
 /*-------------------------------------------------*/
-//void  Q12d::vector2vectormg(const UniformMultiGrid& mggrid, int l, Vector& umg, const Vector& u) const
-void  Q12d::vector2vectormg(Vector& umg, const Vector& u) const
+void  Q12d::vector2vectormg(NodeVector& umg, const NodeVector& u) const
 {
 //  int nx = mggrid.nx(l), ny = mggrid.ny(l);
   for(int ix=0;ix<_nx;ix++)
@@ -176,8 +184,7 @@ void  Q12d::vector2vectormg(Vector& umg, const Vector& u) const
 }
 
 /*-------------------------------------------------*/
-//void  Q13d::vectormg2vector(const UniformMultiGrid& mggrid, int l, Vector& u, const Vector& umg) const
-void  Q13d::vectormg2vector(Vector& u, const Vector& umg) const
+void  Q13d::vectormg2vector(NodeVector& u, const NodeVector& umg) const
 {
 //  int nx = mggrid.nx(l), ny = mggrid.ny(l), nz = mggrid.nz(l);
   for(int ix=0;ix<_nx;ix++)
@@ -192,8 +199,7 @@ void  Q13d::vectormg2vector(Vector& u, const Vector& umg) const
   }
 }
 /*-------------------------------------------------*/
-//void  Q13d::vector2vectormg(const UniformMultiGrid& mggrid, int l, Vector& umg, const Vector& u) const
-void  Q13d::vector2vectormg(Vector& umg, const Vector& u) const
+void  Q13d::vector2vectormg(NodeVector& umg, const NodeVector& u) const
 {
 //  int nx = mggrid.nx(l), ny = mggrid.ny(l), nz = mggrid.nz(l);
   for(int ix=0;ix<_nx;ix++)
@@ -209,7 +215,7 @@ void  Q13d::vector2vectormg(Vector& umg, const Vector& u) const
 }
 
 /*-------------------------------------------------*/
-void Q12d::rhs_one(Vector& v) const
+void Q12d::rhs_one(NodeVector& v) const
 {
 //  std::cerr << "v.n()="<<v.n().t();
 //  assert(_ug);
@@ -225,14 +231,14 @@ void Q12d::rhs_one(Vector& v) const
   }
 }
 /*-------------------------------------------------*/
-void Q12d::rhs_random(Vector& v) const
+void Q12d::rhs_random(NodeVector& v) const
 {
   arma::arma_rng::set_seed_random();
   v.data().randu();
   v *= 100*_vol;
 }
 /*-------------------------------------------------*/
-void Q12d::boundary(Vector& v) const
+void Q12d::boundary(NodeVector& v) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -247,7 +253,7 @@ void Q12d::boundary(Vector& v) const
 }
 
 /*-------------------------------------------------*/
-void Q13d::rhs_one(Vector& v) const
+void Q13d::rhs_one(NodeVector& v) const
 {
   double d = _vol*20.0;
   for(int ix=0;ix<_nx;ix++)
@@ -262,14 +268,14 @@ void Q13d::rhs_one(Vector& v) const
   }
 }
 /*-------------------------------------------------*/
-void Q13d::rhs_random(Vector& v) const
+void Q13d::rhs_random(NodeVector& v) const
 {
   arma::arma_rng::set_seed_random();
   v.data().randu();
   v *= 100*_vol;
 }
 /*-------------------------------------------------*/
-void Q13d::boundary(Vector& v) const
+void Q13d::boundary(NodeVector& v) const
 {
   for(int ix=0;ix<_nx;ix++)
   {

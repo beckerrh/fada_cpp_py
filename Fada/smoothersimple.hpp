@@ -24,9 +24,9 @@ public:
   SmootherSimple(const SmootherSimple& smoother) {}
 
   void set_matrix(std::shared_ptr<MatrixInterface> matrix);
-  void solve(Vector& out, const Vector& in) const{assert(0);}
-  void pre(Vector& out, const Vector& in) const;
-  void post(Vector& out, const Vector& in) const;
+  void solve(VectorInterface& out, const VectorInterface& in) const{assert(0);}
+  void pre(VectorInterface& out, const VectorInterface& in) const;
+  void post(VectorInterface& out, const VectorInterface& in) const;
 };
 
 #endif /* smoothersimple_hpp */

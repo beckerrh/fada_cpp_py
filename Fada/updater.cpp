@@ -10,31 +10,25 @@
 #include  "mgsolver.hpp"
 
 /*--------------------------------------------------------------------------*/
-void UpdaterSimple::setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
+void UpdaterSimple::setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
 {
   _mat = mat;
-//  _level = level;
+  _mem = fem.newMgvector(grid);
 }
 
 /*--------------------------------------------------------------------------*/
-void UpdaterSimple::set_size(const armaicvec& n)
+void UpdaterSimple::addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& r, bool print)
 {
-  _mem.set_size(n);
-}
-/*--------------------------------------------------------------------------*/
-void UpdaterSimple::addUpdate(const Vector& w, Vector& u, Vector& r, bool print)
-{
-  _mem.fill(0.0);
-//  _op->dot(_level, _mem, w, 1.0);
-  _mat->dot(_mem, w, 1.0);
+  _mem->fill(0.0);
+  _mat->dot(*_mem, w, 1.0);
   double d1 = w.dot(r);
-  double d2 = w.dot(_mem);
+  double d2 = w.dot(*_mem);
   double omega = d1/d2;
   omega = fmax(fmin(omega, 10.0),0.1);
 //  omega = fmax(fmin(omega, 2.0),0.2);
 //  double omega = 1.0;
   u.add(omega, w);
-  r.add(-omega, _mem);
+  r.add(-omega, *_mem);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -49,10 +43,9 @@ Updater& Updater::operator=(const Updater& updater)
   assert(0);
   return *this;
 }
-void Updater::setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
+void Updater::setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type, const std::string& solutiontype)
 {
   _scale = false;
-//  _level = level;
   _mat = mat;
   _nvectors = nvectors;
   assert(nvectors>0);
@@ -66,24 +59,21 @@ void Updater::setParameters(std::shared_ptr<MatrixInterface> mat, int nvectors, 
   _b.set_size(_nvectors);
   _x.set_size(_nvectors);
   _conditionmean = _conditionmax = 0.0;
-}
-
-/*--------------------------------------------------------------------------*/
-void Updater::set_size(const armaicvec& n)
-{
-  //  std::cerr << "Updater::set_size() n = " << n.t()<< "_nvectors = " << _nvectors << std::endl;
   _mem.resize(2*_nvectors);
-  for(int i=0;i<_mem.size();i++) _mem[i].set_size(n);
+  for(int i=0;i<_mem.size();i++)
+  {
+    _mem[i] = fem.newMgvector(grid);
+  }
 }
 
 /*--------------------------------------------------------------------------*/
-Vector& Updater::getV(int i)
+VectorInterface& Updater::getV(int i)
 {
-  return _mem[_nshift*i];
+  return *_mem[_nshift*i];
 }
-Vector& Updater::getAV(int i)
+VectorInterface& Updater::getAV(int i)
 {
-  return _mem[_nshift*i+1];
+  return *_mem[_nshift*i+1];
 }
 
 /*--------------------------------------------------------------------------*/
@@ -94,7 +84,7 @@ void Updater::restart()
 }
 
 /*--------------------------------------------------------------------------*/
-void Updater::addUpdate(const Vector& w, Vector& u, Vector& res, bool print)
+void Updater::addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& res, bool print)
 {
   // les impairs sont les produit avec la matrice des pairs !
 //  std::cerr << _level << " addUpdate() _nextmemory="<< _nextmemory << " _nmemory="<< _nmemory<< " _nvectors="<< _nvectors << std::endl;
@@ -180,7 +170,7 @@ void Updater::addUpdate(const Vector& w, Vector& u, Vector& res, bool print)
 }
 
 /*--------------------------------------------------------------------------*/
-void Updater::_computeSmallSystem(int index, int nmemory, const Vector& r)
+void Updater::_computeSmallSystem(int index, int nmemory, const VectorInterface& r)
 {
   _H.resize(nmemory, nmemory);
   _b.resize(nmemory);

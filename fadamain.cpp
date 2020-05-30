@@ -9,7 +9,6 @@
 #include  <stdio.h>
 #include  <stdlib.h>
 #include  <ctime>
-#include  "Fada/vector.hpp"
 #include  "Fada/solverlaplace.hpp"
 #include  "Fada/uniformmultigrid.hpp"
 
@@ -44,7 +43,7 @@ int main(int argc, char** argv)
   std::string smoother = "Jac";
   auto solver = std::make_shared<SolverLaplace>(mggrid, "Q1", "Full", smoother);
   int iter = solver->testsolve();
-  const Vector& u = solver->get_solution();
+  const NodeVector& u = solver->get_solution();
   printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
 
   std::string filename("solution.hdf");

@@ -1,13 +1,13 @@
 //
-//  Vector.hpp
+//  NodeVector.hpp
 //  Fada
 //
 //  Created by Roland Becker on 02/05/2020.
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#ifndef Vector_h
-#define Vector_h
+#ifndef NodeVector_h
+#define NodeVector_h
 
 #include  <armadillo>
 
@@ -18,7 +18,7 @@ typedef arma::Col<int> armaicvec;
 #include  "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
-class Vector : public VectorInterface
+class NodeVector : public VectorInterface
 {
 protected:
   armavec _data;
@@ -40,48 +40,48 @@ protected:
     {
       _ofsp += _ofs[i];
     }
-//        std::cerr << "_n = " << _n.t();
-//        std::cerr << "_ofs = " << _ofs.t();
-//    std::cerr << "_ofsp = " << _ofsp << "\n";
+    //        std::cerr << "_n = " << _n.t();
+    //        std::cerr << "_ofs = " << _ofs.t();
+    //    std::cerr << "_ofsp = " << _ofsp << "\n";
   }
-
+  
 public:
-  Vector() : _data(), _n(), _ofs() {}
-  Vector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
+  NodeVector() : _data(), _n(), _ofs() {}
+  NodeVector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
   {
     set_ofs();
-//    assert(0);
+    //    assert(0);
   }
-  Vector& operator=(const Vector& v)
+  NodeVector& operator=(const NodeVector& v)
   {
     _data = v.data();
-//    armavec::operator=(v);
+    //    armavec::operator=(v);
     assert(arma::all(_n==v.n()));
-//    _n = v._n;
-//    set_ofs();
+    //    _n = v._n;
+    //    set_ofs();
     return *this;
   }
-  Vector& operator=(const armavec& v)
+  NodeVector& operator=(const armavec& v)
   {
     _data = v;
-//    armavec::operator=(v);
+    //    armavec::operator=(v);
     return *this;
   }
-    Vector& operator*=(double d)
-    {
-      _data *= d;
-  //    armavec::operator=(v);
-      return *this;
-    }
+  NodeVector& operator*=(double d)
+  {
+    _data *= d;
+    //    armavec::operator=(v);
+    return *this;
+  }
   void set_size(const armaicvec& n)
   {
-//    std::cerr << "Vector::set_size() n = " << n.t();
+    //    std::cerr << "NodeVector::set_size() n = " << n.t();
     _n = n;
     set_ofs();
-//    armavec::set_size(arma::prod(n));
+    //    armavec::set_size(arma::prod(n));
     _data.set_size(arma::prod(n));
   }
-  void set_size(const Vector& u)
+  void set_size(const NodeVector& u)
   {
     set_size(u.n());
   }
@@ -93,14 +93,14 @@ public:
   armavec& data()
   {
     return _data;
-//    armavec& t = static_cast<armavec&>(*this);
-//    return t;
+    //    armavec& t = static_cast<armavec&>(*this);
+    //    return t;
   }
   const armavec& data() const
   {
     return _data;
-//    const armavec& t = static_cast<const armavec&>(*this);
-//    return t;
+    //    const armavec& t = static_cast<const armavec&>(*this);
+    //    return t;
   }
   double& at(int ix, int iy)
   {
@@ -139,33 +139,38 @@ public:
   {
     _data.fill(d);
   }
-  void add(double d, const Vector& v)
+  void add(double d, const VectorInterface& v)
   {
+//    std::cerr << "??? " << data().n_elem<<"\n";
+//    std::cerr << "??? " << v.data().n_elem<<"\n";
     _data += d*v.data();
-//    this->arma() += d*v.arma();
+    //    this->arma() += d*v.arma();
   }
-  double dot(const Vector& v) const
+  void equal(const VectorInterface& v)
   {
-//    return arma::dot(this->arma(),v.arma());
+    _data = v.data();
+  }  double dot(const VectorInterface& v) const
+  {
+    //    return arma::dot(this->arma(),v.arma());
     return arma::dot(_data,v.data());
   }
   void scale(double d)
   {
-//    this->arma() *= d;
+    //    this->arma() *= d;
     _data *= d;
   }
   double norm(double p=2) const
   {
     return arma::norm(_data,p);
-//    return arma::norm(this->arma(),p);
+    //    return arma::norm(this->arma(),p);
   }
   void output(const std::string& filename) const
   {
     arma::hdf5_name spec(filename);
-//    this->arma().save(spec);
+    //    this->arma().save(spec);
     _data.save(spec);
   }
 };
-std::ostream& operator<<(std::ostream& os, const Vector& v);
+std::ostream& operator<<(std::ostream& os, const NodeVector& v);
 
-#endif /* Vector_h */
+#endif /* NodeVector_h */

@@ -81,12 +81,12 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   }
   for(int l=0;l<_nlevels;l++)
   {
-    _mgupdate[l]->setParameters(_mgmatrix[l], updatemem, type);
+    _mgupdate[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], updatemem, type);
     //    _mgupdate(l)->setParameters(l, this, updatemem, type);
-    _mgupdate[l]->set_size(mgrid->get(l)->n()+2);
+//    _mgupdate[l]->set_size(mgrid->get(l)->n()+2);
     //    _mgupdatesmooth(l)->setParameters(l, this, 0, type);
-    _mgupdatesmooth[l]->setParameters(_mgmatrix[l], 0, type);
-    _mgupdatesmooth[l]->set_size(mgrid->get(l)->n()+2);
+    _mgupdatesmooth[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], 0, type);
+//    _mgupdatesmooth[l]->set_size(mgrid->get(l)->n()+2);
   }
 }
 /*-------------------------------------------------*/
@@ -95,37 +95,38 @@ void MgSolver::_set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, Vec
   v.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
-    _fem->set_size_mgvector(*mgrid->get(l), v[l]);
+    v[l] = _fem->newMgvector(*mgrid->get(l));
   }
 }
 
 /*-------------------------------------------------*/
-void MgSolver::residual(int l, Vector& r, const Vector& u, const Vector& f) const
+void MgSolver::residual(int l, VectorInterface& r, const VectorInterface& u, const VectorInterface& f) const
 {
-  r =  f;
+//  r =  f;
+  r.equal(f);
   _mgmatrix[l]->dot(r, u, -1.0);
 }
 /*-------------------------------------------------*/
-int MgSolver::solve(Vector& u, const Vector& f, bool print)
+int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
 {
   VectorMG& umg = _mgmem[0];
   VectorMG& fmg = _mgmem[1];
   VectorMG& d   = _mgmem[2];
   VectorMG& w   = _mgmem[3];
   
-  _fem->vector2vectormg(fmg[0], f);
-  _fem->vector2vectormg(umg[0], u);
+  _fem->vector2vectormg(*fmg[0], f);
+  _fem->vector2vectormg(*umg[0], u);
   
   int maxlevel = 0;
   double res, tol=0;
   for(int iter=0; iter<this->maxiter+1; iter++)
   {
     _timer.start("residual");
-    residual(maxlevel, d[maxlevel], umg[maxlevel], fmg[maxlevel]);
-    d[maxlevel].fill_bdry(0);
-    d[maxlevel].fill_bdry2(0);
+    residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
+    d[maxlevel]->fill_bdry(0);
+    d[maxlevel]->fill_bdry2(0);
     _timer.stop("residual");
-    res = d[maxlevel].norm();
+    res = d[maxlevel]->norm();
     if(iter==0)
     {
       tol = fmax(this->tol_abs, this->tol_rel*res);
@@ -134,7 +135,7 @@ int MgSolver::solve(Vector& u, const Vector& f, bool print)
     if(print) printf("-mg- %3d %10.3e\n", iter, res);
     if(res <= tol)
     {
-      _fem->vectormg2vector(u, umg[0]);
+      _fem->vectormg2vector(u, *umg[0]);
       return iter;
     }
     mgstep(maxlevel, umg, fmg, d, w, tol);
@@ -147,41 +148,42 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
   if(l==_nlevels-1)
   {
     _timer.start("solvecoarse");
-    _mgsmoother[l]->solve(u[l], f[l]);
+    _mgsmoother[l]->solve(*u[l], *f[l]);
     _timer.stop("solvecoarse");
   }
   else
   {
     _timer.start("smooth");
-    _mgsmoother[l]->pre(w[l], d[l]);
+    _mgsmoother[l]->pre(*w[l], *d[l]);
     _timer.stop("smooth");
     _timer.start("update");
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
-    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
+    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
     _timer.stop("update");
     
     _timer.start("transfer");
-    _mgtransfer[l]->restrict(d[l+1], d[l]);
+    _mgtransfer[l]->restrict(*d[l+1], *d[l]);
     _timer.stop("transfer");
     
-    f[l+1] = d[l+1];
-    u[l+1].fill(0.0);
+//    f[l+1] = d[l+1];
+    f[l+1]->equal(*d[l+1]);
+    u[l+1]->fill(0.0);
     mgstep(l+1, u, f, d, w, tol);
     
     _timer.start("transfer");
-    _mgtransfer[l]->prolongate(w[l], u[l+1]);
+    _mgtransfer[l]->prolongate(*w[l], *u[l+1]);
     _timer.stop("transfer");
     _timer.start("residual");
-    residual(l, d[l], u[l], f[l]);
+    residual(l, *d[l], *u[l], *f[l]);
     _timer.stop("residual");
     _timer.start("update");
-    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
+    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
     _timer.stop("update");
     _timer.start("smooth");
-    _mgsmoother[l]->post(w[l], d[l]);
+    _mgsmoother[l]->post(*w[l], *d[l]);
     _timer.stop("smooth");
     _timer.start("update");
-    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
+    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
     _timer.stop("update");
   }

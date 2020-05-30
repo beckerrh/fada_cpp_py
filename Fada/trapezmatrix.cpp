@@ -53,7 +53,7 @@ void TrapezMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::_boundary(Vector& out) const
+void TrapezMatrix2d::_boundary(NodeVector& out) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -68,7 +68,7 @@ void TrapezMatrix2d::_boundary(Vector& out) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::dot(Vector& out, const Vector& in, double d) const
+void TrapezMatrix2d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   // Laplacien   elements finis q1  (5-point-stencil)
   double d0 = 5.0 * d;
@@ -88,7 +88,7 @@ void TrapezMatrix2d::dot(Vector& out, const Vector& in, double d) const
 
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::jacobi(Vector& out, const Vector& in) const
+void TrapezMatrix2d::jacobi(NodeVector& out, const NodeVector& in) const
 {
   double d0inv = 0.2;
   for(int ix=0;ix<_nx;ix++)
@@ -102,7 +102,7 @@ void TrapezMatrix2d::jacobi(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix2d::gauss_seidel1(Vector& out, const Vector& in) const
+void TrapezMatrix2d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
   /*
    (ix+p)*ny + iy+q < ix*ny + iy
@@ -125,7 +125,7 @@ void TrapezMatrix2d::gauss_seidel1(Vector& out, const Vector& in) const
   }
 }
 /*-------------------------------------------------*/
-void TrapezMatrix2d::gauss_seidel2(Vector& out, const Vector& in) const
+void TrapezMatrix2d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
   double d0inv = 0.2;
   double d1 = -1.0;
@@ -144,7 +144,7 @@ void TrapezMatrix2d::gauss_seidel2(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::_boundary(Vector& out) const
+void TrapezMatrix3d::_boundary(NodeVector& out) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -173,7 +173,7 @@ void TrapezMatrix3d::_boundary(Vector& out) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::dot(Vector& out, const Vector& in, double d) const
+void TrapezMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   double e = d/arma::mean(out.n());
   double d0 = 7.0 * e;
@@ -203,7 +203,7 @@ void TrapezMatrix3d::dot(Vector& out, const Vector& in, double d) const
 
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::jacobi(Vector& out, const Vector& in) const
+void TrapezMatrix3d::jacobi(NodeVector& out, const NodeVector& in) const
 {
   double e = 1.0/arma::mean(out.n());
   double d0 = 7.0 * e;
@@ -222,7 +222,7 @@ void TrapezMatrix3d::jacobi(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::gauss_seidel1(Vector& out, const Vector& in) const
+void TrapezMatrix3d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
   
   /*
@@ -254,7 +254,7 @@ void TrapezMatrix3d::gauss_seidel1(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void TrapezMatrix3d::gauss_seidel2(Vector& out, const Vector& in) const
+void TrapezMatrix3d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
   double e = 1.0/arma::mean(out.n());
   double d0 = 7.0 * e;

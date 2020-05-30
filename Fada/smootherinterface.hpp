@@ -12,7 +12,7 @@
 #include  <memory>
 
 class MatrixInterface;
-class Vector;
+class VectorInterface;
 /*-------------------------------------------------*/
 class SmootherInterface
 {
@@ -22,9 +22,9 @@ public:
   SmootherInterface(const SmootherInterface& smoother) {}
 
   virtual void set_matrix(std::shared_ptr<MatrixInterface> matrix) = 0;
-  virtual void solve(Vector& out, const Vector& in) const = 0;
-  virtual void pre(Vector& out, const Vector& in) const {solve(out, in);}
-  virtual void post(Vector& out, const Vector& in) const {solve(out, in);}
+  virtual void solve(VectorInterface& out, const VectorInterface& in) const = 0;
+  virtual void pre(VectorInterface& out, const VectorInterface& in) const {solve(out, in);}
+  virtual void post(VectorInterface& out, const VectorInterface& in) const {solve(out, in);}
 };
 
 
