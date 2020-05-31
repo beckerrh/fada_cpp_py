@@ -27,7 +27,6 @@ Q13d::~Q13d(){}
 void Q12d::set_grid(std::shared_ptr<GridInterface> grid)
 {
   std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-//  const UniformGrid* ug = dynamic_cast<const UniformGrid*>(grid);
   assert(ug);
   assert(ug->dim()==2);
   _nx = ug->nx();

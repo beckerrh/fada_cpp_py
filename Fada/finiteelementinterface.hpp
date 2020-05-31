@@ -48,18 +48,8 @@ class FiniteElement : public FEM, public FiniteElementInterface
 protected:
   FEM& get() { return static_cast<FEM&>(*this); }
   FEM const& get() const { return static_cast<FEM const&>(*this); }
-  const VECTOR& getVector(const VectorInterface& u) const
-  {
-    const VECTOR* uV = dynamic_cast<const VECTOR*>(&u);
-    assert(uV);
-    return *uV;
-  }
-  VECTOR& getVector(VectorInterface& u) const
-  {
-    VECTOR* uV = dynamic_cast<VECTOR*>(&u);
-    assert(uV);
-    return *uV;
-  }
+  const VECTOR& getVector(const VectorInterface& u) const {return static_cast<const VECTOR&>(u);}
+  VECTOR& getVector(VectorInterface& u) const{return static_cast<VECTOR&>(u);}
 public:
   FiniteElement<FEM,VECTOR>() : FEM(), FiniteElementInterface() {}
   FiniteElement<FEM,VECTOR>(std::string matrixtype) : FEM(matrixtype), FiniteElementInterface() {}

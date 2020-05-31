@@ -35,18 +35,8 @@ class Transfer : public TRANSFER, public TransferInterface
 protected:
 TRANSFER& get() { return static_cast<TRANSFER&>(*this); }
 TRANSFER const& get() const { return static_cast<TRANSFER const&>(*this); }
-const VECTOR& getVector(const VectorInterface& u) const
-{
-  const VECTOR* uV = dynamic_cast<const VECTOR*>(&u);
-  assert(uV);
-  return *uV;
-}
-VECTOR& getVector(VectorInterface& u) const
-{
-  VECTOR* uV = dynamic_cast<VECTOR*>(&u);
-  assert(uV);
-  return *uV;
-}
+const VECTOR& getVector(const VectorInterface& u) const {return static_cast<const VECTOR&>(u);}
+VECTOR& getVector(VectorInterface& u) const{return static_cast<VECTOR&>(u);}
 public:
   Transfer<TRANSFER,VECTOR>(): TRANSFER(), TransferInterface() {}
   Transfer<TRANSFER,VECTOR>(const armaicvec& n, const armavec& dx): TRANSFER(n, dx), TransferInterface() {}

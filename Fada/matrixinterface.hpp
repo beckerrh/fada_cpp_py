@@ -39,18 +39,8 @@ class Matrix : public MATRIX, public MatrixInterface
 protected:
   MATRIX& get() { return static_cast<MATRIX&>(*this); }
   MATRIX const& get() const { return static_cast<MATRIX const&>(*this); }
-  const VECTOR& getVector(const VectorInterface& u) const
-  {
-    const VECTOR* uV = dynamic_cast<const VECTOR*>(&u);
-    assert(uV);
-    return *uV;
-  }
-  VECTOR& getVector(VectorInterface& u) const
-  {
-    VECTOR* uV = dynamic_cast<VECTOR*>(&u);
-    assert(uV);
-    return *uV;
-  }
+  const VECTOR& getVector(const VectorInterface& u) const {return static_cast<const VECTOR&>(u);}
+  VECTOR& getVector(VectorInterface& u) const{return static_cast<VECTOR&>(u);}
 public:
   Matrix<MATRIX, VECTOR>() : MATRIX(), MatrixInterface() {}
   Matrix<MATRIX, VECTOR>(const armaicvec& n, const armavec& dx) : MATRIX(n, dx), MatrixInterface() {}
