@@ -33,8 +33,6 @@ int main(int argc, char** argv)
   else
   {
     n0 << 3 << 3 << 3 << arma::endr;
-//    nlevels = 8;
-//    n0 << 2 << 2 << 2 << arma::endr;
     nlevelmax = 2;
   }
   int nlevels=nlevelmax;
