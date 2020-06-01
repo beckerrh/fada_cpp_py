@@ -17,11 +17,11 @@
 class UniformMultiGridPy : public UniformMultiGrid
 {
 public:
-  UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int> n);
+  UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n);
   pybind11::array_t<int> get_dimensions() const;
-  pybind11::array_t<int> n();
-  pybind11::array_t<double> dx();
-  pybind11::array_t<double> bounds();
+//  pybind11::array_t<int> n();
+//  pybind11::array_t<double> dx();
+//  pybind11::array_t<double> bounds();
 };
 
 #endif /* uniformmultigrid_hpp */

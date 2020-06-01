@@ -10,48 +10,65 @@
 #define q1_hpp
 
 #include  "finiteelementinterface.hpp"
+#include  "nodevector.hpp"
 
 class UniformGrid;
 /*-------------------------------------------------*/
-class Q12d : public FiniteElementInterface
+class Q12d
 {
 protected:
-  int _nx, _ny;
+  std::string _type;
+  size_t _nx, _ny;
   double _vol;
   std::shared_ptr<UniformGrid> _ug;
 
 public:
   ~Q12d();
-  Q12d() : FiniteElementInterface(), _ug(nullptr) {}
-  Q12d(const Q12d& fem) : FiniteElementInterface(fem), _ug(fem._ug) {}
+  Q12d() : _ug(nullptr), _type() {}
+  Q12d(std::string type) : _ug(nullptr), _type(type) {}
+  Q12d(const Q12d& fem) : _ug(fem._ug), _type(fem._type) {}
 
+  std::string toString() const {return "Q12d";}
   void set_grid(std::shared_ptr<GridInterface> grid);
-  void rhs_one(Vector& v) const;
-  void rhs_random(Vector& v) const;
-  void boundary(Vector& v) const;
-  std::unique_ptr<MatrixInterface> newMatrix(std::string matrixtype) const;
-  std::unique_ptr<TransferInterface> newTransfer(std::string matrixtype) const;
+  void rhs_one(NodeVector& v) const;
+  void rhs_random(NodeVector& v) const;
+  void boundary(NodeVector& v) const;
+  std::unique_ptr<MatrixInterface> newMatrix(const GridInterface& grid) const;
+  std::unique_ptr<SmootherInterface> newSmoother(std::string type, const GridInterface& grid) const;
+  std::unique_ptr<SmootherInterface> newCoarseSolver(std::string type, const GridInterface& grid) const;
+  std::unique_ptr<TransferInterface> newTransfer(const GridInterface& grid) const;
+  void vectormg2vector(NodeVector& u, const NodeVector& umg) const;
+  void vector2vectormg(NodeVector& umg, const NodeVector& u) const;
+  std::unique_ptr<VectorInterface> newMgvector(const GridInterface& grid) const;
 };
 
 /*-------------------------------------------------*/
-class Q13d : public FiniteElementInterface
+class Q13d
 {
 protected:
-  int _nx, _ny, _nz;
+  std::string _type;
+  size_t _nx, _ny, _nz;
   double _vol;
   std::shared_ptr<UniformGrid> _ug;
 
 public:
   ~Q13d();
-  Q13d() : FiniteElementInterface(), _ug(nullptr) {}
-  Q13d(const Q13d& fem) : FiniteElementInterface(fem), _ug(fem._ug) {}
+  Q13d() : _ug(nullptr), _type() {}
+  Q13d(std::string type) : _ug(nullptr), _type(type) {}
+  Q13d(const Q13d& fem) : _ug(fem._ug), _type(fem._type) {}
 
+  std::string toString() const {return "Q13d";}
   void set_grid(std::shared_ptr<GridInterface> grid);
-  void rhs_one(Vector& v) const;
-  void rhs_random(Vector& v) const;
-  void boundary(Vector& v) const;
-  std::unique_ptr<MatrixInterface> newMatrix(std::string matrixtype) const;
-  std::unique_ptr<TransferInterface> newTransfer(std::string matrixtype) const;
+  void rhs_one(NodeVector& v) const;
+  void rhs_random(NodeVector& v) const;
+  void boundary(NodeVector& v) const;
+  std::unique_ptr<MatrixInterface> newMatrix(const GridInterface& grid) const;
+  std::unique_ptr<SmootherInterface> newSmoother(std::string type, const GridInterface& grid) const;
+  std::unique_ptr<SmootherInterface> newCoarseSolver(std::string type, const GridInterface& grid) const;
+  std::unique_ptr<TransferInterface> newTransfer(const GridInterface& grid) const;
+  void vectormg2vector(NodeVector& u, const NodeVector& umg) const;
+  void vector2vectormg(NodeVector& umg, const NodeVector& u) const;
+  std::unique_ptr<VectorInterface> newMgvector(const GridInterface& grid) const;
 };
 
 #endif /* q1_hpp */

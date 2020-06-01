@@ -1,27 +1,19 @@
 import pyfada
 import numpy as np
 import time, sys
+import pyvista
 
 #-----------------------------------------------------------------#
 #def vista(nlevelmax, nlevels, n, plot=True):
 def vista(umg, plot=True):
-#  print("umg", umg)
-  import pyvista
-#  nlevels = nlevelmax
-#  op = pyfada.Operator(nlevelmax, nlevels, n)
-#  print("umg.bounds()",umg.bounds())
-#  sys.exit(1)
-#  print("umg.dx()",umg.dx())
-#  n = umg.n()
-#  print("n", n)
-#  print("umg.n()",umg.n())
-  op = pyfada.Operator(umg.n(), umg.bounds())
-  iter = op.testsolve()
+  solver = pyfada.SolverLaplace(umg, "Q1", "Full", "Jac")
+  print("solver", solver)
+  iter = solver.testsolve()
   plotter = pyvista.Plotter()
   plotter.set_background([0.9,0.9,0.9])
-  print(f"dims = {op.get_dimensions().flat}")
-  grid = pyvista.UniformGrid(op.get_dimensions())
-  u = op.get_solution()
+#  print(f"dims = {op.get_dimensions().flat}")
+  grid = pyvista.UniformGrid(umg.get_dimensions())
+  u = solver.get_solution()
   print(f"u: {u.mean()} {u.max()}")
   if not plot: return
   grid.point_arrays['u'] = u
@@ -35,6 +27,6 @@ def vista(umg, plot=True):
 #=================================================================#
 if __name__ == '__main__':
   umg = pyfada.UniformMultiGrid(6, 3, [3,3,3])
+  print("umg", umg)
   vista(umg)
-#  vista(6, 3, [3,3,3])
   

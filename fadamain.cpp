@@ -9,8 +9,7 @@
 #include  <stdio.h>
 #include  <stdlib.h>
 #include  <ctime>
-#include  "Fada/vector.hpp"
-#include  "Fada/operator.hpp"
+#include  "Fada/solverlaplace.hpp"
 #include  "Fada/uniformmultigrid.hpp"
 
 /*-------------------------------------------------*/
@@ -33,27 +32,24 @@ int main(int argc, char** argv)
   else
   {
     n0 << 3 << 3 << 3 << arma::endr;
-    nlevelmax = 2;
+//    nlevels = 8;
+//    n0 << 2 << 2 << 2 << arma::endr;
+    nlevelmax = 6;
   }
   int nlevels=nlevelmax;
   double t0 = seconds();
-//  UniformMultiGrid mggrid;
-//  mggrid.set_size(nlevels, n0);
+  auto mggrid = std::make_shared<UniformMultiGrid>();
+  mggrid->set_size(nlevelmax, nlevels, n0);
+  std::string smoother = "Jac";
+  auto solver = std::make_shared<SolverLaplace>(mggrid, "Q1", "Full", smoother);
+  int iter = solver->testsolve();
+  const NodeVector& u = solver->get_solution();
+  printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
 
+  std::string filename("solution.hdf");
+  u.output(filename);
   
-//  Operateur   A(nlevels, n0);
-  Operator   A;
-  A.set_size(nlevelmax, nlevels, n0);
-//  A.smoother = "gs2";
-
-  int iter = A.testsolve();
-  Vector& u = A.get_solution();
-  printf("u = %10.4e  %10.4e\n", arma::mean(u.arma()), arma::max(u.arma()));
-
-//  std::string filename("solution.hdf");
-//  u.output(filename);
-  
-  printf("Vous avez utilise le lisseur %s\n", A.smoother.c_str());
-  printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, A.nall(), A.dim());
+  printf("Vous avez utilise le lisseur %s\n", smoother.c_str());
+  printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, mggrid->get(0)->nall(), (int)mggrid->dim());
   printf("Total time: %6.2f\n", seconds()-t0);
 }

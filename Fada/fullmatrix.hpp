@@ -11,48 +11,58 @@
 #define fullmatrix_h
 
 #include  "matrixinterface.hpp"
-#include  "vector.hpp"
+#include  "nodevector.hpp"
 
 class armasp;
 /*-------------------------------------------------*/
-class FullMatrix2d : public MatrixInterface
+class FullMatrix2d
 {
 protected:
   int _nx, _ny;
   double _vol, _dx, _dy;
-  void _boundary(Vector& out) const;
+  void _boundary(NodeVector& out) const;
 
 public:
   ~FullMatrix2d();
-  FullMatrix2d() : MatrixInterface() {}
-  FullMatrix2d(const FullMatrix2d& fullmatrix) : MatrixInterface(fullmatrix) {}
+  FullMatrix2d() {}
+  FullMatrix2d(const FullMatrix2d& fullmatrix) {}
+  FullMatrix2d(const armaicvec& n, const armavec& dx)
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
-  void jacobi       (Vector& out, const Vector& in) const;
-  void gauss_seidel1(Vector& out, const Vector& in) const;
-  void gauss_seidel2(Vector& out, const Vector& in) const;
-  void dot(Vector& out, const Vector& in, double d) const;
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
+  void jacobi       (NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
+  void dot(NodeVector& out, const NodeVector& in, double d) const;
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
 /*-------------------------------------------------*/
-class FullMatrix3d : public MatrixInterface
+class FullMatrix3d
 {
 protected:
   int _nx, _ny, _nz;
   double _vol, _dx, _dy, _dz;
-  void _boundary(Vector& out) const;
+  void _boundary(NodeVector& out) const;
 
 public:
   ~FullMatrix3d();
-  FullMatrix3d() : MatrixInterface() {}
-  FullMatrix3d(const FullMatrix3d& fullmatrix) : MatrixInterface(fullmatrix) {}
+  FullMatrix3d() {}
+  FullMatrix3d(const FullMatrix3d& fullmatrix) {}
+  FullMatrix3d(const armaicvec& n, const armavec& dx)
+  {
+    set_grid(n, dx);
+  }
 
-  void set_grid(std::shared_ptr<GridInterface> grid);
-  void jacobi       (Vector& out, const Vector& in) const;
-  void gauss_seidel1(Vector& out, const Vector& in) const;
-  void gauss_seidel2(Vector& out, const Vector& in) const;
-  void dot(Vector& out, const Vector& in, double d) const;
+  void set_grid(const armaicvec& n, const armavec& dx);
+//  void set_grid(std::shared_ptr<GridInterface> grid);
+  void jacobi       (NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
+  void dot(NodeVector& out, const NodeVector& in, double d) const;
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 

@@ -8,7 +8,7 @@
 
 #include  <math.h>
 #include  "fullmatrix.hpp"
-#include  "uniformgrid.hpp"
+//#include  "uniformgrid.hpp"
 #include  "typedefs.hpp"
 #include  "sparsematrix.hpp"
 
@@ -16,34 +16,32 @@ FullMatrix2d::~FullMatrix2d() {}
 FullMatrix3d::~FullMatrix3d() {}
 
 /*-------------------------------------------------*/
-void FullMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
+//void FullMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
+void FullMatrix2d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==2);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _vol = arma::prod(ug->dx());
-  _dx =ug->dx(0);
-  _dy =ug->dx(1);
+  assert(n.n_elem==2);
+  _nx = n[0];
+  _ny = n[1];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
   assert(_dx==_dy);
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
+void FullMatrix3d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-  assert(ug);
-  assert(ug->dim()==3);
-  _nx = ug->nx();
-  _ny = ug->ny();
-  _nz = ug->nz();
-  _vol = arma::prod(ug->dx());
-  _dx =ug->dx(0);
-  _dy =ug->dx(1);
-  _dz =ug->dx(2);
+  assert(n.n_elem==3);
+  _nx = n[0];
+  _ny = n[1];
+  _nz = n[2];
+  _vol = arma::prod(dx);
+  _dx = dx[0];
+  _dy = dx[1];
+  _dz = dx[2];
   assert(_dx==_dy);
   assert(_dx==_dz);
+  assert(_dy==_dz);
 }
 /*-------------------------------------------------*/
 void FullMatrix2d::get_sparse_matrix(SparseMatrix& sp) const
@@ -329,7 +327,7 @@ void FullMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix2d::_boundary(Vector& out) const
+void FullMatrix2d::_boundary(NodeVector& out) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -344,7 +342,7 @@ void FullMatrix2d::_boundary(Vector& out) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix2d::dot(Vector& out, const Vector& in, double d) const
+void FullMatrix2d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   // Laplacien   elements finis q1  (9-point-stencil)
   double d0 = 8.0/3.0 * d;
@@ -366,7 +364,7 @@ void FullMatrix2d::dot(Vector& out, const Vector& in, double d) const
 
 
 /*-------------------------------------------------*/
-void FullMatrix2d::jacobi(Vector& out, const Vector& in) const
+void FullMatrix2d::jacobi(NodeVector& out, const NodeVector& in) const
 {
   double omega = 0.8;
   double d0inv = 3.0/8.0 * omega;
@@ -382,7 +380,7 @@ void FullMatrix2d::jacobi(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix2d::gauss_seidel1(Vector& out, const Vector& in) const
+void FullMatrix2d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
   /*
    (ix+p)*ny + iy+q < ix*ny + iy
@@ -409,7 +407,7 @@ void FullMatrix2d::gauss_seidel1(Vector& out, const Vector& in) const
   _boundary(out);
 }
 /*-------------------------------------------------*/
-void FullMatrix2d::gauss_seidel2(Vector& out, const Vector& in) const
+void FullMatrix2d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
 //  double omega = 0.8;
   double d0inv = 3.0/8.0;
@@ -431,7 +429,7 @@ void FullMatrix2d::gauss_seidel2(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::_boundary(Vector& out) const
+void FullMatrix3d::_boundary(NodeVector& out) const
 {
   for(int ix=0;ix<_nx;ix++)
   {
@@ -460,7 +458,7 @@ void FullMatrix3d::_boundary(Vector& out) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::dot(Vector& out, const Vector& in, double d) const
+void FullMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
 //  double e = d/arma::mean(out.n());
   double e = d*_dx;
@@ -515,7 +513,7 @@ void FullMatrix3d::dot(Vector& out, const Vector& in, double d) const
 
 
 /*-------------------------------------------------*/
-void FullMatrix3d::jacobi(Vector& out, const Vector& in) const
+void FullMatrix3d::jacobi(NodeVector& out, const NodeVector& in) const
 {
   double omega = 0.8;
   double d0inv = 3.0/8.0 * arma::mean(out.n()) * omega;
@@ -533,7 +531,7 @@ void FullMatrix3d::jacobi(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::gauss_seidel1(Vector& out, const Vector& in) const
+void FullMatrix3d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
   
   /*
@@ -579,7 +577,7 @@ void FullMatrix3d::gauss_seidel1(Vector& out, const Vector& in) const
 }
 
 /*-------------------------------------------------*/
-void FullMatrix3d::gauss_seidel2(Vector& out, const Vector& in) const
+void FullMatrix3d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
   double e = 1.0/arma::mean(out.n());
   double d0 = 8.0/3.0 * e;

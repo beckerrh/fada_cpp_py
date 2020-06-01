@@ -74,7 +74,6 @@ namespace carma {
         if (copy) {
             size_t N = src->n_elem;
             T * data = new T[N];
-            std::cerr << "new memory @ " << data << std::endl;
             std::memcpy(data, src->memptr(), sizeof(T) * N);
             return data;
         } else {
@@ -89,15 +88,15 @@ namespace carma {
         /* Create a Python object that will free the allocated
          * memory when destroyed:
          */
-      py::capsule base(data, [](void *f) {
-          T *data = reinterpret_cast<T *>(f);
-          #ifndef NDEBUG
-          // if in debug mode let us know what pointer is being freed
-          std::cerr << "freeing memory @ " << f << std::endl;
-          #endif
-          delete[] data;
-      });
-    return base;
+        py::capsule base(data, [](void *f) {
+            T *data = reinterpret_cast<T *>(f);
+            #ifndef NDEBUG
+            // if in debug mode let us know what pointer is being freed
+            std::cerr << "freeing memory @ " << f << std::endl;
+            #endif
+            delete[] data;
+        });
+        return base;
     } /* create_capsule */
 
 } /* carma */

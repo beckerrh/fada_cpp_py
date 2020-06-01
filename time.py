@@ -2,15 +2,16 @@ import pyfada
 import numpy as np
 import time, os, psutil
 #-----------------------------------------------------------------#
-def test(n, nlevelmax=12, femtype="Q1", matrixtype="Full"):
+def test(n, nlevelmax=12, femtype="Q1", matrixtype="Full", smoothertype="Jac"):
   nlevels = nlevelmax
-  op = pyfada.Operator(nlevelmax, nlevels, n, femtype, matrixtype)
+  umg = pyfada.UniformMultiGrid(nlevelmax, nlevels, n)
+  solver = pyfada.SolverLaplace(umg, femtype, matrixtype, smoothertype)
   t0 = time.time()
-  iter = op.testsolve(problem="DirichletRhsOne")
+  iter = solver.testsolve(problem="DirichletRhsOne")
   t1 = time.time()
   process = psutil.Process(os.getpid())
   mem = process.memory_info().rss//10**6
-  print(f"No. Iterations {iter:3d}  8 (N = {op.nall():8d})")
+  print(f"No. Iterations {iter:3d}  8 (N = {umg.nall():8d} dim = {umg.dim():1d})")
   print(f"Total time: {t1-t0:6.2f} Memory: {mem//10**3:3d}.{mem%10**3:3d} GB")
 
 

@@ -7,18 +7,21 @@
 //
 
 #include  <stdio.h>
-#include  "vector.hpp"
+#include  "nodevector.hpp"
+#include  "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
-std::ostream& operator<<(std::ostream& os, const Vector& v)
+std::ostream& operator<<(std::ostream& os, const NodeVector& v)
 {
-  const armavec& tarma =static_cast<const armavec&>(v);
-  os << tarma.t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
+//  const armavec& tarma =static_cast<const armavec&>(v);
+//  os << tarma.t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
+  os << v.data().t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
   return os;
 }
 
+
 /*-------------------------------------------------*/
-void Vector::fill_bdry(double d)
+void NodeVector::fill_bdry(double d)
 {
   if(dim()==2)
   {
@@ -65,12 +68,12 @@ void Vector::fill_bdry(double d)
 }
 
 /*-------------------------------------------------*/
-void Vector::fill_bdry2(double d)
+void NodeVector::fill_bdry2(double d)
 {
   if(dim()==2)
   {
     int nx = _n[0], ny = _n[1];
-//    std::cerr << "Vector::fill_bdry2() " << nx << " " << ny << "\n";
+//    std::cerr << "NodeVector::fill_bdry2() " << nx << " " << ny << "\n";
     for(int ix=1;ix<nx-1;ix++)
     {
       this->at(ix,1)    = d;
