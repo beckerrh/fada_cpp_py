@@ -52,7 +52,7 @@ protected:
   VECTOR& getVector(VectorInterface& u) const{return static_cast<VECTOR&>(u);}
 public:
   FiniteElement<FEM,VECTOR>() : FEM(), FiniteElementInterface() {}
-  FiniteElement<FEM,VECTOR>(std::string matrixtype) : FEM(matrixtype), FiniteElementInterface() {}
+  FiniteElement<FEM,VECTOR>(std::string type) : FEM(type), FiniteElementInterface() {}
   std::string toString() const {return get().toString();}
   void set_grid(std::shared_ptr<GridInterface> grid){get().set_grid(grid);}
   void rhs_one(VectorInterface& v) const{get().rhs_one(getVector(v));}

@@ -17,16 +17,16 @@ class UniformGrid;
 class Q12d
 {
 protected:
-  std::string _matrixtype;
+  std::string _type;
   size_t _nx, _ny;
   double _vol;
   std::shared_ptr<UniformGrid> _ug;
 
 public:
   ~Q12d();
-  Q12d() : _ug(nullptr), _matrixtype() {}
-  Q12d(std::string matrixtype) : _ug(nullptr), _matrixtype(matrixtype) {}
-  Q12d(const Q12d& fem) : _ug(fem._ug), _matrixtype(fem._matrixtype) {}
+  Q12d() : _ug(nullptr), _type() {}
+  Q12d(std::string type) : _ug(nullptr), _type(type) {}
+  Q12d(const Q12d& fem) : _ug(fem._ug), _type(fem._type) {}
 
   std::string toString() const {return "Q12d";}
   void set_grid(std::shared_ptr<GridInterface> grid);
@@ -46,16 +46,16 @@ public:
 class Q13d
 {
 protected:
-  std::string _matrixtype;
+  std::string _type;
   size_t _nx, _ny, _nz;
   double _vol;
   std::shared_ptr<UniformGrid> _ug;
 
 public:
   ~Q13d();
-  Q13d() : _ug(nullptr), _matrixtype() {}
-  Q13d(std::string matrixtype) : _ug(nullptr), _matrixtype(matrixtype) {}
-  Q13d(const Q13d& fem) : _ug(fem._ug), _matrixtype(fem._matrixtype) {}
+  Q13d() : _ug(nullptr), _type() {}
+  Q13d(std::string type) : _ug(nullptr), _type(type) {}
+  Q13d(const Q13d& fem) : _ug(fem._ug), _type(fem._type) {}
 
   std::string toString() const {return "Q13d";}
   void set_grid(std::shared_ptr<GridInterface> grid);

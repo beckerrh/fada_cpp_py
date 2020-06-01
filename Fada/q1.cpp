@@ -75,18 +75,18 @@ std::unique_ptr<MatrixInterface> Q12d::newMatrix(const GridInterface& grid) cons
   assert(ug);
   const armaicvec& n = ug->n();
   const armavec& dx = ug->dx();
-  if(_matrixtype=="Full")
+  if(_type=="Full")
   {
     return std::unique_ptr<MatrixInterface>(new Matrix<FullMatrix2d,NodeVector>(n, dx));
   }
-  else if(_matrixtype=="Trapez")
+  else if(_type=="Trapez")
   {
 //    return std::unique_ptr<MatrixInterface>(new TrapezMatrix2d(n, dx));
     return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix2d,NodeVector>(n, dx));
   }
   else
   {
-    std::cerr << "unknown matrix '" << _matrixtype<<"'\n";
+    std::cerr << "unknown matrix '" << _type<<"'\n";
     std::exit(1);
   }
 }
@@ -119,19 +119,19 @@ std::unique_ptr<MatrixInterface> Q13d::newMatrix(const GridInterface& grid) cons
   assert(ug);
   const armaicvec& n = ug->n();
   const armavec& dx = ug->dx();
-  if(_matrixtype=="Full")
+  if(_type=="Full")
   {
 //    return std::unique_ptr<MatrixInterface>(new FullMatrix3d(n,dx));
     return std::unique_ptr<MatrixInterface>(new Matrix<FullMatrix3d,NodeVector>(n, dx));
   }
-  else if(_matrixtype=="Trapez")
+  else if(_type=="Trapez")
   {
 //    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d(n,dx));
     return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix3d,NodeVector>(n, dx));
   }
   else
   {
-    std::cerr << "unknown matrix '" << _matrixtype<<"'\n";
+    std::cerr << "unknown matrix '" << _type<<"'\n";
     std::exit(1);
   }
 }
