@@ -71,7 +71,7 @@ void TrapezMatrix2d::_boundary(NodeVector& out) const
 void TrapezMatrix2d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   // Laplacien   elements finis q1  (5-point-stencil)
-  double d0 = 5.0 * d;
+  double d0 = 4.0 * d;
   double d1 = -1.0 * d;
   for(int ix=0;ix<_nx;ix++)
   {
@@ -90,7 +90,7 @@ void TrapezMatrix2d::dot(NodeVector& out, const NodeVector& in, double d) const
 /*-------------------------------------------------*/
 void TrapezMatrix2d::jacobi(NodeVector& out, const NodeVector& in) const
 {
-  double d0inv = 0.2;
+  double d0inv = 0.25;
   for(int ix=0;ix<_nx;ix++)
   {
     for(int iy=0;iy<_ny;iy++)
@@ -110,7 +110,7 @@ void TrapezMatrix2d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
    p=-1 q=-1,0,1
    p= 0 q=-1
    */
-  double d0inv = 0.2;
+  double d0inv = 0.25;
   double d1 = -1.0;
   for(int ix=0;ix<_nx;ix++)
   {
@@ -127,7 +127,7 @@ void TrapezMatrix2d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void TrapezMatrix2d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
-  double d0inv = 0.2;
+  double d0inv = 0.25;
   double d1 = -1.0;
   for(int ix=_nx-1;ix>=0;ix--)
   {
@@ -176,7 +176,7 @@ void TrapezMatrix3d::_boundary(NodeVector& out) const
 void TrapezMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   double e = d/arma::mean(out.n());
-  double d0 = 7.0 * e;
+  double d0 = 6.0 * e;
   double d1 = -1.0 * e;
   for(int ix=0;ix<_nx;ix++)
   {

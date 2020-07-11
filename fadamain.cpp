@@ -23,11 +23,11 @@ inline double seconds(void)
 int main(int argc, char** argv)
 {
   armaicvec n0;
-  int nlevelmax=12, dim=3;
+  int nlevelmax=12, dim=2;
   if(dim==2)
   {
     n0 << 3 << 3 << arma::endr;
-    nlevelmax = 2;
+    nlevelmax = 6;
   }
   else
   {
@@ -40,8 +40,8 @@ int main(int argc, char** argv)
   double t0 = seconds();
   auto mggrid = std::make_shared<UniformMultiGrid>();
   mggrid->set_size(nlevelmax, nlevels, n0);
-  std::string smoother = "Jac";
-  auto solver = std::make_shared<SolverLaplace>(mggrid, "Q1", "Full", smoother);
+  std::string smoother = "GS2";
+  auto solver = std::make_shared<SolverLaplace>(mggrid, "Q1", "Trapez", smoother);
   int iter = solver->testsolve();
   const NodeVector& u = solver->get_solution();
   printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));

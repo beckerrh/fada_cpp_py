@@ -16,7 +16,7 @@ std::string MgSolver::toString() const
 /*-------------------------------------------------*/
 void MgSolver::set_parameters()
 {
-  maxiter = 100;
+  maxiter = 30;
   tol_rel = 1e-8;
   tol_abs = 1e-12;
 }

@@ -9,7 +9,7 @@
 #include "sparsematrix.hpp"
 
 /*-------------------------------------------------*/
-SparseMatrix::SparseMatrix(arma::umat& locations, armavec& values)
+SparseMatrix::SparseMatrix(const arma::umat& locations, const armavec& values)
 {
   set_elements(locations, values);
 }
@@ -37,7 +37,7 @@ void SparseMatrix::dot(armavec& x, const armavec& b, double d) const
 }
 
 /*-------------------------------------------------*/
-void SparseMatrix::set_elements(arma::umat& locations, armavec& values)
+void SparseMatrix::set_elements(const arma::umat& locations, const armavec& values)
 {
   assert(locations.n_rows==2);
   assert(locations.n_cols==values.n_elem);

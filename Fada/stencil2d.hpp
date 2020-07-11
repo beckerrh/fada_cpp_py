@@ -1,37 +1,40 @@
-
 //
-//  fullmatrix.hpp
+//  stencil2d.hpp
 //  Fada
 //
-//  Created by Roland Becker on 08/05/2020.
+//  Created by Roland Becker on 01/06/2020.
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#ifndef fullmatrix_h
-#define fullmatrix_h
+#ifndef stencil2d_hpp
+#define stencil2d_hpp
 
 #include  "nodevector.hpp"
-
-class armasp;
 class SparseMatrix;
+
 /*-------------------------------------------------*/
-class FullMatrix2d
+class Stencil2d
 {
 protected:
   int _nx, _ny;
-  double _vol, _dx, _dy;
   void _boundary(NodeVector& out) const;
+};
+
+/*-------------------------------------------------*/
+class Stencil2d9 : public Stencil2d
+{
+protected:
+  arma::vec::fixed<9> _coef;
 
 public:
-  ~FullMatrix2d();
-  FullMatrix2d() {}
-  FullMatrix2d(const FullMatrix2d& fullmatrix) {}
-  FullMatrix2d(const armaicvec& n, const armavec& dx)
+  Stencil2d9() {}
+  Stencil2d9(const Stencil2d9& stencil) {}
+  Stencil2d9(const armaicvec& n, const armavec& coef)
   {
-    set_grid(n, dx);
+    set_grid(n, coef);
   }
 
-  void set_grid(const armaicvec& n, const armavec& dx);
+  void set_grid(const armaicvec& n, const armavec& coef);
   void jacobi       (NodeVector& out, const NodeVector& in) const;
   void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
   void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
@@ -40,24 +43,20 @@ public:
 };
 
 /*-------------------------------------------------*/
-class FullMatrix3d
+class Stencil2d5 : public Stencil2d
 {
 protected:
-  int _nx, _ny, _nz;
-  double _vol, _dx, _dy, _dz;
-  void _boundary(NodeVector& out) const;
+  arma::vec::fixed<5> _coef;
 
 public:
-  ~FullMatrix3d();
-  FullMatrix3d() {}
-  FullMatrix3d(const FullMatrix3d& fullmatrix) {}
-  FullMatrix3d(const armaicvec& n, const armavec& dx)
+  Stencil2d5() {}
+  Stencil2d5(const Stencil2d5& stencil) {}
+  Stencil2d5(const armaicvec& n, const armavec& coef)
   {
-    set_grid(n, dx);
+    set_grid(n, coef);
   }
 
-  void set_grid(const armaicvec& n, const armavec& dx);
-//  void set_grid(std::shared_ptr<GridInterface> grid);
+  void set_grid(const armaicvec& n, const armavec& coef);
   void jacobi       (NodeVector& out, const NodeVector& in) const;
   void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
   void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
@@ -65,4 +64,4 @@ public:
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
-#endif /* fullmatrix_h */
+#endif /* stencil2d_hpp */

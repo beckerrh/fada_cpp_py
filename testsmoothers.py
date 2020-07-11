@@ -70,9 +70,9 @@ def testcoarsesolve(n, nlevelmin, nlevelmax, femtype="Q1", matrixtype="Full", sm
 
 #=================================================================#
 if __name__ == '__main__':
-  testcoarsesolve(np.array([3,3]), nlevelmin=6, nlevelmax=11)
+#  testcoarsesolve(np.array([3,3]), nlevelmin=6, nlevelmax=11)
 #  testcoarsesolve(np.array([3,3,3]), nlevelmin=3, nlevelmax=6)
 #  testsmoothers(np.array([3,3]), nlevelmax=9)
-#  testsmoothers(np.array([3,3]), nlevelmax=9, matrixtype="Q1Trapez")
-  testsmoothers(np.array([3,3,3]), nlevelmax=7)
+  testsmoothers(np.array([3,3]), nlevelmax=9, matrixtype="Trapez")
+#  testsmoothers(np.array([3,3,3]), nlevelmax=7)
 #  testsmoothers(np .array([3,3,3]), nlevelmax=7, matrixtype="Q1Trapez")
