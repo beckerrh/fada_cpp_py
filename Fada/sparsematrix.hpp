@@ -12,6 +12,33 @@
 #include  "typedefs.hpp"
 
 /*-------------------------------------------------*/
+class Construct_Elements
+{
+protected:
+  int _count;
+  arma::umat _locations;
+  armavec _values;
+public:
+  Construct_Elements() {}
+  Construct_Elements(int size) {start(size);}
+  const arma::umat& locations() const {return _locations;}
+  const armavec& values() const {return _values;}
+  void start(int size)
+  {
+    _locations.resize(2, size);
+    _values.resize(size);
+    _count=0;
+  }
+  void add(int i, int j, double value)
+  {
+    _locations(0, _count) = i;
+    _locations(1, _count) = j;
+    _values[_count] = value;
+    _count++;
+  }
+};
+
+/*-------------------------------------------------*/
 class SparseMatrix
 {
 protected:
@@ -25,8 +52,8 @@ protected:
 public:
   SparseMatrix() {}
   SparseMatrix(const SparseMatrix& matrix) {}
-  SparseMatrix(arma::umat& locations, armavec& values);
-  void set_elements(arma::umat& locations, armavec& values);
+  SparseMatrix(const arma::umat& locations, const armavec& values);
+  void set_elements(const arma::umat& locations, const armavec& values);
 
   #ifdef _LONG_LONG
     const arma::uvec& rows() const {return _rows;}

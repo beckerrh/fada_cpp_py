@@ -16,7 +16,6 @@ FullMatrix2d::~FullMatrix2d() {}
 FullMatrix3d::~FullMatrix3d() {}
 
 /*-------------------------------------------------*/
-//void FullMatrix2d::set_grid(std::shared_ptr<GridInterface> grid)
 void FullMatrix2d::set_grid(const armaicvec& n, const armavec& dx)
 {
   assert(n.n_elem==2);

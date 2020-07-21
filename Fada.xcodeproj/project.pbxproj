@@ -17,6 +17,7 @@
 		EE2FEB8A247FF9CB0072EEED /* solverlaplace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE2FEB88247FF9CB0072EEED /* solverlaplace.cpp */; };
 		EE2FEB8D248019960072EEED /* multigrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE2FEB8B248019960072EEED /* multigrid.cpp */; };
 		EE2FEBAB24811CDE0072EEED /* solverlaplacepy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE2FEBAA24811CDE0072EEED /* solverlaplacepy.cpp */; };
+		EE2FEBAE248570660072EEED /* stencil2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE2FEBAC248570660072EEED /* stencil2d.cpp */; };
 		EE5E76222464A1FD0061AC64 /* updater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E76212464A1FD0061AC64 /* updater.cpp */; };
 		EE5E763B246E8EF50061AC64 /* uniformmultigrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E7639246E8EF40061AC64 /* uniformmultigrid.cpp */; };
 		EE5E763E246EE89C0061AC64 /* fullmatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE5E763D246EE89C0061AC64 /* fullmatrix.cpp */; };
@@ -25,6 +26,7 @@
 		EE9091AE2471708A008D3AE5 /* transferq1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE9091AD2471708A008D3AE5 /* transferq1.cpp */; };
 		EE9091B22471AD82008D3AE5 /* q1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE9091B02471AD82008D3AE5 /* q1.cpp */; };
 		EEA5943E2472EF08000DF82E /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEA5943C2472EF08000DF82E /* timer.cpp */; };
+		EECC8CCF24867F0F000AEF68 /* stencil3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EECC8CCD24867F0F000AEF68 /* stencil3d.cpp */; };
 		EEE325AB2478442100FF1CD4 /* uniformmultigridpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */; };
 		EEE325AD2478495400FF1CD4 /* bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE325AC2478495400FF1CD4 /* bindings.cpp */; };
 		EEF40A41245DC6B800AE1541 /* testarma.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEF40A40245DC6B800AE1541 /* testarma.cpp */; };
@@ -81,6 +83,8 @@
 		EE2FEB8C248019960072EEED /* multigrid.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multigrid.hpp; sourceTree = "<group>"; };
 		EE2FEBA924811CDE0072EEED /* solverlaplacepy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = solverlaplacepy.hpp; sourceTree = "<group>"; };
 		EE2FEBAA24811CDE0072EEED /* solverlaplacepy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = solverlaplacepy.cpp; sourceTree = "<group>"; };
+		EE2FEBAC248570660072EEED /* stencil2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stencil2d.cpp; sourceTree = "<group>"; };
+		EE2FEBAD248570660072EEED /* stencil2d.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = stencil2d.hpp; sourceTree = "<group>"; };
 		EE5E75FC2463D9700061AC64 /* time.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = time.py; sourceTree = "<group>"; };
 		EE5E76202464A1FD0061AC64 /* updater.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = updater.hpp; sourceTree = "<group>"; };
 		EE5E76212464A1FD0061AC64 /* updater.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = updater.cpp; sourceTree = "<group>"; };
@@ -106,6 +110,8 @@
 		EEA2DA47246035C900F1F872 /* libpyfada.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libpyfada.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEA5943C2472EF08000DF82E /* timer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
 		EEA5943D2472EF08000DF82E /* timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
+		EECC8CCD24867F0F000AEF68 /* stencil3d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stencil3d.cpp; sourceTree = "<group>"; };
+		EECC8CCE24867F0F000AEF68 /* stencil3d.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = stencil3d.hpp; sourceTree = "<group>"; };
 		EEE325A92478442100FF1CD4 /* uniformmultigridpy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uniformmultigridpy.cpp; sourceTree = "<group>"; };
 		EEE325AA2478442100FF1CD4 /* uniformmultigridpy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uniformmultigridpy.hpp; sourceTree = "<group>"; };
 		EEE325AC2478495400FF1CD4 /* bindings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bindings.cpp; sourceTree = "<group>"; };
@@ -200,6 +206,10 @@
 				EE2FEB89247FF9CB0072EEED /* solverlaplace.hpp */,
 				EE106B1D2475114E00070A59 /* sparsematrix.cpp */,
 				EE106B1E2475114E00070A59 /* sparsematrix.hpp */,
+				EE2FEBAC248570660072EEED /* stencil2d.cpp */,
+				EE2FEBAD248570660072EEED /* stencil2d.hpp */,
+				EECC8CCD24867F0F000AEF68 /* stencil3d.cpp */,
+				EECC8CCE24867F0F000AEF68 /* stencil3d.hpp */,
 				EEA5943C2472EF08000DF82E /* timer.cpp */,
 				EEA5943D2472EF08000DF82E /* timer.hpp */,
 				EE9091AB24716A8B008D3AE5 /* transferinterface.hpp */,
@@ -412,7 +422,9 @@
 				EE00D212245AC26900C9E49F /* mgsolver.cpp in Sources */,
 				EEF40A54246000A000AE1541 /* operatorpy.cpp in Sources */,
 				EEE325AD2478495400FF1CD4 /* bindings.cpp in Sources */,
+				EE2FEBAE248570660072EEED /* stencil2d.cpp in Sources */,
 				EE2FEB8D248019960072EEED /* multigrid.cpp in Sources */,
+				EECC8CCF24867F0F000AEF68 /* stencil3d.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
