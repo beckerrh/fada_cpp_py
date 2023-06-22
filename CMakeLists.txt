@@ -11,7 +11,8 @@ SET(CMAKE_BUILD_TYPE "Release")
 SET(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_C_FLAGS "-O3")
 SET(CMAKE_CXX_FLAGS "-O3")
-##
+add_definitions(-DARMA_USE_HDF5)
+FIND_PACKAGE(HDF5 REQUIRED)
 #
 find_package(Armadillo REQUIRED)
 message("ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIRS}")
@@ -31,16 +32,26 @@ AUX_SOURCE_DIRECTORY(Fada SRC)
 ADD_LIBRARY(fadalib ${SRC})
 #
 ADD_EXECUTABLE(fada fadamain.cpp)
-TARGET_LINK_LIBRARIES(fada fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES} )
+TARGET_LINK_LIBRARIES(fada fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES} ${HDF5_LIBRARIES} )
 #
 ADD_EXECUTABLE(testarma testarma.cpp)
 TARGET_LINK_LIBRARIES(testarma fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
 #
-find_package(pybind11 REQUIRED)
-message("pybind11 ${ARMADILLO_INCLUDE_DIRS}")
+# find_package(pybind11 REQUIRED)
+# message("pybind11 ${ARMADILLO_INCLUDE_DIRS}")
 AUX_SOURCE_DIRECTORY(pybind SRCPY)
-pybind11_add_module(pyfada  ${SRCPY} ${SRC})
-target_link_libraries(pyfada PRIVATE pybind11::module ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
+FIND_PACKAGE(carma CONFIG REQUIRED)
+# INCLUDE_DIRECTORIES(${CARMA_INCLUDE_DIRS})
+pybind11_add_module(pyfada  MODULE ${SRCPY} ${SRC})
+# target_link_libraries(pyfada PRIVATE ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES} PRIVATE carma::carma)
+TARGET_LINK_LIBRARIES(
+    pyfada PUBLIC
+    ${UMFPACK_LIBRARIES}
+    carma::carma
+    # pybind11::embed
+    # pybind11::pybind11
+    # Python3::Python
+)
 #
 #-- copy .py files
 #

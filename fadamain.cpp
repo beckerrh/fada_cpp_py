@@ -26,12 +26,14 @@ int main(int argc, char** argv)
   int nlevelmax=12, dim=2;
   if(dim==2)
   {
-    n0 << 3 << 3 << arma::endr;
-    nlevelmax = 6;
+    n0 = {5,5};
+    // n0 << 3 << 3 << arma::endr;
+    nlevelmax = 8;
   }
   else
   {
-    n0 << 3 << 3 << 3 << arma::endr;
+    n0 = {5,5,5};
+    // n0 << 3 << 3 << 3 << arma::endr;
 //    nlevels = 8;
 //    n0 << 2 << 2 << 2 << arma::endr;
     nlevelmax = 6;
@@ -48,7 +50,7 @@ int main(int argc, char** argv)
 
   std::string filename("solution.hdf");
   u.output(filename);
-  
+
   printf("Vous avez utilise le lisseur %s\n", smoother.c_str());
   printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, mggrid->get(0)->nall(), (int)mggrid->dim());
   printf("Total time: %6.2f\n", seconds()-t0);

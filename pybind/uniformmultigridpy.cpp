@@ -7,8 +7,7 @@
 //
 
 #include  "uniformmultigridpy.hpp"
-#include  "carma/carma.h"
-//#include  "arma2py.hpp"
+#include  <carma>
 
 /*-------------------------------------------------*/
 UniformMultiGridPy::UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n) : UniformMultiGrid()
@@ -50,4 +49,3 @@ pybind11::array_t<int> UniformMultiGridPy::get_dimensions() const
 //{
 //  return carma::mat_to_arr<double>(&UniformMultiGrid::bounds(), true);
 //}
-

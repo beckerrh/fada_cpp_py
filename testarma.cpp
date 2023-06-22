@@ -17,23 +17,24 @@
 int main(int argc, char** argv)
 {
     armaicvec n;
-    n << 4 << 2 << 3 << arma::endr;
+    n = {4,2,3};
+    // n << 4 << 2 << 3 << arma::endr;
     NodeVector v(n), w(n);
     v.fill(2);
     w.data().randu();
-    
+
     NodeVector u(v);
-    
+
     u = 3*v.data() + w.data();
     std::cerr << u << std::endl;
     std::cerr << "u(2,1,2) =" << u.at(2,1,2) << std::endl;
     std::cerr << arma::dot(v.data(),w.data()) << std::endl;
 
-  
+
   int size = 3;
   arma::vec b = arma::randu<arma::vec>(size);
   arma::vec x(size), y(size);
-  
+
   UmfMatrix umf;
   SparseMatrix& sp = umf.getSparseMatrix();
   int nelem=4;

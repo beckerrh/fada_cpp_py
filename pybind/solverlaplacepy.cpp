@@ -7,7 +7,7 @@
 //
 
 #include  "solverlaplacepy.hpp"
-#include  "carma/carma.h"
+#include  <carma>
 
 /*-------------------------------------------------*/
 SolverLaplacePy::SolverLaplacePy(const UniformMultiGridPy& umg, std::string femtype, std::string matrixtype, std::string smoothertype)
