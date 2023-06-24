@@ -11,9 +11,9 @@
 #include  "q1.hpp"
 
 /*-------------------------------------------------*/
-SolverLaplace::SolverLaplace(std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype)
+SolverLaplace::SolverLaplace(std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype, int updatelength)
 {
-  set_data(mggrid, femtype, matrixtype, smoothertype);
+  set_data(mggrid, femtype, matrixtype, smoothertype, updatelength);
 }
 
 /*-------------------------------------------------*/
@@ -26,7 +26,7 @@ std::string SolverLaplace::toString() const
 }
 
 /*-------------------------------------------------*/
-void SolverLaplace::set_data (std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype)
+void SolverLaplace::set_data (std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype, int updatelength)
 {
   _mggrid = mggrid;
   size_t dim = mggrid->dim();
@@ -56,7 +56,7 @@ void SolverLaplace::set_data (std::shared_ptr<MultiGridInterface> mggrid, std::s
     }
   }
   _fem->set_grid(mggrid->get(0));
-  _mgsolver.set_sizes(_mggrid, _fem, smoothertype);
+  _mgsolver.set_sizes(_mggrid, _fem, smoothertype, updatelength);
 }
 /*-------------------------------------------------*/
 int SolverLaplace::testsolve(bool print, std::string problem)
@@ -64,6 +64,7 @@ int SolverLaplace::testsolve(bool print, std::string problem)
   _u.set_size(_mggrid->get(0)->n());
    _u.fill(0);
    _f.set_size(_u);
+   std::cerr << " u " << _u.data().n_elem << " " << _mggrid->get(0)->nall() << "\n";
    if(problem=="DirichletRhsOne")
    {
      _fem->rhs_one(_f);

@@ -12,7 +12,8 @@
 #include  "uniformgrid.hpp"
 #include  "nodevector.hpp"
 #include  "fullmatrix.hpp"
-#include  "trapezmatrix.hpp"
+#include  "matrixinterface.hpp"
+// #include  "trapezmatrix.hpp"
 #include  "transferq1.hpp"
 #include  "smoothersimple.hpp"
 #include  "smootherumf.hpp"
@@ -57,7 +58,7 @@ std::unique_ptr<VectorInterface> Q12d::newMgvector(const GridInterface& grid) co
   std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
   p->set_size(grid.n()+2);
   p->fill_bdry(0);
-  p->fill_bdry2(0);
+  // p->fill_bdry2(0);
   return p;
 }
 /*-------------------------------------------------*/
@@ -66,7 +67,7 @@ std::unique_ptr<VectorInterface> Q13d::newMgvector(const GridInterface& grid) co
   std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
   p->set_size(grid.n()+2);
   p->fill_bdry(0);
-  p->fill_bdry2(0);
+  // p->fill_bdry2(0);
   return p;
 }
 
@@ -100,7 +101,7 @@ std::unique_ptr<MatrixInterface> Q12d::newMatrix(const GridInterface& grid) cons
     coef[3] = -1.0;
     coef[4] = -1.0;
     return std::unique_ptr<MatrixInterface>(new Matrix<Stencil2d5,NodeVector>(n, coef));
-    return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix2d,NodeVector>(n, dx));
+    // return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix2d,NodeVector>(n, dx));
   }
   else
   {
@@ -116,8 +117,8 @@ std::unique_ptr<SmootherInterface> Q12d::newSmoother(std::string type, const Gri
 /*-------------------------------------------------*/
 std::unique_ptr<SmootherInterface> Q12d::newCoarseSolver(std::string type, const GridInterface& grid) const
 {
-  return std::unique_ptr<SmootherInterface>(new SmootherSimple("Jac"));
-return std::unique_ptr<SmootherInterface>(new SmootherUmf);
+  // return std::unique_ptr<SmootherInterface>(new SmootherSimple("Jac"));
+  return std::unique_ptr<SmootherInterface>(new SmootherUmf);
 }
 
 /*-------------------------------------------------*/
@@ -141,14 +142,13 @@ std::unique_ptr<MatrixInterface> Q13d::newMatrix(const GridInterface& grid) cons
   if(_type=="Full")
   {
     assert(dx[0]==dx[1]);
-    assert(dx[0]==dx[2]);
     double e = dx[0];
     double d0 = 8.0/3.0 * e;
     double d1 = -0.0/3.0 * e;
     double d2 = -1.0/6.0 * e;
     double d3 = -1.0/12.0 * e;
     arma::vec::fixed<27> coef;
-    
+
     coef[13] = d0;
 
     coef[ 4] = coef[10] = coef[12] = coef[14] = coef[16] = coef[22] = d1;
@@ -162,8 +162,20 @@ std::unique_ptr<MatrixInterface> Q13d::newMatrix(const GridInterface& grid) cons
   }
   else if(_type=="Trapez")
   {
+    assert(dx[0]==dx[1]);
+    assert(dx[0]==dx[2]);
+    arma::vec::fixed<7> coef;
+    coef[0] = -1.0;
+    coef[1] = -1.0;
+    coef[2] = -1.0;
+    coef[3] = 6.0;
+    coef[4] = -1.0;
+    coef[5] = -1.0;
+    coef[6] = -1.0;
+    coef * dx[0];
+    return std::unique_ptr<MatrixInterface>(new Matrix<Stencil3d7,NodeVector>(n, coef));
 //    return std::unique_ptr<MatrixInterface>(new TrapezMatrix3d(n,dx));
-    return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix3d,NodeVector>(n, dx));
+    // return std::unique_ptr<MatrixInterface>(new Matrix<TrapezMatrix3d,NodeVector>(n, dx));
   }
   else
   {

@@ -29,7 +29,7 @@ void TrapezMatrix2d::set_grid(const armaicvec& n, const armavec& dx)
 //void TrapezMatrix3d::set_grid(std::shared_ptr<GridInterface> grid)
 void TrapezMatrix3d::set_grid(const armaicvec& n, const armavec& dx)
 {
-  assert(n.n_elem==2);
+  assert(n.n_elem==3);
   _nx = n[0];
   _ny = n[1];
   _nz = n[2];
@@ -44,11 +44,13 @@ void TrapezMatrix3d::set_grid(const armaicvec& n, const armavec& dx)
 /*-------------------------------------------------*/
 void TrapezMatrix2d::get_sparse_matrix(SparseMatrix& sp) const
 {
+  std::cerr << "Not written!\n"; exit(1);
   assert(0);
 }
 /*-------------------------------------------------*/
 void TrapezMatrix3d::get_sparse_matrix(SparseMatrix& sp) const
 {
+  std::cerr << "Not written!\n"; exit(1);
   assert(0);
 }
 
@@ -186,7 +188,7 @@ void TrapezMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
       {
         out.atp(ix,iy,iz) +=
         d0* in.atp(ix,iy,iz)
-        
+
         +d1* in.atp(ix-1,iy  ,iz  )
         +d1* in.atp(ix+1,iy  ,iz  )
         +d1* in.atp(ix  ,iy-1,iz  )
@@ -224,7 +226,7 @@ void TrapezMatrix3d::jacobi(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void TrapezMatrix3d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
-  
+
   /*
    (ix+p)*ny*nz + (iy+q)*nz + iz+r < ix*ny*nz + iy*nz + iz
    p*ny*nz +q*nz +r < 0

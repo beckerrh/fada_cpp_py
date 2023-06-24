@@ -52,11 +52,13 @@ void Updater::setParameters(const FiniteElementInterface& fem, const GridInterfa
   _nextupdate = _nextproduct = _nmemory = _nextmemory = _niterafterrestar = 0;
   _type = type;
   _solutiontype = solutiontype;
-  _nshift = 2;
   assert(_type == "cyc" or _type == "coef" or _type == "ortho" or _type == "restart");
   assert(_solutiontype == "ls" or _solutiontype == "gal" or _solutiontype == "gals");
+  // std::cerr << "_type = " << _type << " _solutiontype " << _solutiontype << "\n";
   _H.set_size(_nvectors, _nvectors);
+  _H.eye();
   _b.set_size(_nvectors);
+  _b.fill(0);
   _x.set_size(_nvectors);
   _conditionmean = _conditionmax = 0.0;
   _mem.resize(2*_nvectors);
@@ -69,11 +71,11 @@ void Updater::setParameters(const FiniteElementInterface& fem, const GridInterfa
 /*--------------------------------------------------------------------------*/
 VectorInterface& Updater::getV(int i)
 {
-  return *_mem[_nshift*i];
+  return *_mem[2*i];
 }
 VectorInterface& Updater::getAV(int i)
 {
-  return *_mem[_nshift*i+1];
+  return *_mem[2*i+1];
 }
 
 /*--------------------------------------------------------------------------*/
@@ -90,7 +92,8 @@ void Updater::addUpdate(const VectorInterface& w, VectorInterface& u, VectorInte
 //  std::cerr << _level << " addUpdate() _nextmemory="<< _nextmemory << " _nmemory="<< _nmemory<< " _nvectors="<< _nvectors << std::endl;
   _rnorm = res.norm();
 
-  getV(_nextmemory) = w;
+  // getV(_nextmemory) = w;
+  getV(_nextmemory).equal(w);
   if(_type == "ortho")
   {
     for(int i = 0; i < _nmemory; i++)
@@ -110,7 +113,7 @@ void Updater::addUpdate(const VectorInterface& w, VectorInterface& u, VectorInte
 //  _op->dot(_level, getAV(_nextmemory), getV(_nextmemory), 1.0);
   _mat->dot(getAV(_nextmemory), getV(_nextmemory), 1.0);
 
-  double nmemory = _nmemory+1;
+  int nmemory = _nmemory+1;
   _computeSmallSystem(_nextmemory, nmemory, res);
   _x = arma::solve( _H, _b, arma::solve_opts::fast);
 //  _x = arma::pinv(_H)*_b;
@@ -128,7 +131,7 @@ void Updater::addUpdate(const VectorInterface& w, VectorInterface& u, VectorInte
       res.add(-_x[i], getAV(i));
     }
   }
-  
+
   if(_nmemory < _nvectors-1)
   {
     _nextmemory++;
@@ -177,9 +180,9 @@ void Updater::_computeSmallSystem(int index, int nmemory, const VectorInterface&
   _x.resize(nmemory);
 //  Vector& r = _mem(2*_nvectors);
 //  const Vector& r = getV(_nvectors);
-  
+
 //  std::cerr << "index=" << index << " rnorm = " << r.norm() << "\n";
-  
+
   //-------------------------------------------------
   if(_solutiontype == "gal")
   //-------------------------------------------------

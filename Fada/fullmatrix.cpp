@@ -8,7 +8,6 @@
 
 #include  <math.h>
 #include  "fullmatrix.hpp"
-//#include  "uniformgrid.hpp"
 #include  "typedefs.hpp"
 #include  "sparsematrix.hpp"
 
@@ -473,14 +472,14 @@ void FullMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
       {
         out.atp(ix,iy,iz) +=
         d0* in.atp(ix,iy,iz)
-        
+
         +d1* in.atp(ix-1,iy  ,iz  )
         +d1* in.atp(ix+1,iy  ,iz  )
         +d1* in.atp(ix  ,iy-1,iz  )
         +d1* in.atp(ix  ,iy+1,iz  )
         +d1* in.atp(ix  ,iy  ,iz-1)
         +d1* in.atp(ix  ,iy  ,iz+1)
-        
+
         +d2* in.atp(ix-1,iy-1,iz  )
         +d2* in.atp(ix-1,iy+1,iz  )
         +d2* in.atp(ix+1,iy-1,iz  )
@@ -493,7 +492,7 @@ void FullMatrix3d::dot(NodeVector& out, const NodeVector& in, double d) const
         +d2* in.atp(ix  ,iy-1,iz+1)
         +d2* in.atp(ix  ,iy+1,iz-1)
         +d2* in.atp(ix  ,iy+1,iz+1)
-        
+
         +d3* in.atp(ix-1,iy-1,iz-1)
         +d3* in.atp(ix-1,iy-1,iz+1)
         +d3* in.atp(ix-1,iy+1,iz-1)
@@ -532,7 +531,7 @@ void FullMatrix3d::jacobi(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void FullMatrix3d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
-  
+
   /*
    (ix+p)*ny*nz + (iy+q)*nz + iz+r < ix*ny*nz + iy*nz + iz
    p*ny*nz +q*nz +r < 0
@@ -556,14 +555,14 @@ void FullMatrix3d::gauss_seidel1(NodeVector& out, const NodeVector& in) const
                                    -d1* out.atp(ix-1,iy  ,iz  )
                                    -d1* out.atp(ix  ,iy-1,iz  )
                                    -d1* out.atp(ix  ,iy  ,iz-1)
-                                   
+
                                    -d2* out.atp(ix-1,iy-1,iz  )
                                    -d2* out.atp(ix-1,iy+1,iz  )
                                    -d2* out.atp(ix-1,iy  ,iz-1)
                                    -d2* out.atp(ix-1,iy  ,iz+1)
                                    -d2* out.atp(ix  ,iy-1,iz-1)
                                    -d2* out.atp(ix  ,iy-1,iz+1)
-                                   
+
                                    -d3* out.atp(ix-1,iy-1,iz-1)
                                    -d3* out.atp(ix-1,iy-1,iz+1)
                                    -d3* out.atp(ix-1,iy+1,iz-1)
@@ -595,14 +594,14 @@ void FullMatrix3d::gauss_seidel2(NodeVector& out, const NodeVector& in) const
                                    -d1* out.atp(ix+1,iy  ,iz  )
                                    -d1* out.atp(ix  ,iy+1,iz  )
                                    -d1* out.atp(ix  ,iy  ,iz+1)
-                                   
+
                                    -d2* out.atp(ix+1,iy  ,iz+1)
                                    -d2* out.atp(ix+1,iy-1,iz  )
                                    -d2* out.atp(ix+1,iy+1,iz  )
                                    -d2* out.atp(ix+1,iy  ,iz-1)
                                    -d2* out.atp(ix  ,iy+1,iz-1)
                                    -d2* out.atp(ix  ,iy+1,iz+1)
-                                   
+
                                    -d3* out.atp(ix+1,iy-1,iz-1)
                                    -d3* out.atp(ix+1,iy-1,iz+1)
                                    -d3* out.atp(ix+1,iy+1,iz-1)

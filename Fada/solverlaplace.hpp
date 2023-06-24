@@ -25,11 +25,12 @@ protected:
 
 public:
   SolverLaplace() : _fem(nullptr), _mggrid(nullptr) {}
-  SolverLaplace(std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype);
-  void set_data (std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype);
-  
+  SolverLaplace(std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype="", int updatelength=0);
+  void set_data (std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype="", int updatelength=0);
+
   std::string toString() const;
 
+  std::shared_ptr<const FiniteElementInterface> getFem() const {return _fem;}
   int testsolve(bool print=true, std::string problem="DirichletRhsOne");
   const NodeVector& get_solution() const {return _u;}
   NodeVector& get_solution() {return _u;}

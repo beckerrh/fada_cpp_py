@@ -1,58 +1,80 @@
-#
-#-----------------------------#
+#----------------------------------------------------------
 #
 cmake_minimum_required(VERSION 3.15)
 PROJECT(fada)
 #
-#-----------------------------#
-#
+#----------------------------------------------------------
 SET(CMAKE_BUILD_TYPE "Release")
+# SET(CMAKE_BUILD_TYPE "Debug")
 #
 SET(CMAKE_CXX_STANDARD 14)
-SET(CMAKE_C_FLAGS "-O3")
-SET(CMAKE_CXX_FLAGS "-O3")
-add_definitions(-DARMA_USE_HDF5)
-FIND_PACKAGE(HDF5 REQUIRED)
-#
-find_package(Armadillo REQUIRED)
-message("ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIRS}")
-
-find_library(SUPERLU_LIBRARY NAMES "superlu")
-message("SUPERLU_LIBRARY ${SUPERLU_LIBRARY}")
-FIND_LIBRARY(UMFPACK_LIBRARIES NAMES umfpack libumfpack UMFPACK libUMFPACK
-               PATH_SUFFIXES ${CMAKE_LIBRARY_ARCHITECTURE}
-               HINTS ${CMAKE_INSTALL_PREFIX}/External/lib)
-if(NOT UMFPACK_LIBRARIES)
-    message(FATAL_ERROR "*** umfpack library not find (consider installing suite-sparse)")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DARMA_EXTRA_DEBUG)
+	add_definitions(-DDEBUG)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+  SET(CMAKE_C_FLAGS "-O3")
+  SET(CMAKE_CXX_FLAGS "-O3")
+  add_definitions(-DARMA_NO_DEBUG)
 endif()
+ADD_DEFINITIONS(-DARMA_USE_HDF5)
 
-INCLUDE_DIRECTORIES(${ARMADILLO_INCLUDE_DIRS})
-AUX_SOURCE_DIRECTORY(Fada SRC)
+#----------------------------------------------------------
+SET(PACKAGES
+  HDF5
+  Armadillo
+  superlu
+  amgcl
+)
+SET(LINK_LIBRARIES "")
+SET(INCLUDE_DIRECTORIES "")
+FOREACH(PACKAGE ${PACKAGES})
+  FIND_PACKAGE(${PACKAGE} REQUIRED)
+  string(TOUPPER ${PACKAGE} PACKAGE_UPPER)
+  list(APPEND LINK_LIBRARIES ${${PACKAGE_UPPER}_LIBRARIES})
+  list(APPEND INCLUDE_DIRECTORIES ${${PACKAGE_UPPER}_INCLUDE_DIRS})
+ENDFOREACH(PACKAGE)
+#----------------------------------------------------------
+# packages without "FindXXX.cmake"
+SET(PACKAGES
+  umfpack
+)
+FOREACH(PACKAGE ${PACKAGES})
+  string(TOUPPER ${PACKAGE} PACKAGE_UPPER)
+  FIND_LIBRARY(UMFPACK_LIBRARIES NAMES ${PACKAGE} lib${PACKAGE} ${PACKAGE_UPPER}
+                 PATH_SUFFIXES ${CMAKE_LIBRARY_ARCHITECTURE}
+                 HINTS ${CMAKE_INSTALL_PREFIX}/External/lib)
+  if(NOT ${PACKAGE_UPPER}_LIBRARIES)
+      message(FATAL_ERROR "*** ${PACKAGE} library not find (consider installing suite-sparse)")
+  endif()
+  list(APPEND LINK_LIBRARIES ${${PACKAGE_UPPER}_LIBRARIES})
+ENDFOREACH(PACKAGE)
+
+MESSAGE("{LINK_LIBRARIES} ${LINK_LIBRARIES}")
+MESSAGE("{INCLUDE_DIRECTORIES} ${INCLUDE_DIRECTORIES}")
 #
+#----------------------------------------------------------
+AUX_SOURCE_DIRECTORY(Fada SRC)
 ADD_LIBRARY(fadalib ${SRC})
+TARGET_INCLUDE_DIRECTORIES(fadalib PRIVATE ${INCLUDE_DIRECTORIES})
 #
 ADD_EXECUTABLE(fada fadamain.cpp)
-TARGET_LINK_LIBRARIES(fada fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES} ${HDF5_LIBRARIES} )
+TARGET_INCLUDE_DIRECTORIES(fada PUBLIC ${INCLUDE_DIRECTORIES})
+TARGET_LINK_LIBRARIES(fada fadalib  ${LINK_LIBRARIES})
 #
 ADD_EXECUTABLE(testarma testarma.cpp)
-TARGET_LINK_LIBRARIES(testarma fadalib  ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES})
+TARGET_INCLUDE_DIRECTORIES(testarma PUBLIC ${INCLUDE_DIRECTORIES})
+TARGET_LINK_LIBRARIES(testarma fadalib  ${LINK_LIBRARIES})
 #
-# find_package(pybind11 REQUIRED)
-# message("pybind11 ${ARMADILLO_INCLUDE_DIRS}")
+#----------------------------------------------------------
 AUX_SOURCE_DIRECTORY(pybind SRCPY)
 FIND_PACKAGE(carma CONFIG REQUIRED)
-# INCLUDE_DIRECTORIES(${CARMA_INCLUDE_DIRS})
 pybind11_add_module(pyfada  MODULE ${SRCPY} ${SRC})
-# target_link_libraries(pyfada PRIVATE ${UMFPACK_LIBRARIES} ${ARMADILLO_LIBRARIES} PRIVATE carma::carma)
 TARGET_LINK_LIBRARIES(
     pyfada PUBLIC
-    ${UMFPACK_LIBRARIES}
+    ${LINK_LIBRARIES}
     carma::carma
-    # pybind11::embed
-    # pybind11::pybind11
-    # Python3::Python
 )
-#
+#----------------------------------------------------------
 #-- copy .py files
 #
 FILE(GLOB PYBINFILES ${CMAKE_CURRENT_SOURCE_DIR}/*.py)

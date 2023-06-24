@@ -63,10 +63,6 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   }
   _mgupdate.resize(_nlevels);
   _mgupdatesmooth.resize(_nlevels);
-  std::string type="cyc";
-  //  type="coef";
-  //  type="ortho";
-  //  type="restart";
   for(int l=0;l<_nlevels;l++)
   {
     if(updatemem==0)
@@ -81,12 +77,8 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   }
   for(int l=0;l<_nlevels;l++)
   {
-    _mgupdate[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], updatemem, type);
-    //    _mgupdate(l)->setParameters(l, this, updatemem, type);
-//    _mgupdate[l]->set_size(mgrid->get(l)->n()+2);
-    //    _mgupdatesmooth(l)->setParameters(l, this, 0, type);
-    _mgupdatesmooth[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], 0, type);
-//    _mgupdatesmooth[l]->set_size(mgrid->get(l)->n()+2);
+    _mgupdate[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], updatemem);
+    _mgupdatesmooth[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], 0);
   }
 }
 /*-------------------------------------------------*/
@@ -113,10 +105,10 @@ int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
   VectorMG& fmg = _mgmem[1];
   VectorMG& d   = _mgmem[2];
   VectorMG& w   = _mgmem[3];
-  
+
   _fem->vector2vectormg(*fmg[0], f);
   _fem->vector2vectormg(*umg[0], u);
-  
+
   int maxlevel = 0;
   double res, tol=0;
   for(int iter=0; iter<this->maxiter+1; iter++)
@@ -160,16 +152,16 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
     _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
     _timer.stop("update");
-    
+
     _timer.start("transfer");
     _mgtransfer[l]->restrict(*d[l+1], *d[l]);
     _timer.stop("transfer");
-    
+
 //    f[l+1] = d[l+1];
     f[l+1]->equal(*d[l+1]);
     u[l+1]->fill(0.0);
     mgstep(l+1, u, f, d, w, tol);
-    
+
     _timer.start("transfer");
     _mgtransfer[l]->prolongate(*w[l], *u[l+1]);
     _timer.stop("transfer");

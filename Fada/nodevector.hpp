@@ -44,7 +44,7 @@ protected:
     //        std::cerr << "_ofs = " << _ofs.t();
     //    std::cerr << "_ofsp = " << _ofsp << "\n";
   }
-  
+
 public:
   NodeVector() : _data(), _n(), _ofs() {}
   NodeVector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
@@ -55,22 +55,17 @@ public:
   NodeVector& operator=(const NodeVector& v)
   {
     _data = v.data();
-    //    armavec::operator=(v);
     assert(arma::all(_n==v.n()));
-    //    _n = v._n;
-    //    set_ofs();
     return *this;
   }
   NodeVector& operator=(const armavec& v)
   {
     _data = v;
-    //    armavec::operator=(v);
     return *this;
   }
   NodeVector& operator*=(double d)
   {
     _data *= d;
-    //    armavec::operator=(v);
     return *this;
   }
   void set_size(const armaicvec& n)
@@ -78,7 +73,6 @@ public:
     //    std::cerr << "NodeVector::set_size() n = " << n.t();
     _n = n;
     set_ofs();
-    //    armavec::set_size(arma::prod(n));
     _data.set_size(arma::prod(n));
   }
   void set_size(const NodeVector& u)
@@ -93,14 +87,10 @@ public:
   armavec& data()
   {
     return _data;
-    //    armavec& t = static_cast<armavec&>(*this);
-    //    return t;
   }
   const armavec& data() const
   {
     return _data;
-    //    const armavec& t = static_cast<const armavec&>(*this);
-    //    return t;
   }
   double& at(int ix, int iy)
   {

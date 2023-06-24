@@ -202,7 +202,7 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
       for(int iz=1;iz<_nz-1;iz++)
       {
         i = ofsx*ix + ofsy*iy + iz + ofsp;
-        
+
         j = ofsx*(ix-1) + ofsy*(iy-1) + iz-1 + ofsp;
         ce.add(i, j, _coef[0]);
         j = ofsx*(ix-1) + ofsy*(iy-1) + iz   + ofsp;
@@ -221,7 +221,7 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
         ce.add(i, j, _coef[7]);
         j = ofsx*(ix-1) + ofsy*(iy+1) + iz+1 + ofsp;
         ce.add(i, j, _coef[8]);
-        
+
         j = ofsx*(ix  ) + ofsy*(iy-1) + iz-1 + ofsp;
         ce.add(i, j, _coef[9]);
         j = ofsx*(ix  ) + ofsy*(iy-1) + iz   + ofsp;
@@ -240,7 +240,7 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
         ce.add(i, j, _coef[16]);
         j = ofsx*(ix  ) + ofsy*(iy+1) + iz+1 + ofsp;
         ce.add(i, j, _coef[17]);
-  
+
         j = ofsx*(ix+1) + ofsy*(iy-1) + iz-1 + ofsp;
         ce.add(i, j, _coef[18]);
         j = ofsx*(ix+1) + ofsy*(iy-1) + iz   + ofsp;
@@ -259,6 +259,214 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
         ce.add(i, j, _coef[25]);
         j = ofsx*(ix+1) + ofsy*(iy+1) + iz+1 + ofsp;
         ce.add(i, j, _coef[26]);
+      }
+    }
+  }
+  //bdry
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      i = ofsx*ix + ofsy*iy + 0 + ofsp;
+      ce.add(i, i, 1);
+      i = ofsx*ix + ofsy*iy + _nz-1 + ofsp;
+      ce.add(i, i, 1);
+    }
+  }
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iz=1;iz<_nz-1;iz++)
+    {
+      i = ofsx*ix + ofsy*0 + iz + ofsp;
+      ce.add(i, i, 1);
+      i = ofsx*ix + ofsy*(_ny-1) + iz + ofsp;
+      ce.add(i, i, 1);
+    }
+  }
+  for(int iy=1;iy<_ny-1;iy++)
+  {
+    for(int iz=1;iz<_nz-1;iz++)
+    {
+      i = ofsx*0 + ofsy*iy + iz + ofsp;
+      ce.add(i, i, 1);
+      i = ofsx*(_nx-1) + ofsy*iy + iz + ofsp;
+      ce.add(i, i, 1);
+    }
+  }
+  //aux
+  for(int ix=0;ix<_nx+2;ix++)
+  {
+    for(int iy=0;iy<_ny+2;iy++)
+    {
+      i = ofsx*ix + ofsy*iy + 0;
+      ce.add(i, i, 1);
+      i = ofsx*ix + ofsy*iy + _nz+1;
+      ce.add(i, i, 1);
+    }
+  }
+  for(int ix=0;ix<_nx+2;ix++)
+  {
+    for(int iz=1;iz<_nz+1;iz++)
+    {
+      i = ofsx*ix + ofsy*0 + iz;
+      ce.add(i, i, 1);
+      i = ofsx*ix + ofsy*(_ny+1) + iz;
+      ce.add(i, i, 1);
+    }
+  }
+  for(int iy=1;iy<_ny+1;iy++)
+  {
+    for(int iz=1;iz<_nz+1;iz++)
+    {
+      i = ofsx*0 + ofsy*iy + iz;
+      ce.add(i, i, 1);
+      i = ofsx*(_nx+1) + ofsy*iy + iz;
+      ce.add(i, i, 1);
+    }
+  }
+  sp.set_elements(ce.locations(), ce.values());
+}
+
+/*-------------------------------------------------*/
+void Stencil3d7::set_grid(const armaicvec& n, const armavec& coef)
+{
+  assert(n.n_elem==3);
+  _nx = n[0];
+  _ny = n[1];
+  _nz = n[2];
+  _coef = coef;
+//  std::cerr << "Stencil3d27() _coef="<<arma::sum(_coef)<<"\n";
+}
+/*-------------------------------------------------*/
+void Stencil3d7::dot(NodeVector& out, const NodeVector& in, double d) const
+{
+  arma::vec::fixed<7> coef = d*_coef;
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      for(int iz=0;iz<_nz;iz++)
+      {
+        out.atp(ix,iy,iz) +=
+           coef[ 0]* in.atp(ix-1,iy  ,iz  )
+          +coef[ 1]* in.atp(ix  ,iy-1,iz  )
+          +coef[ 2]* in.atp(ix  ,iy  ,iz-1)
+          +coef[ 3]* in.atp(ix  ,iy  ,iz  )
+          +coef[ 4]* in.atp(ix  ,iy  ,iz+1)
+          +coef[ 5]* in.atp(ix  ,iy+1,iz  )
+          +coef[ 6]* in.atp(ix+1,iy  ,iz  )
+        ;
+      }
+    }
+  }
+  // Conditions aux limites ( Dirichlet)
+  _boundary(out);
+}
+
+
+/*-------------------------------------------------*/
+void Stencil3d7::jacobi(NodeVector& out, const NodeVector& in) const
+{
+  double d0inv = 1.0/_coef[13];
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      for(int iz=0;iz<_nz;iz++)
+      {
+        out.atp(ix,iy,iz) = d0inv * in.atp(ix,iy,iz);
+      }
+    }
+  }
+  _boundary(out);
+}
+
+/*-------------------------------------------------*/
+void Stencil3d7::gauss_seidel1(NodeVector& out, const NodeVector& in) const
+{
+  /*
+   (ix+p)*ny*nz + (iy+q)*nz + iz+r < ix*ny*nz + iy*nz + iz
+   p*ny*nz +q*nz +r < 0
+   p=-1 q=-1,0,1  r=-1,0,1
+   p= 0 q=-1 r=-1,0,1 q=0 r=-1
+   */
+  double d0inv = 1.0/_coef[3];
+  for(int ix=0;ix<_nx;ix++)
+  {
+    for(int iy=0;iy<_ny;iy++)
+    {
+      for(int iz=0;iz<_nz;iz++)
+      {
+        out.atp(ix,iy,iz) = d0inv*(
+                                   in.atp(ix,iy,iz)
+                                   -_coef[0]* out.atp(ix-1,iy  ,iz  )
+                                   -_coef[1]* out.atp(ix  ,iy-1,iz  )
+                                   -_coef[2]* out.atp(ix  ,iy  ,iz-1)
+                                   );
+      }
+    }
+  }
+  _boundary(out);
+}
+
+/*-------------------------------------------------*/
+void Stencil3d7::gauss_seidel2(NodeVector& out, const NodeVector& in) const
+{
+  double d0inv = 1.0/_coef[3];
+  for(int ix=_nx-1;ix>=0;ix--)
+  {
+    for(int iy=_ny-1;iy>=0;iy--)
+    {
+      for(int iz=_nz-1;iz>=0;iz--)
+      {
+        out.atp(ix,iy,iz) = d0inv*(
+                                   in.atp(ix,iy,iz)
+                                   -_coef[4]* out.atp(ix  ,iy  ,iz+1)
+                                   -_coef[5]* out.atp(ix  ,iy+1,iz  )
+                                   -_coef[6]* out.atp(ix+1,iy  ,iz  )
+                                   );
+      }
+    }
+  }
+  _boundary(out);
+}
+
+/*-------------------------------------------------*/
+void Stencil3d7::get_sparse_matrix(SparseMatrix& sp) const
+{
+  // (nx+2)*(ny+2)*(nz+2) - nx*ny*nz + nx*ny*z - (nx-2)*(ny-2)*(nz-2)
+  //= 8 + 4*(nx+ny+nz)+2*(nx*ny+nx*nz+ny*nz) -( -8 + 4*(nx+ny+nz) - 2*(nx*ny+nx*nz+ny*nz)  )
+  //= 16 + 4*(nx*ny+nx*nz+ny*nz)
+  int size = 7*(_nx-2)*(_ny-2)*(_nz-2) + 16 + 4*(_nx*_ny+_nx*_nz+_ny*_nz);
+  int ofsy = _nz + 2;
+  int ofsx = ofsy*(_ny + 2);
+  int ofsp = ofsx+ofsy+1;
+//  std::cerr << "ofsx " << ofsx << " ofsy " << ofsy << " ofsp " << ofsp<< " size " << size << "\n";
+  int i, j;
+  Construct_Elements ce(size);
+  for(int ix=1;ix<_nx-1;ix++)
+  {
+    for(int iy=1;iy<_ny-1;iy++)
+    {
+      for(int iz=1;iz<_nz-1;iz++)
+      {
+        i = ofsx*ix + ofsy*iy + iz + ofsp;
+
+        j = ofsx*(ix-1) + ofsy*(iy  ) + iz   + ofsp;
+        ce.add(i, j, _coef[0]);
+
+        j = ofsx*(ix  ) + ofsy*(iy-1) + iz   + ofsp;
+        ce.add(i, j, _coef[1]);
+        j = ofsx*(ix  ) + ofsy*(iy  ) + iz-1 + ofsp;
+        ce.add(i, j, _coef[2]);
+        j = ofsx*(ix  ) + ofsy*(iy  ) + iz   + ofsp;
+        ce.add(i, j, _coef[3]);
+        j = ofsx*(ix  ) + ofsy*(iy) + iz+1   + ofsp;
+        ce.add(i, j, _coef[4]);
+        j = ofsx*(ix  ) + ofsy*(iy+1) + iz   + ofsp;
+        ce.add(i, j, _coef[5]);
+        j = ofsx*(ix+1) + ofsy*(iy  ) + iz   + ofsp;
+        ce.add(i, j, _coef[6]);
       }
     }
   }

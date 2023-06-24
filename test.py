@@ -4,7 +4,6 @@ import time, sys
 import pyvista
 
 #-----------------------------------------------------------------#
-#def vista(nlevelmax, nlevels, n, plot=True):
 def vista(umg, plot=True):
   solver = pyfada.SolverLaplace(umg, "Q1", "Full", "Jac")
   print("solver", solver)

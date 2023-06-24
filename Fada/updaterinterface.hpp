@@ -21,7 +21,7 @@ public:
   UpdaterInterface() {}
   UpdaterInterface(const UpdaterInterface& updater) {}
 
-  virtual void setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="gal")=0;
+  virtual void setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls")=0;
   virtual void addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& r, bool print=false)=0;
 };
 

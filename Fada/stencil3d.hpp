@@ -42,4 +42,26 @@ public:
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
+/*-------------------------------------------------*/
+class Stencil3d7 : public Stencil3d
+{
+protected:
+  arma::vec::fixed<7> _coef;
+
+public:
+  Stencil3d7() {}
+  Stencil3d7(const Stencil3d7& stencil) {}
+  Stencil3d7(const armaicvec& n, const armavec& coef)
+  {
+    set_grid(n, coef);
+  }
+
+  void set_grid(const armaicvec& n, const armavec& coef);
+  void jacobi       (NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
+  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
+  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void get_sparse_matrix(SparseMatrix& sp) const;
+};
+
 #endif /* stencil3d_hpp */
