@@ -80,7 +80,7 @@ public:
     set_size(u.n());
   }
   void fill_bdry(double d=0);
-  void fill_bdry2(double d=0);
+  // void fill_bdry2(double d=0);
   int dim() const {return (int) _n.n_elem;}
   const armaicvec& n() const {return _n;}
   const armaicvec& ofs() const {return _ofs;}
@@ -100,15 +100,15 @@ public:
   {
     return _data[_ofs[0]*ix+iy];
   }
-  double& atp(int ix, int iy)
-  {
-    // _ofs[0]*(ix+1)+iy+1 = _ofs[0]*ix+iy + _ofs[0]+1
-    return _data[_ofs[0]*ix+iy+_ofsp];
-  }
-  const double& atp(int ix, int iy) const
-  {
-    return _data[_ofs[0]*ix+iy+_ofsp];
-  }
+  // double& atp(int ix, int iy)
+  // {
+  //   // _ofs[0]*(ix+1)+iy+1 = _ofs[0]*ix+iy + _ofs[0]+1
+  //   return _data[_ofs[0]*ix+iy+_ofsp];
+  // }
+  // const double& atp(int ix, int iy) const
+  // {
+  //   return _data[_ofs[0]*ix+iy+_ofsp];
+  // }
   double& at(int ix, int iy, int iz)
   {
     return _data[_ofs[0]*ix+_ofs[1]*iy+iz];
@@ -117,14 +117,14 @@ public:
   {
     return _data[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
-  double& atp(int ix, int iy, int iz)
-  {
-    return _data[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
-  }
-  const double& atp(int ix, int iy, int iz) const
-  {
-    return _data[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
-  }
+  // double& atp(int ix, int iy, int iz)
+  // {
+  //   return _data[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
+  // }
+  // const double& atp(int ix, int iy, int iz) const
+  // {
+  //   return _data[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
+  // }
   void fill(double d)
   {
     _data.fill(d);

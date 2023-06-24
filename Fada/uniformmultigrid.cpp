@@ -42,6 +42,11 @@ void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0,
     std::cerr << nlevels << " = nlevels > nlevelmax = " << nlevelmax << "\n";
     exit(1);
   }
+  if(nlevelmax==0)
+  {
+    std::cerr<< " nlevelmax = " << nlevelmax << "\n";
+    exit(1);
+  }
   arma::uword dim = n0.n_elem;
   armaicvec n(dim);
   std::shared_ptr<armamat> bounds;

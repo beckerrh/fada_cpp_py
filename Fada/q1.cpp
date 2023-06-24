@@ -11,7 +11,7 @@
 #include  "q1.hpp"
 #include  "uniformgrid.hpp"
 #include  "nodevector.hpp"
-#include  "fullmatrix.hpp"
+// #include  "fullmatrix.hpp"
 #include  "matrixinterface.hpp"
 // #include  "trapezmatrix.hpp"
 #include  "transferq1.hpp"
@@ -56,7 +56,8 @@ void Q13d::set_grid(std::shared_ptr<GridInterface> grid)
 std::unique_ptr<VectorInterface> Q12d::newMgvector(const GridInterface& grid) const
 {
   std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
-  p->set_size(grid.n()+2);
+  // p->set_size(grid.n()+2);
+  p->set_size(grid.n());
   p->fill_bdry(0);
   // p->fill_bdry2(0);
   return p;
@@ -65,7 +66,8 @@ std::unique_ptr<VectorInterface> Q12d::newMgvector(const GridInterface& grid) co
 std::unique_ptr<VectorInterface> Q13d::newMgvector(const GridInterface& grid) const
 {
   std::unique_ptr<VectorInterface> p = std::make_unique<NodeVector>();
-  p->set_size(grid.n()+2);
+  // p->set_size(grid.n()+2);
+  p->set_size(grid.n());
   p->fill_bdry(0);
   // p->fill_bdry2(0);
   return p;
@@ -213,7 +215,8 @@ void  Q12d::vectormg2vector(NodeVector& u, const NodeVector& umg) const
   {
     for(int iy=0;iy<_ny;iy++)
     {
-      u.at(ix,iy) = umg.atp(ix,iy);
+      // u.at(ix,iy) = umg.atp(ix,iy);
+      u.at(ix,iy) = umg.at(ix,iy);
     }
   }
 }
@@ -225,7 +228,8 @@ void  Q12d::vector2vectormg(NodeVector& umg, const NodeVector& u) const
   {
     for(int iy=0;iy<_ny;iy++)
     {
-      umg.atp(ix,iy) = u.at(ix,iy);
+      // umg.atp(ix,iy) = u.at(ix,iy);
+      umg.at(ix,iy) = u.at(ix,iy);
     }
   }
 }
@@ -240,7 +244,8 @@ void  Q13d::vectormg2vector(NodeVector& u, const NodeVector& umg) const
     {
       for(int iz=0;iz<_nz;iz++)
       {
-        u.at(ix,iy,iz) = umg.atp(ix,iy,iz);
+        // u.at(ix,iy,iz) = umg.atp(ix,iy,iz);
+        u.at(ix,iy,iz) = umg.at(ix,iy,iz);
       }
     }
   }
@@ -255,7 +260,8 @@ void  Q13d::vector2vectormg(NodeVector& umg, const NodeVector& u) const
     {
       for(int iz=0;iz<_nz;iz++)
       {
-        umg.atp(ix,iy,iz) = u.at(ix,iy,iz);
+        // umg.atp(ix,iy,iz) = u.at(ix,iy,iz);
+        umg.at(ix,iy,iz) = u.at(ix,iy,iz);
       }
     }
   }

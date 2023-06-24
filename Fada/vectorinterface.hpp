@@ -23,7 +23,7 @@ public:
 
   virtual void set_size(const armaicvec& n)=0;
   virtual void fill_bdry(double d=0)=0;
-  virtual void fill_bdry2(double d=0)=0;
+  // virtual void fill_bdry2(double d=0)=0;
   virtual void fill(double d=0)=0;
   virtual double dot(const VectorInterface& v)const=0;
   virtual double norm(double p=2)const=0;

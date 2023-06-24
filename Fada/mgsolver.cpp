@@ -116,13 +116,13 @@ int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
     _timer.start("residual");
     residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
     d[maxlevel]->fill_bdry(0);
-    d[maxlevel]->fill_bdry2(0);
+    // d[maxlevel]->fill_bdry2(0);
     _timer.stop("residual");
     res = d[maxlevel]->norm();
     if(iter==0)
     {
       tol = fmax(this->tol_abs, this->tol_rel*res);
-      if(print) printf("-mg- --- %10.3e ---\n", tol);
+      if(print) printf("-mg- ---tol= %10.3e ---\n", tol);
     }
     if(print) printf("-mg- %3d %10.3e\n", iter, res);
     if(res <= tol)
@@ -137,6 +137,7 @@ int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
 /*-------------------------------------------------*/
 void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol)
 {
+  // std::cerr << "MgSolver::mgstep() l=" << l << "_nlevels="<<_nlevels<<"\n";
   if(l==_nlevels-1)
   {
     _timer.start("solvecoarse");

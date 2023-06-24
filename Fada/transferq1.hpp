@@ -13,11 +13,13 @@
 #include  "transferinterface.hpp"
 #include  "typedefs.hpp"
 #include  "nodevector.hpp"
+#include  "seamvector.hpp"
 
 /*-------------------------------------------------*/
 class TransferQ12d
 {
 protected:
+  mutable SeamVector _seam;
   int _nx, _ny;
   void _boundary(NodeVector& u) const;
 
@@ -40,9 +42,10 @@ public:
 class TransferQ13d
 {
 protected:
+  mutable SeamVector _seam;
   int _nx, _ny, _nz;
   void _boundary(NodeVector& u) const;
-  
+
 public:
   ~TransferQ13d();
   TransferQ13d() {}

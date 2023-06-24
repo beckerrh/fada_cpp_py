@@ -44,6 +44,7 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
   arma::uword n = locations.n_cols;
   _cols.set_size(n);
   _values.set_size(n);
+  // std::cerr << "locations\n" << locations.row(0) << "\n" << locations.row(1) << "\n";
   arma::uvec ind = arma::sort_index(arma::max(locations.row(1))*locations.row(0)+locations.row(1));
   arma::uword nrows = locations(0,ind[n-1])+1;
   _rows.set_size(nrows+1);
@@ -62,6 +63,6 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
     _cols[i] = locations(1,index);
   }
   _rows[nrows] = n;
-//  save(std::cerr);
+ // save(std::cerr);
 //  assert(0);
 }

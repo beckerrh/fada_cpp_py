@@ -9,7 +9,7 @@ SET(CMAKE_BUILD_TYPE "Release")
 #
 SET(CMAKE_CXX_STANDARD 14)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_definitions(-DARMA_EXTRA_DEBUG)
+  # add_definitions(-DARMA_EXTRA_DEBUG)
 	add_definitions(-DDEBUG)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
   SET(CMAKE_C_FLAGS "-O3")

@@ -18,8 +18,9 @@ class MultiGrid : public MultiGridInterface
 {
 protected:
   std::vector<std::shared_ptr<GridInterface> > _grids;
-  
+
 public:
+  MultiGrid() : MultiGridInterface(), _grids() {}
   size_t nlevels() const {return _grids.size();}
   std::shared_ptr<GridInterface> get(int l) {return _grids[l];}
   std::shared_ptr<const GridInterface> get(int l) const {return _grids[l];}

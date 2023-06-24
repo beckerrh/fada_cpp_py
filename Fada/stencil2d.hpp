@@ -10,12 +10,14 @@
 #define stencil2d_hpp
 
 #include  "nodevector.hpp"
+#include  "seamvector.hpp"
 class SparseMatrix;
 
 /*-------------------------------------------------*/
 class Stencil2d
 {
 protected:
+  mutable SeamVector _seam;
   int _nx, _ny;
   void _boundary(NodeVector& out) const;
 };

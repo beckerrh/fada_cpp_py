@@ -25,11 +25,13 @@ void Timer::enrol(std::string name, bool sum)
 /*-------------------------------------------------*/
 void Timer::start(std::string name)
 {
+  if(_debug) std::cerr << "Timer: start " << name << "\n";
   _temp[name] = seconds();
 }
 /*-------------------------------------------------*/
 void Timer::stop(std::string name)
 {
+  if(_debug) std::cerr << "Timer: stop " << name << "\n";
   (*this)[name] += seconds()-_temp[name];
 }
 /*-------------------------------------------------*/
