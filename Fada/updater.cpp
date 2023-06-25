@@ -27,6 +27,8 @@ void UpdaterSimple::addUpdate(const VectorInterface& w, VectorInterface& u, Vect
   omega = fmax(fmin(omega, 10.0),0.1);
 //  omega = fmax(fmin(omega, 2.0),0.2);
 //  double omega = 1.0;
+// std::cerr << "omega="<<omega<<"\n";
+// omega = 1;
   u.add(omega, w);
   r.add(-omega, *_mem);
 }

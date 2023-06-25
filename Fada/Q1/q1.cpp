@@ -9,14 +9,12 @@
 #include  <cassert>
 #include  <armadillo>
 #include  "q1.hpp"
-#include  "uniformgrid.hpp"
+#include  "../uniformgrid.hpp"
 #include  "nodevector.hpp"
-// #include  "fullmatrix.hpp"
-#include  "matrixinterface.hpp"
-// #include  "trapezmatrix.hpp"
+#include  "../matrixinterface.hpp"
 #include  "transferq1.hpp"
-#include  "smoothersimple.hpp"
-#include  "smootherumf.hpp"
+#include  "../smoothersimple.hpp"
+#include  "../smootherumf.hpp"
 #include  "stencil2d.hpp"
 #include  "stencil3d.hpp"
 
@@ -59,7 +57,6 @@ std::unique_ptr<VectorInterface> Q12d::newMgvector(const GridInterface& grid) co
   // p->set_size(grid.n()+2);
   p->set_size(grid.n());
   p->fill_bdry(0);
-  // p->fill_bdry2(0);
   return p;
 }
 /*-------------------------------------------------*/
@@ -69,7 +66,6 @@ std::unique_ptr<VectorInterface> Q13d::newMgvector(const GridInterface& grid) co
   // p->set_size(grid.n()+2);
   p->set_size(grid.n());
   p->fill_bdry(0);
-  // p->fill_bdry2(0);
   return p;
 }
 

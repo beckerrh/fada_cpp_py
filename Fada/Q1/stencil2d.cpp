@@ -7,7 +7,7 @@
 //
 
 #include "stencil2d.hpp"
-#include "sparsematrix.hpp"
+#include "../sparsematrix.hpp"
 
 /*-------------------------------------------------*/
 void Stencil2d::_boundary(NodeVector& out) const

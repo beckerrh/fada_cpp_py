@@ -8,7 +8,7 @@
 
 #include  <sstream>
 #include  "solverlaplace.hpp"
-#include  "q1.hpp"
+#include  "Q1/q1.hpp"
 
 /*-------------------------------------------------*/
 SolverLaplace::SolverLaplace(std::shared_ptr<MultiGridInterface> mggrid, std::string femtype, std::string matrixtype, std::string smoothertype, int updatelength)

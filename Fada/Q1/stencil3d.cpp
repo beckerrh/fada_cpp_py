@@ -7,7 +7,7 @@
 //
 
 #include  "stencil3d.hpp"
-#include  "sparsematrix.hpp"
+#include  "../sparsematrix.hpp"
 
 /*-------------------------------------------------*/
 void Stencil3d::_boundary(NodeVector& out) const
@@ -419,13 +419,6 @@ void Stencil3d7::jacobi(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void Stencil3d7::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 {
-  /*
-   * (ix+p)*ny*nz + (iy+q)*nz + iz+r < ix*ny*nz + iy*nz + iz
-   * p*ny*nz +q*nz +r < 0
-   * p=-1 q=-1,0,1  r=-1,0,1
-   * p= 0 q=-1 r=-1,0,1 q=0 r=-1
-   */
-  // _seam.fromvector(out);
   double d0inv = 1.0 / _coef[3];
   out.at(0, 0, 0) = d0inv * in.at(0, 0, 0);
   for (int iz = 1; iz < _nz; iz++)
@@ -488,22 +481,6 @@ void Stencil3d7::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void Stencil3d7::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
-  // _seam.fromvector(out);
-  // for(int ix=_nx-1;ix>=0;ix--)
-  // {
-  //   for(int iy=_ny-1;iy>=0;iy--)
-  //   {
-  //     for(int iz=_nz-1;iz>=0;iz--)
-  //     {
-  //       out.at(ix,iy,iz) = d0inv*(
-  //                                  in.at(ix,iy,iz)
-  //                                  -_coef[4]* _seam.atp(ix  ,iy  ,iz+1)
-  //                                  -_coef[5]* _seam.atp(ix  ,iy+1,iz  )
-  //                                  -_coef[6]* _seam.atp(ix+1,iy  ,iz  )
-  //                                  );
-  //     }
-  //   }
-  // }
   double d0inv = 1.0/_coef[3];
   out.at(_nx - 1, _ny - 1, _nz - 1) = d0inv * in.at(_nx - 1, _ny - 1, _nz - 1);
   for (int iz = _nz - 2; iz >= 0; iz--)

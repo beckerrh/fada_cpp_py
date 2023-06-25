@@ -9,7 +9,7 @@
 #ifndef q1_hpp
 #define q1_hpp
 
-#include  "finiteelementinterface.hpp"
+#include  "../finiteelementinterface.hpp"
 #include  "nodevector.hpp"
 
 class UniformGrid;

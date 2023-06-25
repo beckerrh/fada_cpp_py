@@ -31,13 +31,11 @@ int main(int argc, char** argv)
   if(dim==2)
   {
     n0 = {5,5};
-    // n0 = {3,3};
     nlevelmax = 9;
   }
   else
   {
     n0 = {5,5,5};
-    n0 = {3,3,3};
     nlevelmax = 6;
   }
   if(argc > 2)

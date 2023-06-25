@@ -6,9 +6,9 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#include "smoothersimple.hpp"
-#include "matrixinterface.hpp"
-#include "vectorinterface.hpp"
+#include "../smoothersimple.hpp"
+#include "../matrixinterface.hpp"
+#include "../vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 void SmootherSimple::set_matrix(std::shared_ptr<MatrixInterface> matrix)

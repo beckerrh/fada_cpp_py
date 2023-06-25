@@ -116,7 +116,6 @@ int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
     _timer.start("residual");
     residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
     d[maxlevel]->fill_bdry(0);
-    // d[maxlevel]->fill_bdry2(0);
     _timer.stop("residual");
     res = d[maxlevel]->norm();
     if(iter==0)

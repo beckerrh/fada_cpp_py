@@ -10,8 +10,8 @@
 #ifndef transferq1_h
 #define transferq1_h
 
-#include  "transferinterface.hpp"
-#include  "typedefs.hpp"
+#include  "../transferinterface.hpp"
+#include  "../typedefs.hpp"
 #include  "nodevector.hpp"
 #include  "seamvector.hpp"
 

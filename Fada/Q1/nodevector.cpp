@@ -8,7 +8,7 @@
 
 #include  <stdio.h>
 #include  "nodevector.hpp"
-#include  "uniformgrid.hpp"
+#include  "../uniformgrid.hpp"
 
 /*-------------------------------------------------*/
 std::ostream& operator<<(std::ostream& os, const NodeVector& v)
@@ -66,51 +66,3 @@ void NodeVector::fill_bdry(double d)
     }
   }
 }
-//
-// /*-------------------------------------------------*/
-// void NodeVector::fill_bdry2(double d)
-// {
-//   if(dim()==2)
-//   {
-//     int nx = _n[0], ny = _n[1];
-// //    std::cerr << "NodeVector::fill_bdry2() " << nx << " " << ny << "\n";
-//     for(int ix=1;ix<nx-1;ix++)
-//     {
-//       this->at(ix,1)    = d;
-//       this->at(ix,ny-2) = d;
-//     }
-//     for(int iy=1;iy<ny-1;iy++)
-//     {
-//       this->at(1,iy)    = d;
-//       this->at(nx-2,iy) = d;
-//     }
-//   }
-//   else if(dim()==3)
-//   {
-//     int nx = _n[0], ny = _n[1], nz = _n[2];
-//     for(int ix=1;ix<nx-1;ix++)
-//     {
-//       for(int iy=1;iy<ny-1;iy++)
-//       {
-//         this->at(ix,iy,1)    = d;
-//         this->at(ix,iy,nz-2) = d;
-//       }
-//     }
-//     for(int ix=1;ix<nx-1;ix++)
-//     {
-//       for(int iz=1;iz<nz-1;iz++)
-//       {
-//         this->at(ix,1,   iz) = d;
-//         this->at(ix,ny-2,iz) = d;
-//       }
-//     }
-//     for(int iy=1;iy<ny-1;iy++)
-//     {
-//       for(int iz=1;iz<nz-1;iz++)
-//       {
-//         this->at(1,   iy,iz) = d;
-//         this->at(nx-2,iy,iz) = d;
-//       }
-//     }
-//   }
-// }

@@ -12,7 +12,7 @@
 #include  "finiteelementinterface.hpp"
 #include  "multigridinterface.hpp"
 #include  "mgsolver.hpp"
-#include  "nodevector.hpp"
+#include  "Q1/nodevector.hpp"
 
 /*-------------------------------------------------*/
 class SolverLaplace
