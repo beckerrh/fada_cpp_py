@@ -9,7 +9,7 @@
 #ifndef updaterinterface_h
 #define updaterinterface_h
 
-class FiniteElementInterface;
+class ModelInterface;
 class GridInterface;
 class MatrixInterface;
 class VectorInterface;
@@ -21,8 +21,8 @@ public:
   UpdaterInterface() {}
   UpdaterInterface(const UpdaterInterface& updater) {}
 
-  virtual void setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls")=0;
-  virtual void addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& r, bool print=false)=0;
+  virtual void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls")=0;
+  virtual void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false)=0;
 };
 
 

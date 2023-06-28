@@ -10,7 +10,8 @@
 #include  "../sparsematrix.hpp"
 
 /*-------------------------------------------------*/
-void Stencil3d::_boundary(NodeVector& out) const
+template<int N>
+void Stencil3d<N>::_boundary(NodeVector& out) const
 {
   // for(int ix=0;ix<_nx;ix++)
   // {
@@ -212,7 +213,8 @@ void Stencil3d27::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
+// std::shared_ptr<MatrixInterface> Stencil3d27::get_sparse_matrix() const
+void Stencil3d27::get_locations_values(arma::umat& locations, armavec& values) const
 {
   // (nx+2)*(ny+2)*(nz+2) - nx*ny*nz + nx*ny*z - (nx-2)*(ny-2)*(nz-2)
   //= 8 + 4*(nx+ny+nz)+2*(nx*ny+nx*nz+ny*nz) -( -8 + 4*(nx+ny+nz) - 2*(nx*ny+nx*nz+ny*nz)  )
@@ -222,7 +224,7 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
   int ofsx = ofsy * _ny;
 //  std::cerr << "ofsx " << ofsx << " ofsy " << ofsy << " ofsp " << ofsp<< " size " << size << "\n";
   int i, j;
-  Construct_Elements ce(size);
+  Construct_Elements ce(locations, values, size);
 
   for (int ix = 1; ix < _nx - 1; ix++)
   {
@@ -353,7 +355,11 @@ void Stencil3d27::get_sparse_matrix(SparseMatrix& sp) const
       ce.add(i, i, 1);
     }
   }
-  sp.set_elements(ce.locations(), ce.values());
+  // locations[:] = ce.locations();
+  // values[:] = ce.values();
+  // sp.set_elements(ce.locations(), ce.values());
+  // return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+  // return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
 }
 
 /*-------------------------------------------------*/
@@ -401,7 +407,7 @@ void Stencil3d7::dot(NodeVector& out, const NodeVector& in, double d) const
 /*-------------------------------------------------*/
 void Stencil3d7::jacobi(NodeVector& out, const NodeVector& in) const
 {
-  double d0inv = 1.0 / _coef[13];
+  double d0inv = 1.0 / _coef[3];
 
   for (int ix = 0; ix < _nx; ix++)
   {
@@ -524,7 +530,8 @@ void Stencil3d7::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d7::get_sparse_matrix(SparseMatrix& sp) const
+// std::shared_ptr<MatrixInterface> Stencil3d7::get_sparse_matrix() const
+void Stencil3d7::get_locations_values(arma::umat& locations, armavec& values) const
 {
   // (nx+2)*(ny+2)*(nz+2) - nx*ny*nz + nx*ny*z - (nx-2)*(ny-2)*(nz-2)
   //= 8 + 4*(nx+ny+nz)+2*(nx*ny+nx*nz+ny*nz) -( -8 + 4*(nx+ny+nz) - 2*(nx*ny+nx*nz+ny*nz)  )
@@ -534,7 +541,8 @@ void Stencil3d7::get_sparse_matrix(SparseMatrix& sp) const
   int ofsx = ofsy * _ny;
 //  std::cerr << "ofsx " << ofsx << " ofsy " << ofsy << " ofsp " << ofsp<< " size " << size << "\n";
   int i, j;
-  Construct_Elements ce(size);
+  // Construct_Elements ce(size);
+  Construct_Elements ce(locations, values, size);
 
   for (int ix = 1; ix < _nx - 1; ix++)
   {
@@ -596,5 +604,9 @@ void Stencil3d7::get_sparse_matrix(SparseMatrix& sp) const
   // std::cerr << "locations i " << locations.row(0);
   // std::cerr << "locations j " << locations.row(1);
   // std::cerr << "values " << values.t();
-  sp.set_elements(ce.locations(), ce.values());
+  // sp.set_elements(ce.locations(), ce.values());
+  // return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+  // return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+  // locations = ce.locations();
+  // values = ce.values();
 }

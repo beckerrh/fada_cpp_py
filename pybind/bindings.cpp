@@ -6,15 +6,18 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
+#include  <pybind11/stl.h>
 #include  "uniformmultigridpy.hpp"
 #include  "solverlaplacepy.hpp"
+
+// PYBIND11_MAKE_OPAQUE(std::map<std::string, std::string>);
 
 /*=================================================*/
 PYBIND11_MODULE(pyfada, m) {
     m.doc() = "fada plugin";
 #
     pybind11::class_<UniformMultiGridPy>(m, "UniformMultiGrid")
-      .def(pybind11::init<int, int, pybind11::array_t<int>& >())
+      .def(pybind11::init<int, int, pybind11::array_t<int>& >(), pybind11::arg("nlevelmax"),pybind11::arg("nlevels"),pybind11::arg("n0"))
       .def("get_dimensions", &UniformMultiGridPy::get_dimensions)
 //      .def("n", &UniformMultiGridPy::n)
 //      .def("bounds", &UniformMultiGridPy::bounds)
@@ -24,7 +27,8 @@ PYBIND11_MODULE(pyfada, m) {
       .def("__repr__", &UniformMultiGridPy::toString);
 #
     pybind11::class_<SolverLaplacePy>(m, "SolverLaplace")
-      .def(pybind11::init<const UniformMultiGridPy&, std::string, std::string, std::string>())
+      // py::bind_map<std::map<std::string, std::string>>(m, "StringStringMap");
+      .def(pybind11::init<const UniformMultiGridPy&, const std::map<std::string, std::string>&>(), pybind11::arg("umg"), pybind11::arg("parameters"))
       .def("testsolve", &SolverLaplacePy::testsolve, pybind11::arg("print")=true, pybind11::arg("problem")="Random")
       .def("get_solution", &SolverLaplacePy::get_solution)
       .def("__repr__", &SolverLaplacePy::toString);

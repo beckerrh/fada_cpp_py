@@ -14,14 +14,14 @@ std::string MgSolver::toString() const
   return ss.str();
 }
 /*-------------------------------------------------*/
-void MgSolver::set_parameters()
+void MgSolver::set_parameters(int maxiter, double tol_rel, double tol_abs)
 {
-  maxiter = 30;
-  tol_rel = 1e-8;
-  tol_abs = 1e-12;
+  _maxiter = maxiter;
+  _tol_rel = tol_rel;
+  _tol_abs = tol_abs;
 }
 /*-------------------------------------------------*/
-void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<FiniteElementInterface> fem, std::string smoothertype, int updatemem)
+void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> fem, std::string smoothertype, int updatemem)
 {
   _timer.enrol("smooth");
   _timer.enrol("transfer");
@@ -30,7 +30,7 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   _timer.enrol("solvecoarse");
   //  std::cerr << "mggrid" << *mggrid << "\n";
   _nlevels = mgrid->nlevels();
-  _fem = fem;
+  _model = fem;
   _mgmem.resize(4);
   for(int i=0;i<_mgmem.size();i++)
   {
@@ -39,27 +39,25 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   _mgmatrix.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
-    _mgmatrix[l] = _fem->newMatrix(*mgrid->get(l));
-//    _mgmatrix[l]->set_grid(mgrid->get(l));
+    _mgmatrix[l] = _model->newMatrix(mgrid->get(l));
   }
   _mgsmoother.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
     if(l<_nlevels-1)
     {
-      _mgsmoother[l] = _fem->newSmoother(smoothertype, *mgrid->get(l));
+      _mgsmoother[l] = _model->newSmoother(smoothertype, mgrid->get(l), _mgmatrix[l]);
     }
     else
     {
-      _mgsmoother[l] = _fem->newCoarseSolver("direct", *mgrid->get(l));
+      _mgsmoother[l] = _model->newCoarseSolver("direct", mgrid->get(l), _mgmatrix[l]);
     }
-    _mgsmoother[l]->set_matrix(_mgmatrix[l]);
+    // _mgsmoother[l]->set_matrix(_mgmatrix[l]);
   }
   _mgtransfer.resize(_nlevels-1);
   for(int l=0;l<_nlevels-1;l++)
   {
-    _mgtransfer[l] = _fem->newTransfer(*mgrid->get(l+1));
-//    _mgtransfer[l]->set_grid(mgrid->get(l+1));
+    _mgtransfer[l] = _model->newTransfer(mgrid->get(l+1));
   }
   _mgupdate.resize(_nlevels);
   _mgupdatesmooth.resize(_nlevels);
@@ -67,18 +65,20 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   {
     if(updatemem==0)
     {
-      _mgupdate[l] = std::unique_ptr<UpdaterInterface>(new UpdaterSimple);
+      // _mgupdate[l] = std::shared_ptr<UpdaterInterface>(new UpdaterConstant);
+      _mgupdate[l] = std::shared_ptr<UpdaterInterface>(new UpdaterSimple);
     }
     else
     {
-      _mgupdate[l] = std::unique_ptr<UpdaterInterface>(new Updater);
+      _mgupdate[l] = std::shared_ptr<UpdaterInterface>(new Updater);
     }
-    _mgupdatesmooth[l] = std::unique_ptr<UpdaterInterface>(new UpdaterSimple);
+    // _mgupdatesmooth[l] = std::shared_ptr<UpdaterInterface>(new UpdaterSimple);
+    _mgupdatesmooth[l] = std::shared_ptr<UpdaterInterface>(new UpdaterConstant(0.8));
   }
   for(int l=0;l<_nlevels;l++)
   {
-    _mgupdate[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], updatemem);
-    _mgupdatesmooth[l]->setParameters(*_fem, *mgrid->get(l), _mgmatrix[l], 0);
+    _mgupdate[l]->setParameters(*_model, mgrid->get(l), _mgmatrix[l], updatemem);
+    _mgupdatesmooth[l]->setParameters(*_model, mgrid->get(l), _mgmatrix[l], 0);
   }
 }
 /*-------------------------------------------------*/
@@ -87,46 +87,56 @@ void MgSolver::_set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, Vec
   v.resize(_nlevels);
   for(int l=0;l<_nlevels;l++)
   {
-    v[l] = _fem->newMgvector(*mgrid->get(l));
+    v[l] = _model->newVector(mgrid->get(l));
   }
 }
 
 /*-------------------------------------------------*/
-void MgSolver::residual(int l, VectorInterface& r, const VectorInterface& u, const VectorInterface& f) const
+void MgSolver::residual(int l, std::shared_ptr<VectorInterface> r, std::shared_ptr<VectorInterface const> u, std::shared_ptr<VectorInterface const>  f) const
 {
-//  r =  f;
-  r.equal(f);
+  // std::cerr << "\nu\n";
+  // u->save(std::cerr);
+
+  r->equal(*f);
   _mgmatrix[l]->dot(r, u, -1.0);
+
+  // std::cerr << "\nr\n";
+  // r->save(std::cerr);
 }
 /*-------------------------------------------------*/
-int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
+// int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
+int MgSolver::solve(bool print)
 {
   VectorMG& umg = _mgmem[0];
   VectorMG& fmg = _mgmem[1];
   VectorMG& d   = _mgmem[2];
   VectorMG& w   = _mgmem[3];
 
-  _fem->vector2vectormg(*fmg[0], f);
-  _fem->vector2vectormg(*umg[0], u);
+  // _model->vector2vectormg(*fmg[0], f);
+  // _model->vector2vectormg(*umg[0], u);
+  // fmg[0]->equal(f);
+  // umg[0]->equal(u);
 
   int maxlevel = 0;
   double res, tol=0;
-  for(int iter=0; iter<this->maxiter+1; iter++)
+  for(int iter=0; iter<this->_maxiter+1; iter++)
   {
     _timer.start("residual");
-    residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
+    // residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
+    residual(maxlevel, d[maxlevel], umg[maxlevel], fmg[maxlevel]);
     d[maxlevel]->fill_bdry(0);
     _timer.stop("residual");
     res = d[maxlevel]->norm();
     if(iter==0)
     {
-      tol = fmax(this->tol_abs, this->tol_rel*res);
+      tol = fmax(this->_tol_abs, this->_tol_rel*res);
       if(print) printf("-mg- ---tol= %10.3e ---\n", tol);
     }
     if(print) printf("-mg- %3d %10.3e\n", iter, res);
     if(res <= tol)
     {
-      _fem->vectormg2vector(u, *umg[0]);
+      // _model->vectormg2vector(u, *umg[0]);
+      // u.equal(*umg[0]);
       return iter;
     }
     mgstep(maxlevel, umg, fmg, d, w, tol);
@@ -140,42 +150,47 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
   if(l==_nlevels-1)
   {
     _timer.start("solvecoarse");
-    _mgsmoother[l]->solve(*u[l], *f[l]);
+    // std::cerr << "\n BEFORE u\n";
+    // u[l]->save(std::cerr);
+    // std::cerr << "\n BEFORE f\n";
+    // f[l]->save(std::cerr);
+    _mgsmoother[l]->solve(u[l], f[l]);
+    // std::cerr << "\n AFTER u\n";
+    // u[l]->save(std::cerr);
     _timer.stop("solvecoarse");
   }
   else
   {
     _timer.start("smooth");
-    _mgsmoother[l]->pre(*w[l], *d[l]);
+    _mgsmoother[l]->pre(w[l], d[l]);
     _timer.stop("smooth");
     _timer.start("update");
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
-    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
+    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
     _timer.stop("update");
 
     _timer.start("transfer");
-    _mgtransfer[l]->restrict(*d[l+1], *d[l]);
+    _mgtransfer[l]->restrict(d[l+1], d[l]);
     _timer.stop("transfer");
 
-//    f[l+1] = d[l+1];
     f[l+1]->equal(*d[l+1]);
     u[l+1]->fill(0.0);
     mgstep(l+1, u, f, d, w, tol);
 
     _timer.start("transfer");
-    _mgtransfer[l]->prolongate(*w[l], *u[l+1]);
+    _mgtransfer[l]->prolongate(w[l], u[l+1]);
     _timer.stop("transfer");
-    _timer.start("residual");
-    residual(l, *d[l], *u[l], *f[l]);
-    _timer.stop("residual");
+    // _timer.start("residual");
+    // residual(l, *d[l], *u[l], *f[l]);
+    // _timer.stop("residual");
     _timer.start("update");
-    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
+    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
     _timer.stop("update");
     _timer.start("smooth");
-    _mgsmoother[l]->post(*w[l], *d[l]);
+    _mgsmoother[l]->post(w[l], d[l]);
     _timer.stop("smooth");
     _timer.start("update");
-    _mgupdate[l]->addUpdate(*w[l], *u[l], *d[l]);
+    _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
     _timer.stop("update");
   }

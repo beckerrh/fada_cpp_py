@@ -52,7 +52,7 @@ void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0,
   std::shared_ptr<armamat> bounds;
   if(bp==nullptr)
   {
-    bounds = std::unique_ptr<armamat>(new armamat(2, dim));
+    bounds = std::shared_ptr<armamat>(new armamat(2, dim));
     for(int i=0;i<dim;i++)
     {
       (*bounds)(0, i) = 0.0;
@@ -70,6 +70,6 @@ void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0,
     {
       n[i] = int(pow(2,nlevelmax-1-l))*(n0[i]-1)+1;
     }
-    _grids[l] = std::unique_ptr<GridInterface>(new UniformGrid(n, bounds));
+    _grids[l] = std::shared_ptr<GridInterface>(new UniformGrid(n, bounds));
   }
 }

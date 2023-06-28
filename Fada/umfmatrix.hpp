@@ -20,7 +20,6 @@ protected:
   double* Control;
   double* Info;
   void* Symbolic, * Numeric;
-  SparseMatrix _sp;
   arma::uword n;
   #ifdef _LONG_LONG
     const long long* sb;
@@ -31,16 +30,15 @@ protected:
   #endif
   const double* mb;
 
-  void init();
+  std::shared_ptr<MatrixInterface const> _matrix;
 
 public:
   ~UmfMatrix();
   UmfMatrix();
   UmfMatrix( const UmfMatrix& umfmatrix);
-  
-  const SparseMatrix& getSparseMatrix() const {return _sp;}
-  SparseMatrix& getSparseMatrix() {return _sp;}
+
   void save(std::ostream& os, arma::file_type datatype = arma::arma_binary) const;
+  void init(std::shared_ptr<MatrixInterface const> matrix);
   void computeLu();
   void solve(armavec& x, const armavec& b) const;
 };

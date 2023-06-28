@@ -10,18 +10,11 @@
 #include "../sparsematrix.hpp"
 
 /*-------------------------------------------------*/
-void Stencil2d::_boundary(NodeVector& out) const
+template <int N>
+void Stencil2d <N>::_boundary(NodeVector& out) const
 {
-  // for(int ix=0;ix<_nx;ix++)
-  // {
-  //   out.atp(ix,0)    = 0.0;
-  //   out.atp(ix,_ny-1) = 0.0;
-  // }
-  // for(int iy=0;iy<_ny;iy++)
-  // {
-  //   out.atp(0,iy)    = 0.0;
-  //   out.atp(_nx-1,iy) = 0.0;
-  // }
+  // std::cerr << "_boundary() _nx="<<_nx << "_ny=" << _ny <<"\n";
+  //  std::cerr << "Stencil2d9() _coef="<<_coef.t();
   for (int ix = 0; ix < _nx; ix++)
   {
     out.at(ix, 0)       = 0.0;
@@ -187,7 +180,8 @@ void Stencil2d9::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d9::get_sparse_matrix(SparseMatrix& sp) const
+// std::shared_ptr<MatrixInterface> Stencil2d9::get_sparse_matrix() const
+void Stencil2d9::get_locations_values(arma::umat& locations, armavec& values) const
 {
   // (nx+2)*(ny+2) - nx*ny + nx*ny - (nx-2)*(ny-2) = 4*(nx+ny)
 //   int size = 9*(_nx-2)*(_ny-2) + 4*(_nx+_ny);
@@ -259,7 +253,8 @@ void Stencil2d9::get_sparse_matrix(SparseMatrix& sp) const
   int size = 9 * (_nx - 2) * (_ny - 2) + 4 * (_nx + _ny);
   int ofsx = _ny;
   int i, j;
-  Construct_Elements ce(size);
+  // Construct_Elements ce(size);
+  Construct_Elements ce(locations, values, size);
 
   for (int ix = 1; ix < _nx - 1; ix++)
   {
@@ -320,17 +315,22 @@ void Stencil2d9::get_sparse_matrix(SparseMatrix& sp) const
 //  std::cerr << "locations i " << locations.row(0);
 //  std::cerr << "locations j " << locations.row(1);
 //  std::cerr << "values " << values.t();
-  sp.set_elements(ce.locations(), ce.values());
+// return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+// return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+// locations = ce.locations();
+// values = ce.values();
 }
 
 /*-------------------------------------------------*/
 void Stencil2d5::set_grid(const armaicvec& n, const armavec& coef)
 {
+   // std::cerr << "Stencil2d5() _coef="<<_coef.t() << "n=" << n.t() <<"\n";
   _seam.set_size(n + 2);
   assert(n.n_elem == 2);
   _nx   = n[0];
   _ny   = n[1];
   _coef = coef;
+  // std::cerr << "Stencil2d5() _nx="<<_nx << "_ny=" << _ny <<"\n";
 //  std::cerr << "Stencil2d9() _coef="<<_coef.t();
 }
 
@@ -338,6 +338,7 @@ void Stencil2d5::set_grid(const armaicvec& n, const armavec& coef)
 void Stencil2d5::dot(NodeVector& out, const NodeVector& in, double d) const
 {
   arma::vec::fixed <5> coef = d * _coef;
+  // std::cerr << "Stencil2d5::dot() _nx="<<_nx << "_ny=" << _ny <<"\n";
 
   // for(int ix=0;ix<_nx;ix++)
   // {
@@ -413,7 +414,7 @@ void Stencil2d5::gauss_seidel1(NodeVector& out, const NodeVector& in) const
   //                               );
   //   }
   // }
-  out.at(0, 0) = d0inv *in.at(0, 0);
+  out.at(0, 0) = d0inv * in.at(0, 0);
   for (int iy = 1; iy < _ny; iy++)
   {
     out.at(0, iy) = d0inv * (
@@ -442,6 +443,7 @@ void Stencil2d5::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 /*-------------------------------------------------*/
 void Stencil2d5::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 {
+  // std::cerr << "Stencil2d5::gauss_seidel2()\n";
 //  double omega = 0.8;
   double omega = 1.0;
   double d0inv = 1.0 / _coef[2] * omega;
@@ -457,6 +459,8 @@ void Stencil2d5::gauss_seidel2(NodeVector& out, const NodeVector& in) const
   //                               );
   //   }
   // }
+  // std::cerr << "in="<<in<<"\n";
+  // std::cerr << "_nx="<<_nx<< "_ny="<<_ny<<"\n";
   out.at(_nx - 1, _ny - 1) = d0inv * in.at(_nx - 1, _ny - 1);
   for (int iy = _ny - 2; iy >= 0; iy--)
   {
@@ -473,18 +477,21 @@ void Stencil2d5::gauss_seidel2(NodeVector& out, const NodeVector& in) const
       );
     for (int iy = _ny - 2; iy >= 0; iy--)
     {
+      // std::cerr << "outtt " << out.at(ix, iy) << " in " << in.at(ix, iy);
       out.at(ix, iy) = d0inv * (
         in.at(ix, iy)
         - _coef[3] * out.at(ix, iy + 1)
         - _coef[4] * out.at(ix + 1, iy)
         );
+        // std::cerr << "  outtt " << out.at(ix, iy) << "\n";
     }
   }
+  // std::cerr << "out="<<out<<"\n";
   _boundary(out);
 }
 
 /*-------------------------------------------------*/
-void Stencil2d5::get_sparse_matrix(SparseMatrix& sp) const
+void Stencil2d5::get_locations_values(arma::umat& locations, armavec& values) const
 {
 //   // (nx+2)*(ny+2) - nx*ny + nx*ny - (nx-2)*(ny-2) = 4*(nx+ny)
 //   int size = 5*(_nx-2)*(_ny-2) + 4*(_nx+_ny);
@@ -547,12 +554,12 @@ void Stencil2d5::get_sparse_matrix(SparseMatrix& sp) const
 //   sp.set_elements(ce.locations(), ce.values());
 
 
-
   int size = 5 * (_nx - 2) * (_ny - 2) + 2 * _nx + 2 * (_ny - 2);
   int ofsx = _ny;
   // std::cerr << "_nx _ny " << _nx << " " << _ny << " ofsx " << ofsx  << "\n";
   int i, j;
-  Construct_Elements ce(size);
+  // Construct_Elements ce(size);
+  Construct_Elements ce(locations, values, size);
 
   for (int ix = 1; ix < _nx - 1; ix++)
   {
@@ -587,8 +594,8 @@ void Stencil2d5::get_sparse_matrix(SparseMatrix& sp) const
     i = ofsx * (_nx - 1) + iy;
     ce.add(i, i, 1);
   }
-//  std::cerr << "locations i " << locations.row(0);
-//  std::cerr << "locations j " << locations.row(1);
-//  std::cerr << "values " << values.t();
-  sp.set_elements(ce.locations(), ce.values());
+  // locations[:] = ce.locations();
+  // values[:] = ce.values();
+  // return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
+  // return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
 }

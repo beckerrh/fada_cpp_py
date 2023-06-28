@@ -13,9 +13,9 @@
 /*-------------------------------------------------*/
 std::ostream& operator<<(std::ostream& os, const NodeVector& v)
 {
-//  const armavec& tarma =static_cast<const armavec&>(v);
-//  os << tarma.t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
-  os << v.data().t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
+ const armavec& tarma =static_cast<const armavec&>(v);
+ os << tarma.t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
+  // os << v.data().t()<< "n=" << v.n().t()<< "ofs=" << v.ofs().t();
   return os;
 }
 

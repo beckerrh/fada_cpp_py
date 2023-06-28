@@ -9,7 +9,7 @@
 #ifndef typedefs_h
 #define typedefs_h
 
-//#define _LONG_LONG
+// #define _LONG_LONG
 
 #include  <armadillo>
 

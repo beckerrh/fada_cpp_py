@@ -18,7 +18,6 @@ class NodeVector;
 class SeamVector : public armavec
 {
 protected:
-  // armavec _data;
   armaicvec _n, _ofs;
   int _ofsp;
   void set_ofs()
@@ -40,8 +39,6 @@ protected:
   }
 
 public:
-  // SeamVector() : _data(), _n(), _ofs() {}
-  // SeamVector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
   SeamVector() : armavec(), _n(), _ofs() {}
   SeamVector(const armaicvec& n) : armavec(arma::prod(n)), _n(n)
   {
@@ -54,7 +51,6 @@ public:
   }
   void set_size(const armaicvec& n)
   {
-    //    std::cerr << "SeamVector::set_size() n = " << n.t();
     _n = n;
     set_ofs();
     armavec::set_size(arma::prod(n));

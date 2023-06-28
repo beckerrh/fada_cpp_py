@@ -11,27 +11,28 @@
 
 #include  "nodevector.hpp"
 #include  "seamvector.hpp"
-class SparseMatrix;
 
+class MatrixInterface;
 /*-------------------------------------------------*/
+template<int N>
 class Stencil3d
 {
 protected:
+  arma::vec::fixed<N> _coef;
   mutable SeamVector _seam;
   int _nx, _ny, _nz;
   void _boundary(NodeVector& out) const;
+public:
+  void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{out<<_coef;}
 };
 
 /*-------------------------------------------------*/
-class Stencil3d27 : public Stencil3d
+class Stencil3d27 : public Stencil3d<27>
 {
-protected:
-  arma::vec::fixed<27> _coef;
-
 public:
-  Stencil3d27() {}
-  Stencil3d27(const Stencil3d27& stencil) {}
-  Stencil3d27(const armaicvec& n, const armavec& coef)
+  Stencil3d27() : Stencil3d<27>() {}
+  Stencil3d27(const Stencil3d27& stencil) : Stencil3d<27>(stencil) {}
+  Stencil3d27(const armaicvec& n, const armavec& coef) : Stencil3d<27>()
   {
     set_grid(n, coef);
   }
@@ -41,19 +42,16 @@ public:
   void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
   void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
   void dot(NodeVector& out, const NodeVector& in, double d) const;
-  void get_sparse_matrix(SparseMatrix& sp) const;
+  void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
 /*-------------------------------------------------*/
-class Stencil3d7 : public Stencil3d
+class Stencil3d7 : public Stencil3d<7>
 {
-protected:
-  arma::vec::fixed<7> _coef;
-
 public:
-  Stencil3d7() {}
-  Stencil3d7(const Stencil3d7& stencil) {}
-  Stencil3d7(const armaicvec& n, const armavec& coef)
+  Stencil3d7() : Stencil3d<7>() {}
+  Stencil3d7(const Stencil3d7& stencil) : Stencil3d<7>(stencil) {}
+  Stencil3d7(const armaicvec& n, const armavec& coef) : Stencil3d<7>()
   {
     set_grid(n, coef);
   }
@@ -63,7 +61,7 @@ public:
   void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
   void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
   void dot(NodeVector& out, const NodeVector& in, double d) const;
-  void get_sparse_matrix(SparseMatrix& sp) const;
+  void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
 #endif /* stencil3d_hpp */

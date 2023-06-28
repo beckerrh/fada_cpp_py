@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.15)
 PROJECT(fada)
 #
 #----------------------------------------------------------
-SET(CMAKE_BUILD_TYPE "Release")
+# SET(CMAKE_BUILD_TYPE "Release")
 # SET(CMAKE_BUILD_TYPE "Debug")
 #
 SET(CMAKE_CXX_STANDARD 14)
@@ -24,6 +24,7 @@ SET(PACKAGES
   Armadillo
   superlu
   amgcl
+	Eigen3
 )
 SET(LINK_LIBRARIES "")
 SET(INCLUDE_DIRECTORIES "")
@@ -94,6 +95,6 @@ ENDFOREACH(PYBINFILE)
 
 #----------------------------------------------------------
 INSTALL(TARGETS ${FADALIB} DESTINATION lib)
-INSTALL(TARGETS pyfada DESTINATION lib)
+INSTALL(TARGETS pyfada DESTINATION ${CMAKE_INSTALL_PREFIX})
 INSTALL(TARGETS fada DESTINATION ${CMAKE_INSTALL_PREFIX})
 INSTALL(TARGETS testarma DESTINATION ${CMAKE_INSTALL_PREFIX})

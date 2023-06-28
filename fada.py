@@ -42,8 +42,10 @@ class FadaRun:
             # description='utility',
             usage='''fada <command> [<args>]
                     commands are:
-                    compile     compile library and/or project
-                    test        run test
+                    cmake      cmake
+                    compile    compile library
+                    copypython compile library
+                    test       run test
                     ''')
         parser.add_argument('command', help='subcommand to run')
         parser.add_argument('-t', default = self.CMAKE_BUILD_TYPES[0], help='build type', choices=self.CMAKE_BUILD_TYPES)
@@ -56,13 +58,19 @@ class FadaRun:
             self.cmake(build_type=args['t'], verbose=args['verbose'], cleanlib=args['cleanlib'])
         elif args['command']=='compile':
             self.compile(build_type=args['t'], verbose=args['verbose'])
+        elif args['command']=='copypython':
+            self.copypython(verbose=args['verbose'])
         else:
             raise ValueError(f"unknown subcommand {args['command']}")
-
+    def copypython(self, verbose):
+        files = self.sourcedir.glob("*.py")
+        for file in files:
+            shutil.copy(file, self.installdir)
     def cmake(self, build_type=None, verbose=False, cleanlib=False):
         if build_type is None: build_type=self.CMAKE_BUILD_TYPES[0]
         localbuilddir = self.builddir / build_type
         if verbose:
+            print ('compile', f"{build_type=} {cleanlib=}")
             print ('compile: sourcedir', self.sourcedir)
             print ('compile: installdir', self.installdir)
             print ('compile: builddir', self.builddir)
@@ -77,6 +85,8 @@ class FadaRun:
         os.chdir(localbuilddir)
         cmakeoptions = " -DCMAKE_BUILD_TYPE="+build_type + " -DCMAKE_INSTALL_PREFIX="+str(self.installdir)
         command = "cmake " + str(self.sourcedir) + cmakeoptions
+        if verbose:
+            print ('compile: command', command)
         returncode = runsubprocess(command)
     def compile(self, build_type=None, verbose=False):
         if build_type is None: build_type=self.CMAKE_BUILD_TYPES[0]

@@ -162,69 +162,80 @@ void UmfMatrix::save(std::ostream& os, arma::file_type datatype) const
   #endif
 }
 /*---------------------------------------------------------*/
-void UmfMatrix::init()
+void UmfMatrix::init(std::shared_ptr<MatrixInterface const> matrix)
 {
-  n = _sp.nrows();
-  mb = _sp.values().begin();
+  _matrix = matrix;
+  if(std::dynamic_pointer_cast<SparseMatrix const>(matrix))
+  {
+    std::shared_ptr<SparseMatrix const> _sp = std::dynamic_pointer_cast<SparseMatrix const>(matrix);
+    n = _sp->nrows();
+    mb = _sp->values().begin();
+    #ifdef _LONG_LONG
+      sb = (const long long*) _sp->rows().begin();
+      cb = (const long long*) _sp->cols().begin();
+    #else
+      sb = (const int*) _sp->rows().begin();
+      cb = (const int*) _sp->cols().begin();
+    #endif
+  }
+  else
+  {
+    std::cerr<<"*** ERROR UmfMatrix: unknown sparse matrix\n";
+    assert(0);
+    exit(1);
+  }
   #ifdef _LONG_LONG
     umfpack_dl_free_symbolic (&Symbolic);
-    sb = (const long long*) _sp.rows().begin();
-    cb = (const long long*) _sp.cols().begin();
     int status = umfpack_dl_symbolic(n, n, sb, cb, NULL, &Symbolic, Control, Info);
     if(status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      std::cerr<<"*** ERROR UmfMatrix: umfpack_symbolic failed\n";
-      _sp.save(std::cerr);
-      assert(0);
-      exit(1);
     }
   #else
     umfpack_di_free_symbolic (&Symbolic);
-    sb = (const int*) _sp.rows().begin();
-    cb = (const int*) _sp.cols().begin();
     int status = umfpack_di_symbolic(n, n, sb, cb, NULL, &Symbolic, Control, Info);
     if(status != UMFPACK_OK)
     {
       umfpack_di_report_info(Control, Info);
       umfpack_di_report_status(Control, status);
-      std::cerr<<"*** ERROR UmfMatrix: umfpack_symbolic failed\n";
-      _sp.save(std::cerr);
-      assert(0);
-      exit(1);
     }
   #endif
+  if(status != UMFPACK_OK)
+  {
+    std::cerr<<"*** ERROR UmfMatrix: umfpack_symbolic failed\n";
+    matrix->save(std::cerr);
+    assert(0);
+    exit(1);
+  }
 }
 /*---------------------------------------------------------*/
 void UmfMatrix::computeLu()
 {
-  init();
+  std::shared_ptr<SparseMatrix const> _sp = std::dynamic_pointer_cast<SparseMatrix const>(_matrix);
+  assert(_sp);
   #ifdef _LONG_LONG
-    umfpack_dl_free_numeric (&Numeric);
     int status = umfpack_dl_numeric(sb, cb, mb, Symbolic, &Numeric, Control, Info);
     if(status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      std::ofstream file("MATRIX_NOT_OK");
-      _sp.save(file);
-      assert(0);
-      exit(1);
     }
   #else
-    umfpack_di_free_numeric (&Numeric);
     int status = umfpack_di_numeric(sb, cb, mb, Symbolic, &Numeric, Control, Info);
     if(status != UMFPACK_OK)
     {
       umfpack_di_report_info(Control, Info);
       umfpack_di_report_status(Control, status);
-      std::ofstream file("MATRIX_NOT_OK");
-      _sp.save(file);
-      assert(0);
-      exit(1);
     }
   #endif
+  if(status != UMFPACK_OK)
+  {
+    std::ofstream file("MATRIX_NOT_OK");
+    _matrix->save(file);
+    assert(0);
+    exit(1);
+  }
 }
 /*---------------------------------------------------------*/
 void UmfMatrix::solve(armavec& x, const armavec& b) const
@@ -240,7 +251,6 @@ void UmfMatrix::solve(armavec& x, const armavec& b) const
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
       std::ofstream file("MATRIX_NOT_OK");
-      //      _sp.save(file, arma::arma_ascii);
       std::cerr<<"*** ERROR UmfMatrix::Solve(): umfpack_dl_solve failed\n";
       assert(0);
       exit(1);
@@ -252,7 +262,6 @@ void UmfMatrix::solve(armavec& x, const armavec& b) const
       umfpack_di_report_info(Control, Info);
       umfpack_di_report_status(Control, status);
       std::ofstream file("MATRIX_NOT_OK");
-      //      _sp.save(file, arma::arma_ascii);
       std::cerr<<"*** ERROR UmfMatrix::Solve(): umfpack_dl_solve failed\n";
       assert(0);
       exit(1);

@@ -10,15 +10,14 @@
 #include  <carma>
 
 /*-------------------------------------------------*/
-SolverLaplacePy::SolverLaplacePy(const UniformMultiGridPy& umg, std::string femtype, std::string matrixtype, std::string smoothertype)
+SolverLaplacePy::SolverLaplacePy(const UniformMultiGridPy& umg, const std::map<std::string,std::string>& parameters)
 {
   auto mggrid = std::make_shared<UniformMultiGrid>(umg);
-//  mggrid->set_size(nlevelmax, nlevels, n0);
-  set_data(mggrid, femtype, matrixtype, smoothertype);
+  set_data(mggrid, parameters);
 }
 
 /*-------------------------------------------------*/
 pybind11::array_t<double> SolverLaplacePy::get_solution()
 {
-  return carma::mat_to_arr<double>(_u.data());
+  return carma::mat_to_arr<double>(SolverLaplace::get_solution());
 }

@@ -3,76 +3,71 @@ import numpy as np
 import time
 
 #-----------------------------------------------------------------#
-def testsparameters(nlevelmin, nlevelmax, parameters, paramname, getMgSolver, title):
+def testsparameters(pname, parameters, methods, getMgSolver, title):
   import matplotlib.pyplot as plt
-  nlevelmaxs = np.arange(nlevelmin, nlevelmax)
   times, iters, Ns = {}, {}, []
-  for param in parameters:
-    times[param] = []
-    iters[param] = []
-  for nlevelmax in nlevelmaxs:
-    for param in parameters:
-      umg, solver = getMgSolver(nlevelmax, param)
-      print("nlevelmax", nlevelmax, "nall", umg.nall())
+  for method in methods:
+    times[method] = []
+    iters[method] = []
+  for parameter in parameters:
+    for method in methods:
+      umg, solver = getMgSolver(parameter, method)
+      print("parameter", parameter, "nall", umg.nall())
       t0 = time.time()
       iter = solver.testsolve(print=False)
       t1 = time.time()
-      iters[param].append(iter)
-      times[param].append(t1-t0)
+      iters[method].append(iter)
+      times[method].append(t1-t0)
     Ns.append(umg.nall())
-#  print("Ns", Ns)
+  if pname=="N":
+      plabel = r'$\log_{10}(N)$'
+      pplot = np.log10(Ns)
+  else:
+      plabel = pname
+      pplot = np.array(parameters)
   fig = plt.figure()
   ax = fig.add_subplot(211)
-  ax.set_xlabel(r'$\log_{10}(N)$')
+  ax.set_xlabel(plabel)
   ax.set_ylabel(r'it')
   ax.set_title(f"iter")
-  for param in parameters:
-      ax.plot(np.log10(Ns), iters[param], '-x', label=f"{param}")
+  for method in methods:
+      ax.plot(pplot, iters[method], '-x', label=f"{method}")
   ax.legend()
   ax = fig.add_subplot(212)
-  ax.set_xlabel(r'$\log_{10}(N)$')
+  ax.set_xlabel(plabel)
   ax.set_ylabel(r't')
   ax.set_title(f"time")
-  for param in parameters:
-      ax.plot(np.log10(Ns), times[param], '-x', label=f"{param}")
-#      ax.plot(np.log10(Ns), np.log10(times[param]), '-x', label=f"{param}")
+  for method in methods:
+      ax.plot(pplot, np.log10(times[method]), '-x', label=f"{method}")
   ax.legend()
-  fig.suptitle(f"{title} {umg.dim()}d param={paramname}")
+  fig.suptitle(f"{title} {umg.dim()}d")
   plt.show()
 
 #-----------------------------------------------------------------#
-def testsmoothers(n, nlevelmax=12, femtype="Q1", matrixtype="Full"):
-  def get(nlevelmax, param):
+def testsmoothers(n=np.array([3,3]), nlevelmax=10, femtype="Q1", matrixtype="Trapez"):
+  def get(nlevelmax, method):
     nlevels = nlevelmax
     umg = pyfada.UniformMultiGrid(nlevelmax, nlevels, n)
-    solver = pyfada.SolverLaplace(umg, femtype, matrixtype, param)
+    solver = pyfada.SolverLaplace(umg, femtype, matrixtype, method)
     return umg, solver
   smoothers = ['Jac', 'GS1', 'GS2', 'GS']
-  pname = "smoother"
-  title = f"fem={femtype} {matrixtype}"
-  testsparameters(nlevelmin=3, nlevelmax=nlevelmax, parameters=smoothers, paramname=pname, getMgSolver=get, title=title)
+  title = f"smoother comapre fem={femtype} {matrixtype}"
+  parameters = np.arange(4, nlevelmax)
+  testsparameters(pname="N", parameters=parameters, methods=smoothers, getMgSolver=get, title=title)
 
 
 #-----------------------------------------------------------------#
-def testcoarsesolve(n, nlevelmin, nlevelmax, femtype="Q1", matrixtype="Full", smoothertype="Jac"):
-  def get(nlevelmax, param):
-    nlevels = param
-    if param==-1: nlevels=nlevelmax
-    umg = pyfada.UniformMultiGrid(nlevelmax, nlevels, n)
-    solver = pyfada.SolverLaplace(umg, femtype, matrixtype, smoothertype)
+def testcoarsesolve(n=np.array([3,3,3]), nlevels=7, stenciltype="Trapez", smoothertype="GS"):
+  def get(param, method):
+    umg = pyfada.UniformMultiGrid(nlevels, param, n)
+    solver = pyfada.SolverLaplace(umg=umg, parameters={"stenciltype":stenciltype, "matrixtype":method, "smoothertype":smoothertype})
     return umg, solver
-  nlevels = np.arange(1,nlevelmin)
-  nlevels = [1, -1]
-  pname = "nlevels"
-  title = f"fem={femtype} {matrixtype}"
-  testsparameters(nlevelmin=nlevelmin, nlevelmax=nlevelmax, parameters=nlevels, paramname=pname, getMgSolver=get, title=title)
+  parameters = np.arange(nlevels-3, nlevels)
+  title = f"coarse solver {stenciltype=}"
+  testsparameters(pname="nlevels", parameters=parameters, methods=["matrix"], getMgSolver=get, title=title)
 
 
 #=================================================================#
 if __name__ == '__main__':
-#  testcoarsesolve(np.array([3,3]), nlevelmin=6, nlevelmax=11)
-#  testcoarsesolve(np.array([3,3,3]), nlevelmin=3, nlevelmax=6)
-#  testsmoothers(np.array([3,3]), nlevelmax=9)
-  testsmoothers(np.array([3,3]), nlevelmax=9, matrixtype="Trapez")
-#  testsmoothers(np.array([3,3,3]), nlevelmax=7)
-#  testsmoothers(np .array([3,3,3]), nlevelmax=7, matrixtype="Q1Trapez")
+    testcoarsesolve()
+    # testsmoothers()

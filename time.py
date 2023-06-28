@@ -2,10 +2,10 @@ import pyfada
 import numpy as np
 import time, os, psutil
 #-----------------------------------------------------------------#
-def test(n, nlevelmax=12, femtype="Q1", matrixtype="Full", smoothertype="Jac"):
+def test(n, nlevelmax=12, stenciltype="Trapez", matrixtype="stencil", smoothertype="GS"):
   nlevels = nlevelmax
   umg = pyfada.UniformMultiGrid(nlevelmax, nlevels, n)
-  solver = pyfada.SolverLaplace(umg, femtype, matrixtype, smoothertype)
+  solver = pyfada.SolverLaplace(umg, stenciltype, matrixtype, smoothertype)
   t0 = time.time()
   iter = solver.testsolve(problem="DirichletRhsOne")
   t1 = time.time()

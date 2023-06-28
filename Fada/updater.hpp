@@ -15,16 +15,24 @@
 
 
 /*-------------------------------------------------*/
-class UpdaterSimple : public UpdaterInterface
+class UpdaterConstant : public UpdaterInterface
 {
 protected:
+  double _omega;
   std::shared_ptr<VectorInterface> _mem;
-  std::shared_ptr<MatrixInterface> _mat;
-//  int _level;
+  std::shared_ptr<MatrixInterface const> _mat;
 
 public:
-  void addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& r, bool print=false);
-  void setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls");
+  UpdaterConstant(double omega=1) : UpdaterInterface() {_omega=omega;}
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
+  void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls");
+};
+
+/*-------------------------------------------------*/
+class UpdaterSimple : public UpdaterConstant
+{
+public:
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
 };
 
 /*-------------------------------------------------*/
@@ -32,7 +40,7 @@ class Updater : public UpdaterInterface
 {
 protected:
   mutable std::vector<std::shared_ptr<VectorInterface>> _mem;
-  std::shared_ptr<MatrixInterface> _mat;
+  std::shared_ptr<MatrixInterface const> _mat;
   std::string _type, _solutiontype, _status;
   bool _scale;
   mutable double _rnorm, _condition, _conditionmax, _conditionmean;
@@ -41,9 +49,9 @@ protected:
   mutable int _nmemory, _nextmemory, _niterafterrestar;
   mutable armamat _H;
   mutable armavec _b, _x;
-  VectorInterface& getV(int i);
-  VectorInterface& getAV(int i);
-  void _computeSmallSystem(int index, int nmemory, const VectorInterface& r);
+  std::shared_ptr<VectorInterface> getV(int i);
+  std::shared_ptr<VectorInterface> getAV(int i);
+  void _computeSmallSystem(int index, int nmemory, std::shared_ptr<VectorInterface const> r);
   void _matrixVectorProduct(int index) const;
   void restart();
 
@@ -52,8 +60,8 @@ public:
   Updater();
   Updater(const Updater& updater);
   Updater& operator=( const Updater& updater);
-  void setParameters(const FiniteElementInterface& fem, const GridInterface& grid, std::shared_ptr<MatrixInterface> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls");
-  void addUpdate(const VectorInterface& w, VectorInterface& u, VectorInterface& r, bool print=false);
+  void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls");
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
 };
 
 #endif /* updater_h */

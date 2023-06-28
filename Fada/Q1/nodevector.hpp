@@ -14,10 +14,11 @@
 #include  "../vectorinterface.hpp"
 
 /*-------------------------------------------------*/
-class NodeVector : public VectorInterface
+// class NodeVector : public VectorInterface
+class NodeVector : public armavec
 {
 protected:
-  armavec _data;
+  // armavec _data;
   armaicvec _n, _ofs;
   int _ofsp;
   void set_ofs()
@@ -42,34 +43,38 @@ protected:
   }
 
 public:
-  NodeVector() : _data(), _n(), _ofs() {}
-  NodeVector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
+  // NodeVector() : _data(), _n(), _ofs() {}
+  // NodeVector(const armaicvec& n) : _data(arma::prod(n)), _n(n)
+  NodeVector() : armavec(), _n(), _ofs() {}
+  NodeVector(const armaicvec& n) : armavec(arma::prod(n)), _n(n)
   {
     set_ofs();
     //    assert(0);
   }
   NodeVector& operator=(const NodeVector& v)
   {
-    _data = v.data();
+    armavec::operator=(v);
+    // _data = v.data();
     assert(arma::all(_n==v.n()));
     return *this;
   }
   NodeVector& operator=(const armavec& v)
   {
-    _data = v;
+    armavec::operator=(v);
+    // _data = v;
     return *this;
   }
-  NodeVector& operator*=(double d)
-  {
-    _data *= d;
-    return *this;
-  }
+  // NodeVector& operator*=(double d)
+  // {
+  //   _data *= d;
+  //   return *this;
+  // }
   void set_size(const armaicvec& n)
   {
     //    std::cerr << "NodeVector::set_size() n = " << n.t();
     _n = n;
     set_ofs();
-    _data.set_size(arma::prod(n));
+    armavec::set_size(arma::prod(n));
   }
   void set_size(const NodeVector& u)
   {
@@ -79,64 +84,76 @@ public:
   int dim() const {return (int) _n.n_elem;}
   const armaicvec& n() const {return _n;}
   const armaicvec& ofs() const {return _ofs;}
-  armavec& data()
-  {
-    return _data;
-  }
-  const armavec& data() const
-  {
-    return _data;
-  }
+  // armavec& data()
+  // {
+  //   return _data;
+  // }
+  // const armavec& data() const
+  // {
+  //   return _data;
+  // }
   double& at(int ix, int iy)
   {
-    return _data[_ofs[0]*ix+iy];
+    return (*this)[_ofs[0]*ix+iy];
   }
   const double& at(int ix, int iy) const
   {
-    return _data[_ofs[0]*ix+iy];
+    return (*this)[_ofs[0]*ix+iy];
   }
   double& at(int ix, int iy, int iz)
   {
-    return _data[_ofs[0]*ix+_ofs[1]*iy+iz];
+    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
   const double& at(int ix, int iy, int iz) const
   {
-    return _data[_ofs[0]*ix+_ofs[1]*iy+iz];
+    return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz];
   }
-  void fill(double d)
-  {
-    _data.fill(d);
-  }
-  void add(double d, const VectorInterface& v)
-  {
-//    std::cerr << "??? " << data().n_elem<<"\n";
-//    std::cerr << "??? " << v.data().n_elem<<"\n";
-    _data += d*v.data();
-    //    this->arma() += d*v.arma();
-  }
-  void equal(const VectorInterface& v)
-  {
-    _data = v.data();
-  }  double dot(const VectorInterface& v) const
-  {
-    //    return arma::dot(this->arma(),v.arma());
-    return arma::dot(_data,v.data());
-  }
+  // void fill(double d)
+  // {
+  //   _data.fill(d);
+  // }
   void scale(double d)
   {
     //    this->arma() *= d;
-    _data *= d;
+    // _data *= d;
+    *this *= d;
   }
   double norm(double p=2) const
   {
-    return arma::norm(_data,p);
-    //    return arma::norm(this->arma(),p);
+    const armavec& tarma = static_cast<const armavec&>(*this);
+    return arma::norm(tarma,p);
   }
-  void output(const std::string& filename) const
+  // void add(double d, const VectorInterface& v)
+  // {
+  //   _data += d*v.data();
+  // }
+  // void equal(const VectorInterface& v)
+  // {
+  //   _data = v.data();
+  // }
+  // double dot(const VectorInterface& v) const
+  // {
+  //   //    return arma::dot(this->arma(),v.arma());
+  //   return arma::dot(_data,v.data());
+  // }
+  void add(double d, const NodeVector& v)
   {
-    arma::hdf5_name spec(filename);
-    //    this->arma().save(spec);
-    _data.save(spec);
+    armavec& tarma = static_cast<armavec&>(*this);
+    const armavec& varma = static_cast<const armavec&>(v);
+    tarma += d*varma;
+    // _data += d*v.data();
+  }
+  void equal(const NodeVector& v)
+  {
+    armavec::operator=(v);
+    // _data = v.data();
+  }
+  double dot(const NodeVector& v) const
+  {
+    //    return arma::dot(this->arma(),v.arma());
+    const armavec& tarma = static_cast<const armavec&>(*this);
+    const armavec& varma = static_cast<const armavec&>(v);
+    return arma::dot(tarma, varma);
   }
 };
 std::ostream& operator<<(std::ostream& os, const NodeVector& v);

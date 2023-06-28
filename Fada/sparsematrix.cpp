@@ -9,11 +9,6 @@
 #include "sparsematrix.hpp"
 
 /*-------------------------------------------------*/
-SparseMatrix::SparseMatrix(const arma::umat& locations, const armavec& values)
-{
-  set_elements(locations, values);
-}
-/*-------------------------------------------------*/
 void SparseMatrix::save(std::ostream& out, arma::file_type datatype) const
 {
   for(int i=0;i<nrows();i++)
@@ -52,7 +47,7 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
   for(int i=0;i<n;i++)
   {
     arma::uword index = ind[i];
-    arma::uword row = locations(0,index);
+    arma::uword row = locations.at(0,index);
     if(row!=prec)
     {
       _rows[count] = i;
@@ -60,9 +55,67 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
       count++;
     }
     _values[i] = values[index];
-    _cols[i] = locations(1,index);
+    _cols[i] = locations.at(1,index);
   }
   _rows[nrows] = n;
+  _diags.set_size(nrows);
+  for(int i=0;i<nrows;i++)
+  {
+    for(int pos=_rows[i];pos<_rows[i+1];pos++)
+    {
+      if(_cols[pos]==i)
+      {
+        _diags[i] = pos;
+        break;
+      }
+    }
+  }
+  // for(int i=0;i<nrows;i++)
+  // {
+  //   std::cerr << "\nrow = " << i << " " << _cols[_diags[i]] << "\n";
+  //   for(int pos=_rows[i];pos<_rows[i+1];pos++)
+  //   {
+  //     std::cerr << " " << _cols[pos];
+  //   }
+  // }
  // save(std::cerr);
 //  assert(0);
+}
+/*-------------------------------------------------*/
+void SparseMatrix::jacobi(armavec& out, const armavec& in) const
+{
+  for(int i=0;i<nrows();i++)
+  {
+    out[i] = in[i]/_values[_diags[i]];
+  }
+}
+/*-------------------------------------------------*/
+void SparseMatrix::gauss_seidel1(armavec& out, const armavec& in) const
+{
+  for(int i=0;i<nrows();i++)
+  {
+    double val = in[i];
+    for(int pos=_rows[i];pos<_rows[i+1];pos++)
+    {
+      int j = _cols[pos];
+      if(j>=i) break;
+      val -= _values[pos] * out[j];
+    }
+    out[i] = val/_values[_diags[i]];
+  }
+}
+/*-------------------------------------------------*/
+void SparseMatrix::gauss_seidel2(armavec& out, const armavec& in) const
+{
+  for(int i=nrows()-1;i>=0;i--)
+  {
+    double val = in[i];
+    for(int pos=_rows[i+1]-1;pos>=_rows[i];pos--)
+    {
+      int j = _cols[pos];
+      if(j<=i) break;
+      val -= _values[pos] * out[j];
+    }
+    out[i] = val/_values[_diags[i]];
+  }
 }

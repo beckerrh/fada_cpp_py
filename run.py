@@ -5,7 +5,7 @@ import pyvista
 
 #-----------------------------------------------------------------#
 def vista(umg, plot=True):
-  solver = pyfada.SolverLaplace(umg, "Q1", "Full", "Jac")
+  solver = pyfada.SolverLaplace(umg, "Trapez", "stencil", "Jac")
   print("solver", solver)
   iter = solver.testsolve()
   plotter = pyvista.Plotter()

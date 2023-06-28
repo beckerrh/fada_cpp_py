@@ -9,32 +9,49 @@
 #include  "smootherumf.hpp"
 #include  "matrixinterface.hpp"
 #include  "vectorinterface.hpp"
+#include  "feminterface.hpp"
 
 /*-------------------------------------------------*/
-void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface> matrix)
+void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface const> matrix)
 {
-  _matrix = matrix;
-  matrix->get_sparse_matrix(_umfmat.getSparseMatrix());
+  _umfmat.init(matrix);
+  // _matrix = matrix;
+  // std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  // if(stencil)
+  // {
+  //   std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  //   arma::umat locations;
+  //   armavec values;
+  //   stencil->get_locations_values(locations, values);
+  //   typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
+  //   _umfmat.init(std::shared_ptr<MatrixInterface>(new SparseMatrixDef(locations, values)));
+  // }
+  // else
+  // {
+  //   _umfmat.init(matrix);
+  // }
+  // typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
+  // std::shared_ptr<SparseMatrixDef const> spmatrix = std::dynamic_pointer_cast<SparseMatrixDef const>(matrix);
+  // if(spmatrix)
+  // {
+  //   _umfmat.init(spmatrix);
+  // }
+  // else
+  // {
+  //   std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  //   arma::umat locations;
+  //   armavec values;
+  //   stencil->get_locations_values(locations, values);
+  //   _umfmat.init(std::shared_ptr<MatrixInterface>(new SparseMatrixDef(locations, values)));
+  // }
   _umfmat.computeLu();
 }
 /*-------------------------------------------------*/
-void SmootherUmf::solve(VectorInterface& out, const VectorInterface& in) const
+// void SmootherUmf::solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const
+// {
+//   _umfmat.solve(out->data(), in->data());
+// }
+void SmootherUmf::solve(armavec& out, const armavec& in) const
 {
-  _umfmat.solve(out.data(), in.data());
-//    u.fill(0);
-//    for(int iter=0;iter<100;iter++)
-//    {
-//      d = f;
-//      _umfmat.getSparseMatrix().dot(d.data(), u.data(), -1.0);
-//  //    residual(l, d, u, f);
-//      double res = d.norm();
-//      printf("-- %3d %10.2e\n",iter, res);
-//      if(res<1e-14) break;
-//      _mgmatrix(l)->jacobi(w,d);
-//      u.add(1.0, w);
-//  //    _mgupdatesmooth(l)->addUpdate(w, u, d);
-//    }
-//    _spmat.solve(w.data(), f.data());
-//    w.add(-1.0,u);
-//    assert(w.norm()<1e-12);
+  _umfmat.solve(out, in);
 }

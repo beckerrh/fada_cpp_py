@@ -18,7 +18,7 @@ class SolverLaplacePy : public SolverLaplace
 {
 protected:
 public:
-  SolverLaplacePy(const UniformMultiGridPy& umg, std::string femtype, std::string matrixtype, std::string smoothertype);
+  SolverLaplacePy(const UniformMultiGridPy& umg, const std::map<std::string,std::string>& parameters);
 
   pybind11::array_t<double> get_solution();
 };
