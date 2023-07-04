@@ -8,15 +8,18 @@
 
 #include  <cassert>
 #include  <armadillo>
+#include  "../coarsesolverinterface.hpp"
+#include  "../coarsesolver_arma.hpp"
 #include  "../matrixinterface.hpp"
 #include  "../uniformgrid.hpp"
 #include  "../smoothersimple.hpp"
 #include  "../smootherumf.hpp"
+#include  "../sparsematrix.hpp"
+#include  "../sparsematrix_arma.hpp"
 #include  "q1.hpp"
 #include  "nodevector.hpp"
 #include  "transferq1.hpp"
-#include  "stencil2d.hpp"
-#include  "stencil3d.hpp"
+#include  "stencil.hpp"
 
 double lin2d(double x, double y) {return 3.0*x+2.0*y;}
 double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
@@ -25,7 +28,7 @@ double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
 /*-------------------------------------------------*/
 void Q1::set_grid(std::shared_ptr<GridInterface const> grid)
 {
-  std::shared_ptr<UniformGrid const> ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+  auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
   assert(ug);
   assert(ug->dx().n_elem == ug->dim());
   assert(ug->n().n_elem == ug->dim());
@@ -39,30 +42,53 @@ void Q1::set_grid(std::shared_ptr<GridInterface const> grid)
 /*-------------------------------------------------*/
 std::shared_ptr<VectorInterface> Q1::newVector(std::shared_ptr<GridInterface const> grid) const
 {
-  // std::shared_ptr<VectorInterface> p = std::make_unique<NodeVector>();
   std::shared_ptr<VectorInterface> p = std::make_unique<Vector<NodeVector>>();
-  // p->set_size(grid.n()+2);
   p->set_size(grid->n());
   p->fill_bdry(0);
   return p;
 }
 /*-------------------------------------------------*/
-std::shared_ptr<SmootherInterface> Q1::newSmoother(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
+std::shared_ptr<SmootherInterface const> Q1::newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
 {
-  return std::shared_ptr<SmootherInterface>(new SmootherSimple(type, matrix));
-}
-/*-------------------------------------------------*/
-std::shared_ptr<SmootherInterface> Q1::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
-{
-  return std::shared_ptr<SmootherInterface>(new SmootherSimple("GS", matrix));
-  std::shared_ptr<MatrixInterface const> matrixforumf;
-  std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  auto stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
+  if (_smoothertype=="stencil")
+  {
+    assert(stencil);
+    return stencil;
+  }
+  std::shared_ptr<MatrixInterface const> matrixforumf = matrix;
   if(stencil)
   {
-    std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
     arma::umat locations;
     armavec values;
     stencil->get_locations_values(locations, values);
+    typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
+    matrixforumf = std::make_shared<SparseMatrixDef>(locations, values);
+  }
+  if(_matrixtype=="arma")
+  {
+    return std::make_shared<Smoother<SmootherSimple<SparseMatrix_arma>,Vector<armavec>>>(_smoother, matrixforumf);
+  }
+  return std::make_shared<Smoother<SmootherSimple<SparseMatrix>,Vector<armavec>>>(_smoother, matrixforumf);
+}
+/*-------------------------------------------------*/
+std::shared_ptr<CoarseSolverInterface const> Q1::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
+{
+  // return std::shared_ptr<SmootherInterface>(new CoarseSolver<SmootherSimple,Vector<armavec>>("GS", matrix));
+  auto armamat = std::dynamic_pointer_cast<Matrix<SparseMatrix_arma,Vector<armavec>> const>(matrix);
+  if(armamat)
+  {
+    return std::make_shared<CoarseSolver<CoarseSolver_arma, Vector<armavec>>>(matrix,_coarsesolver);
+  }
+  std::shared_ptr<MatrixInterface const> matrixforumf;
+  auto stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
+  if(stencil)
+  {
+    arma::umat locations;
+    armavec values;
+    stencil->get_locations_values(locations, values);
+    // std::cerr << "locations\n" << locations << "\n";
+    // std::cerr << "values\n" << values << "\n";
     typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
     matrixforumf = std::make_shared<SparseMatrixDef>(locations, values);
   }
@@ -71,13 +97,13 @@ std::shared_ptr<SmootherInterface> Q1::newCoarseSolver(std::string type, std::sh
     matrixforumf = matrix;
   }
   // return std::shared_ptr<SmootherInterface>(new Smoother<arma::sp_mat, Vector<armavec>>(matrix));
-  return std::shared_ptr<SmootherInterface>(new Smoother<SmootherUmf, Vector<armavec>>(matrixforumf));
+  return std::shared_ptr<CoarseSolverInterface>(new CoarseSolver<SmootherUmf, Vector<armavec>>(matrixforumf,_coarsesolver));
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<MatrixInterface> Q1::newMatrix(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<MatrixInterface const> Q1::newMatrix(std::shared_ptr<GridInterface const> grid) const
 {
-  std::shared_ptr<FemAndMatrixInterface> p = newStencil(grid);
+  std::shared_ptr<FemAndMatrixAndSmootherInterface> p = newStencil(grid);
   if(_matrixtype=="stencil")
   {
     return p;
@@ -87,9 +113,16 @@ std::shared_ptr<MatrixInterface> Q1::newMatrix(std::shared_ptr<GridInterface con
     arma::umat locations;
     armavec values;
     p->get_locations_values(locations, values);
-    // return std::shared_ptr<MatrixInterface>(new SparseMatrix(locations, values));
-    typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
-    return std::shared_ptr<MatrixInterface>(new SparseMatrixDef(locations, values));
+    if(_matrixtype=="arma")
+    {
+      return std::make_shared<Matrix<SparseMatrix_arma,Vector<armavec>>>(locations, values);
+    }
+    else
+    {
+      typedef Matrix<SparseMatrix,Vector<armavec>> SparseMatrixDef;
+      return std::make_shared<SparseMatrixDef>(locations, values);
+      // return std::shared_ptr<MatrixInterface>(new SparseMatrixDef(locations, values));
+    }
   }
 }
 /*-------------------------------------------------*/
@@ -106,7 +139,7 @@ void Q1::rhs_random(NodeVector& v) const
   v *= 100*_vol;
 }
 /*-------------------------------------------------*/
-std::shared_ptr<FemAndMatrixInterface> Q12d::newStencil(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<FemAndMatrixAndSmootherInterface> Q12d::newStencil(std::shared_ptr<GridInterface const> grid) const
 {
   std::shared_ptr<UniformGrid const> ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
   assert(ug);
@@ -125,7 +158,7 @@ std::shared_ptr<FemAndMatrixInterface> Q12d::newStencil(std::shared_ptr<GridInte
     coef[7] = -1.0/3.0;
     coef[8] = -1.0/3.0;
     // return std::shared_ptr<MatrixInterface>(new Matrix<Stencil2d9,Vector<NodeVector>>(n, coef));
-    return std::shared_ptr<FemAndMatrixInterface>(new FemAndMatrix<Stencil2d9,Vector<NodeVector>>(n, coef));
+    return std::shared_ptr<FemAndMatrixAndSmootherInterface>(new FemAndMatrixAndSmoother<Stencil2d9,Vector<NodeVector>>(n, coef, _smoother));
   }
   else if(_stenciltype=="Trapez")
   {
@@ -136,7 +169,7 @@ std::shared_ptr<FemAndMatrixInterface> Q12d::newStencil(std::shared_ptr<GridInte
     coef[3] = -1.0;
     coef[4] = -1.0;
     // return std::shared_ptr<MatrixInterface>(new Matrix<Stencil2d5,Vector<NodeVector>>(n, coef));
-    return std::shared_ptr<FemAndMatrixInterface>(new FemAndMatrix<Stencil2d5,Vector<NodeVector>>(n, coef));
+    return std::shared_ptr<FemAndMatrixAndSmootherInterface>(new FemAndMatrixAndSmoother<Stencil2d5,Vector<NodeVector>>(n, coef, _smoother));
   }
   else
   {
@@ -146,7 +179,7 @@ std::shared_ptr<FemAndMatrixInterface> Q12d::newStencil(std::shared_ptr<GridInte
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<TransferInterface> Q12d::newTransfer(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<TransferInterface const> Q12d::newTransfer(std::shared_ptr<GridInterface const> grid) const
 {
   std::shared_ptr<UniformGrid const> ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
   // const UniformGrid* ug = dynamic_cast<const UniformGrid*>(grid);
@@ -158,7 +191,7 @@ return std::shared_ptr<TransferInterface>(new Transfer<TransferQ12d,Vector<NodeV
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<FemAndMatrixInterface> Q13d::newStencil(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<FemAndMatrixAndSmootherInterface> Q13d::newStencil(std::shared_ptr<GridInterface const> grid) const
 {
   std::shared_ptr<UniformGrid const> ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
   // const UniformGrid* ug = dynamic_cast<const UniformGrid*>(grid);
@@ -180,7 +213,7 @@ std::shared_ptr<FemAndMatrixInterface> Q13d::newStencil(std::shared_ptr<GridInte
     coef[15] = coef[17] = coef[19] = coef[21] = coef[23] = coef[25] = d2;
     coef[ 0] = coef[ 2] = coef[ 6] = coef[ 8] = coef[18] = coef[20] = coef[24] = coef[26] = d3;
     // return std::shared_ptr<MatrixInterface>(new Matrix<Stencil3d27,Vector<NodeVector>>(n, coef));
-    return std::shared_ptr<FemAndMatrixInterface>(new FemAndMatrix<Stencil3d27,Vector<NodeVector>>(n, coef));
+    return std::shared_ptr<FemAndMatrixAndSmootherInterface>(new FemAndMatrixAndSmoother<Stencil3d27,Vector<NodeVector>>(n, coef, _smoother));
   }
   else if(_stenciltype=="Trapez")
   {
@@ -196,7 +229,7 @@ std::shared_ptr<FemAndMatrixInterface> Q13d::newStencil(std::shared_ptr<GridInte
     coef[6] = -1.0;
     coef * dx[0];
     // return std::shared_ptr<MatrixInterface>(new Matrix<Stencil3d7,Vector<NodeVector>>(n, coef));
-    return std::shared_ptr<FemAndMatrixInterface>(new FemAndMatrix<Stencil3d7,Vector<NodeVector>>(n, coef));
+    return std::shared_ptr<FemAndMatrixAndSmootherInterface>(new FemAndMatrixAndSmoother<Stencil3d7,Vector<NodeVector>>(n, coef, _smoother));
   }
   else
   {
@@ -206,7 +239,7 @@ std::shared_ptr<FemAndMatrixInterface> Q13d::newStencil(std::shared_ptr<GridInte
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<TransferInterface> Q13d::newTransfer(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<TransferInterface const> Q13d::newTransfer(std::shared_ptr<GridInterface const> grid) const
 {
   std::shared_ptr<UniformGrid const> ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
   // const UniformGrid* ug = dynamic_cast<const UniformGrid*>(grid);

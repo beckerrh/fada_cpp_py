@@ -14,7 +14,6 @@
 
 class GridInterface;
 class VectorInterface;
-// class SparseMatrix;
 /*-------------------------------------------------*/
 class MatrixInterface
 {
@@ -37,8 +36,6 @@ template<typename MATRIX, class VECTOR>
 class Matrix : public  virtual MATRIX, public  virtual MatrixInterface
 {
 protected:
-  MATRIX& get() { return static_cast<MATRIX&>(*this); }
-  MATRIX const& get() const { return static_cast<MATRIX const&>(*this); }
   const VECTOR& getVector(std::shared_ptr<VectorInterface const> u) const {return static_cast<const VECTOR&>(*u);}
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
 
@@ -46,10 +43,12 @@ public:
   Matrix<MATRIX, VECTOR>() : MATRIX(), MatrixInterface() {}
   Matrix<MATRIX, VECTOR>(const arma::umat& locations, const armavec& values): MATRIX(locations,values), MatrixInterface(){}
 
+  MATRIX& get() { return static_cast<MATRIX&>(*this); }
+  MATRIX const& get() const { return static_cast<MATRIX const&>(*this); }
   void dot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().dot(getVector(out),getVector(in), d);}
-  void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
-  void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
-  void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
+  // void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
+  // void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
+  // void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{get().save(out, datatype);}
 };
 

@@ -7,6 +7,7 @@
 //
 
 #include  <pybind11/stl.h>
+#include  "uniformgridpy.hpp"
 #include  "uniformmultigridpy.hpp"
 #include  "solverlaplacepy.hpp"
 
@@ -16,12 +17,21 @@
 PYBIND11_MODULE(pyfada, m) {
     m.doc() = "fada plugin";
 #
+    pybind11::class_<UniformGridPy>(m, "UniformGrid")
+      .def(pybind11::init<>())
+      .def(pybind11::init<pybind11::array_t<int>& >(),pybind11::arg("n0"))
+      .def("get_dimensions", &UniformGridPy::get_dimensions)
+      .def("dim", &UniformGridPy::dim)
+      .def("__repr__", &UniformGridPy::toString)
+      .def("savehdf5", &UniformGridPy::savehdf5)
+      .def("loadhdf5", &UniformGridPy::loadhdf5);
+#
     pybind11::class_<UniformMultiGridPy>(m, "UniformMultiGrid")
       .def(pybind11::init<int, int, pybind11::array_t<int>& >(), pybind11::arg("nlevelmax"),pybind11::arg("nlevels"),pybind11::arg("n0"))
       .def("get_dimensions", &UniformMultiGridPy::get_dimensions)
-//      .def("n", &UniformMultiGridPy::n)
-//      .def("bounds", &UniformMultiGridPy::bounds)
-//      .def("dx", &UniformMultiGridPy::dx)
+    //      .def("n", &UniformMultiGridPy::n)
+    //      .def("bounds", &UniformMultiGridPy::bounds)
+    //      .def("dx", &UniformMultiGridPy::dx)
       .def("dim", &UniformMultiGridPy::dim)
       .def("nall", &UniformMultiGridPy::nall)
       .def("__repr__", &UniformMultiGridPy::toString);

@@ -6,18 +6,19 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#ifndef uniformmultigridpy_hpp
-#define uniformmultigridpy_hpp
+#ifndef uniformgridpy_hpp
+#define uniformgridpy_hpp
 
-#include  "../Fada/uniformmultigrid.hpp"
+#include  "../Fada/uniformgrid.hpp"
 #include  <pybind11/pybind11.h>
 #include  <pybind11/numpy.h>
 
 /*-------------------------------------------------*/
-class UniformMultiGridPy : public UniformMultiGrid
+class UniformGridPy : public UniformGrid
 {
 public:
-  UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n);
+  UniformGridPy() : UniformGrid() {}
+  UniformGridPy(pybind11::array_t<int>& n);
   pybind11::array_t<int> get_dimensions() const;
 //  pybind11::array_t<int> n();
 //  pybind11::array_t<double> dx();

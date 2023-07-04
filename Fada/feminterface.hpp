@@ -12,6 +12,7 @@
 
 #include  "typedefs.hpp"
 #include  "matrixinterface.hpp"
+#include  "smootherinterface.hpp"
 
 class GridInterface;
 class VectorInterface;
@@ -45,17 +46,17 @@ public:
 };
 
 /*-------------------------------------------------*/
-class FemAndMatrixInterface : public virtual FemInterface, public virtual MatrixInterface
+class FemAndMatrixAndSmootherInterface : public virtual FemInterface, public virtual MatrixInterface, public virtual SmootherInterface
 {
 public:
-  virtual ~FemAndMatrixInterface() {}
-  FemAndMatrixInterface() : FemInterface(), MatrixInterface() {}
-  FemAndMatrixInterface(const FemAndMatrixInterface& fem) : FemInterface(fem), MatrixInterface(fem) {}
+  virtual ~FemAndMatrixAndSmootherInterface() {}
+  FemAndMatrixAndSmootherInterface() : FemInterface(), MatrixInterface(), SmootherInterface() {}
+  FemAndMatrixAndSmootherInterface(const FemAndMatrixAndSmootherInterface& fem) : FemInterface(fem), MatrixInterface(fem), SmootherInterface(fem) {}
 };
 
 /*-------------------------------------------------*/
 template<typename FEM, class VECTOR>
-class FemAndMatrix : public virtual FemAndMatrixInterface, public FEM
+class FemAndMatrixAndSmoother : public virtual FemAndMatrixAndSmootherInterface, public FEM
 {
 protected:
   FEM& get() { return static_cast<FEM&>(*this); }
@@ -64,16 +65,18 @@ protected:
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
 
 public:
-  FemAndMatrix<FEM, VECTOR>() : FemAndMatrixInterface(), FEM() {}
-  FemAndMatrix<FEM, VECTOR>(const armaicvec& n, const armavec& dx) : FemAndMatrixInterface(), FEM(n,dx) {}
+  FemAndMatrixAndSmoother<FEM, VECTOR>() : FemAndMatrixAndSmootherInterface(), FEM() {}
+  FemAndMatrixAndSmoother<FEM, VECTOR>(const armaicvec& n, const armavec& coef, std::string smoother) : FemAndMatrixAndSmootherInterface(), FEM(n, coef, smoother) {}
 
   void get_locations_values(arma::umat& locations, armavec& values) const{get().get_locations_values(locations, values);}
   void set_grid(const armaicvec& n, const armavec& dx){get().set_grid(n, dx);}
   void dot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().dot(getVector(out),getVector(in), d);}
-  void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
-  void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
-  void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{get().save(out, datatype);}
+  void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().presmooth(getVector(out),getVector(in));}
+  void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().postsmooth(getVector(out),getVector(in));}
+  // void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
+  // void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
+  // void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
 };
 
 

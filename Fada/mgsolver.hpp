@@ -13,6 +13,7 @@
 
 #include  "typedefs.hpp"
 
+#include  "coarsesolverinterface.hpp"
 #include  "modelinterface.hpp"
 #include  "updaterinterface.hpp"
 #include  "matrixinterface.hpp"
@@ -30,10 +31,11 @@ class MgSolver
 protected:
   Timer _timer;
   size_t _nlevels;
-  std::shared_ptr<ModelInterface> _model;
-  std::vector<std::shared_ptr<MatrixInterface> > _mgmatrix;
-  std::vector<std::shared_ptr<SmootherInterface> > _mgsmoother;
-  std::vector<std::shared_ptr<TransferInterface> > _mgtransfer;
+  std::shared_ptr<ModelInterface const> _model;
+  std::vector<std::shared_ptr<MatrixInterface const> > _mgmatrix;
+  std::vector<std::shared_ptr<SmootherInterface const> > _mgsmoother;
+  std::vector<std::shared_ptr<TransferInterface const> > _mgtransfer;
+  std::shared_ptr<CoarseSolverInterface const> _mgcoarsesolver;
   mutable std::vector<std::shared_ptr<UpdaterInterface> > _mgupdate, _mgupdatesmooth;
   int _maxiter;
   double _tol_rel, _tol_abs;
@@ -50,7 +52,7 @@ public:
   {
     set_parameters();
   }
-  void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> fem, std::string smoothertype, int updatemem=0);
+  void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model, int updatemem=0);
   std::string toString() const;
   int solve(bool print=true);
   std::shared_ptr<VectorInterface const> getU() const {return _mgmem[0][0];}

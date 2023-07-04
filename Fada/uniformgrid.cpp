@@ -10,6 +10,23 @@
 #include "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
+void UniformGrid::savehdf5(const std::string& filename) const
+{
+  _n.save(arma::hdf5_name(filename,"n"));
+  _dx.save(arma::hdf5_name(filename,"dx",arma::hdf5_opts::append));
+  _bounds.save(arma::hdf5_name(filename,"bounds",arma::hdf5_opts::append));
+}
+/*-------------------------------------------------*/
+void UniformGrid::loadhdf5(const std::string& filename)
+{
+  _n.load(arma::hdf5_name(filename,"n"));
+  _dx.load(arma::hdf5_name(filename,"dx"));
+  _bounds.load(arma::hdf5_name(filename,"bounds"));
+  // std::cerr <<"_n\n" << _n << "\n";
+  // std::cerr <<"loadhdf5\n" << this->toString() << "\n";
+}
+
+/*-------------------------------------------------*/
 std::string UniformGrid::toString() const
 {
   std::stringstream ss;

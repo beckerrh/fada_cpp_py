@@ -14,7 +14,6 @@
 #include  <string>
 
 /*-------------------------------------------------*/
-// class SmootherUmf : public SmootherInterface
 class SmootherUmf
 {
 protected:
@@ -25,9 +24,8 @@ protected:
 public:
   SmootherUmf() {}
   SmootherUmf(const SmootherUmf& smoother) {}
-  SmootherUmf(std::shared_ptr<MatrixInterface const> matrix) {set_matrix(matrix);}
+  SmootherUmf(std::shared_ptr<MatrixInterface const> matrix, std::string type) {set_matrix(matrix);}
 
-  // void solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const;
   void solve(armavec& out, const armavec& in) const;
 };
 

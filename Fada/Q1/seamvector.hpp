@@ -84,4 +84,4 @@ public:
 };
 std::ostream& operator<<(std::ostream& os, const SeamVector& v);
 
-#endif /* SeamVector_h */
+#endif

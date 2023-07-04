@@ -27,9 +27,8 @@ public:
   virtual void equal(const VectorInterface& v)=0;
   virtual void add(double d, const VectorInterface& v)=0;
   virtual void scale(double d)=0;
-  // virtual armavec& data() =0;
-  // virtual const armavec& data() const=0;
-  virtual void save(std::ostream& os, arma::file_type ftype=arma::arma_ascii) const=0;
+  virtual void save(std::ostream& os, arma::file_type ftype=arma::arma_binary) const=0;
+  virtual void savehdf5(const std::string& filename) const=0;
 };
 /*-------------------------------------------------*/
 template<typename VECTOR>
@@ -40,17 +39,13 @@ protected:
   {
     const Vector<VECTOR>* p = dynamic_cast< const Vector<VECTOR>* >(&v);
     return p->get();
-    // return std::dynamic_pointer_cast<VECTOR const&>(&v);
-    // return static_cast<VECTOR const&>(v);
   }
 public:
-  VECTOR& get() { return static_cast<VECTOR&>(*this); }
-  VECTOR const& get() const { return static_cast<VECTOR const&>(*this); }
   Vector<VECTOR>() : VECTOR(), VectorInterface() {}
   Vector<VECTOR>(const armaicvec& n) : VECTOR(n), VectorInterface() {}
 
-  // armavec& data()  {return get().data();}
-  // const armavec& data() const {return get().data();}
+  VECTOR& get() { return static_cast<VECTOR&>(*this); }
+  VECTOR const& get() const { return static_cast<VECTOR const&>(*this); }
   void set_size(const armaicvec& n) {get().set_size(n);}
   void fill_bdry(double d=0) {get().fill_bdry(d);}
   void fill(double d=0) {get().fill(d);}
@@ -59,7 +54,8 @@ public:
   double dot(const VectorInterface& v)const {return get().dot(getVector(v));}
   void equal(const VectorInterface& v) {get().equal(getVector(v));}
   void add(double d, const VectorInterface& v) {get().add(d, getVector(v));}
-   void save(std::ostream& os, arma::file_type ftype=arma::arma_ascii) const{get().save(os,ftype);}
+  void save(std::ostream& os, arma::file_type ftype=arma::arma_binary) const{get().save(os,ftype);}
+  void savehdf5(const std::string& filename) const{get().savehdf5(filename);}
 };
 
 

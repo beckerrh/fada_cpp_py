@@ -23,10 +23,10 @@ int main(int argc, char** argv)
   std::map<std::string,std::string> parameters;
   armaicvec n0;
   int nlevelmax=-1, dim=2;
-  std::string stenciltype("Trapez"), matrixtype("stencil"), smoother("GS");
+  std::string stenciltype("Trapez"), matrixtype("stencil"), smoother("GS"), problem("DirichletRhsOne");
   if(argc%2!=1)
   {
-    std::cerr << "arguments with '-d' or '-m' or '-st' or '-sm'\n";
+    std::cerr << "arguments with '-d' or '-m' or '-st' or '-sm' '-smt' '-p'\n";
     std::cerr << "argc="<<argc<<" argv=" << *argv<<"\n";
     exit(1);
   }
@@ -49,9 +49,17 @@ int main(int argc, char** argv)
     {
       parameters["matrixtype"] = argv[i+1];
     }
-    else if(!strcmp(argv[i], "-sm"))
+    else if(!strcmp(argv[i], "-smt"))
     {
       parameters["smoothertype"] = argv[i+1];
+    }
+    else if(!strcmp(argv[i], "-sm"))
+    {
+      parameters["smoother"] = argv[i+1];
+    }
+    else if(!strcmp(argv[i], "-p"))
+    {
+      problem = argv[i+1];
     }
     else
     {
@@ -77,14 +85,15 @@ int main(int argc, char** argv)
   int updatemem = 0;
   // auto solver = std::make_shared<SolverLaplace>(mggrid, stenciltype, matrixtype, smoother, updatemem);
   auto solver = std::make_shared<SolverLaplace>(mggrid, parameters);
-  int iter = solver->testsolve();
+  int iter = solver->testsolve(true, problem);
   // const NodeVector& u = solver->get_solution();
   // printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
   //
   std::string filename("solution.hdf");
   // u.output(filename);
-    arma::hdf5_name spec(filename);
+  arma::hdf5_name spec(filename);
   solver->get_solution().save(spec);
+  mggrid->get(0)->savehdf5("grid.hdf");
 
   printf("Vous avez utilise le lisseur %s\n", smoother.c_str());
   printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, mggrid->get(0)->nall(), (int)mggrid->dim());

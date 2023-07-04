@@ -24,8 +24,6 @@ protected:
 
 public:
   SolverLaplace() : _model(nullptr), _mggrid(nullptr) {}
-  // SolverLaplace(std::shared_ptr <MultiGridInterface> mggrid, std::string stenciltype, std::string matrixtype, std::string smoothertype = "", int updatelength = 0);
-  // void set_data(std::shared_ptr <MultiGridInterface> mggrid, std::string stenciltype, std::string matrixtype, std::string smoothertype = "", int updatelength = 0);
   SolverLaplace(std::shared_ptr <MultiGridInterface> mggrid, const std::map<std::string,std::string>& parameters);
   void set_data(std::shared_ptr <MultiGridInterface> mggrid, const std::map<std::string,std::string>& parameters);
   std::string toString() const;

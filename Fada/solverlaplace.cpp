@@ -56,40 +56,40 @@ void SolverLaplace::set_data(std::shared_ptr <MultiGridInterface> mggrid, const 
   int updatelength(0);
   for(std::map<std::string,std::string>::const_iterator p = parameters.begin(); p != parameters.end(); p++)
   {
-    if(p->first=="stenciltype")
-    {
-      stenciltype = p->second;
-    }
-    else if(p->first=="matrixtype")
-    {
-      matrixtype = p->second;
-    }
-    else if(p->first=="smoothertype")
-    {
-      smoothertype = p->second;
-    }
-    else if(p->first=="updatelength")
+    // if(p->first=="stenciltype")
+    // {
+    //   stenciltype = p->second;
+    // }
+    // else if(p->first=="matrixtype")
+    // {
+    //   matrixtype = p->second;
+    // }
+    // else if(p->first=="smoothertype")
+    // {
+    //   smoothertype = p->second;
+    // }
+    if(p->first=="updatelength")
     {
       updatelength = std::atoi(p->second.c_str());
     }
-    else
-    {
-      std::cerr<< "unknwon parameter " << p->first << " value=" << p->second << "\n";
-      exit(1);
-    }
+    // else
+    // {
+    //   std::cerr<< "unknwon parameter " << p->first << " value=" << p->second << "\n";
+    //   exit(1);
+    // }
   }
   _mggrid = mggrid;
   size_t dim = mggrid->dim();
   if (dim == 2)
   {
-    _model = std::make_shared<Model<Q12d, Vector<NodeVector>>>(stenciltype, matrixtype);
+    _model = std::make_shared<Model<Q12d, Vector<NodeVector>>>(parameters);
   }
   else if (dim == 3)
   {
-    _model = std::make_shared<Model<Q13d, Vector<NodeVector>>>(stenciltype, matrixtype);
+    _model = std::make_shared<Model<Q13d, Vector<NodeVector>>>(parameters);
   }
   _model->set_grid(mggrid->get(0));
-  _mgsolver.set_sizes(_mggrid, _model, smoothertype, updatelength);
+  _mgsolver.set_sizes(_mggrid, _model, updatelength);
 }
 
 /*-------------------------------------------------*/
@@ -98,7 +98,6 @@ int SolverLaplace::testsolve(bool print, std::string problem)
   // _u.set_size(_mggrid->get(0)->n());
   // _u.fill(0);
   // _f.set_size(_u);
-  // std::cerr << "u " << _u.data().n_elem << " " << _mggrid->get(0)->nall() << "\n";
   if (problem == "DirichletRhsOne")
   {
     _model->rhs_one(get_rhs());
@@ -117,12 +116,17 @@ int SolverLaplace::testsolve(bool print, std::string problem)
     _model->boundary(get_u());
     _model->boundary(get_rhs());
   }
+  else
+  {
+    std::cerr << "unknwon problem " << problem << "\n";
+    assert(0);
+    exit(1);
+  }
 //
-//   _model->vector2vectormg(_mggrid, 0, fmg(0), _f);
-//   _model->vector2vectormg(_mggrid, 0, umg(0), _u);
+  std::shared_ptr <const NodeVector> p = std::dynamic_pointer_cast <const NodeVector>(get_rhs());
+  std::cerr << "f " << p->min() << " " << p->max() << "\n";
   int iter = _mgsolver.solve(print);
   std::cerr << "u " << get_solution().min() << " " << get_solution().max() << "\n";
-//   _model->vectormg2vector(_mggrid, 0, _u, umg(0));
   return iter;
 //  return 0;
 }

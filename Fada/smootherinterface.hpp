@@ -10,6 +10,7 @@
 #define smootherinterface_h
 
 #include  <memory>
+#include  <string>
 
 class MatrixInterface;
 class VectorInterface;
@@ -21,29 +22,24 @@ public:
   SmootherInterface() {}
   SmootherInterface(const SmootherInterface& smoother) {}
 
-  // virtual void set_matrix(std::shared_ptr<MatrixInterface const> matrix) = 0;
-  virtual void solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const = 0;
-  virtual void pre(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {solve(out, in);}
-  virtual void post(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {solve(out, in);}
+  virtual void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const=0;
+  virtual void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const=0;
 };
 
 /*-------------------------------------------------*/
-// template<typename SMOOTHER, typename MATRIX, class VECTOR>
 template<typename SMOOTHER, class VECTOR>
-class Smoother : public SMOOTHER, public SmootherInterface
+class Smoother : public virtual SMOOTHER, public virtual SmootherInterface
 {
 protected:
   SMOOTHER& get() { return static_cast<SMOOTHER&>(*this); }
   SMOOTHER const& get() const { return static_cast<SMOOTHER const&>(*this); }
-  // MATRIX const& getMatrix(std::shared_ptr<MatrixInterface> A) const { return static_cast<MATRIX const&>(*A); }
   const VECTOR& getVector(std::shared_ptr<VectorInterface const> u) const {return static_cast<const VECTOR&>(*u);}
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
 public:
-  // Smoother<SMOOTHER,MATRIX, VECTOR>() : SMOOTHER(), SmootherInterface() {}
   Smoother<SMOOTHER, VECTOR>(std::shared_ptr<MatrixInterface const> matrix) : SMOOTHER(matrix), SmootherInterface() {}
-  void solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().solve(getVector(out), getVector(in));}
-
-  // void set_matrix(std::shared_ptr<MatrixInterface const> A) {get().set_matrix(getMatrix(A));}
+  Smoother<SMOOTHER, VECTOR>(std::string type, std::shared_ptr<MatrixInterface const> matrix) : SMOOTHER(type, matrix), SmootherInterface() {}
+  void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().presmooth(getVector(out), getVector(in));}
+  void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().postsmooth(getVector(out), getVector(in));}
 };
 
 

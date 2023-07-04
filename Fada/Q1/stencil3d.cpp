@@ -6,74 +6,62 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#include  "stencil3d.hpp"
-#include  "../sparsematrix.hpp"
+#include  "stencil.hpp"
+#include  "../construct_elements_matrix.hpp"
 
-/*-------------------------------------------------*/
-template<int N>
-void Stencil3d<N>::_boundary(NodeVector& out) const
-{
-  // for(int ix=0;ix<_nx;ix++)
-  // {
-  //   for(int iy=0;iy<_ny;iy++)
-  //   {
-  //     out.atp(ix,iy,0)    = 0.0;
-  //     out.atp(ix,iy,_nz-1) = 0.0;
-  //   }
-  // }
-  // for(int ix=0;ix<_nx;ix++)
-  // {
-  //   for(int iz=0;iz<_nz;iz++)
-  //   {
-  //     out.atp(ix,0,   iz) = 0.0;
-  //     out.atp(ix,_ny-1,iz) = 0.0;
-  //   }
-  // }
-  // for(int iy=0;iy<_ny;iy++)
-  // {
-  //   for(int iz=0;iz<_nz;iz++)
-  //   {
-  //     out.atp(0,   iy,iz) = 0.0;
-  //     out.atp(_nx-1,iy,iz) = 0.0;
-  //   }
-  // }
-  for (int ix = 0; ix < _nx; ix++)
-  {
-    for (int iy = 0; iy < _ny; iy++)
-    {
-      out.at(ix, iy, 0)       = 0.0;
-      out.at(ix, iy, _nz - 1) = 0.0;
-    }
-  }
-  for (int ix = 0; ix < _nx; ix++)
-  {
-    for (int iz = 0; iz < _nz; iz++)
-    {
-      out.at(ix, 0, iz)       = 0.0;
-      out.at(ix, _ny - 1, iz) = 0.0;
-    }
-  }
-  for (int iy = 0; iy < _ny; iy++)
-  {
-    for (int iz = 0; iz < _nz; iz++)
-    {
-      out.at(0, iy, iz)       = 0.0;
-      out.at(_nx - 1, iy, iz) = 0.0;
-    }
-  }
-}
-
-/*-------------------------------------------------*/
-void Stencil3d27::set_grid(const armaicvec& n, const armavec& coef)
-{
-  _seam.set_size(n + 2);
-  assert(n.n_elem == 3);
-  _nx   = n[0];
-  _ny   = n[1];
-  _nz   = n[2];
-  _coef = coef;
-//  std::cerr << "Stencil3d27() _coef="<<arma::sum(_coef)<<"\n";
-}
+// /*-------------------------------------------------*/
+// template<int N>
+// void Stencil3d<N>::_boundary(NodeVector& out) const
+// {
+//   // for(int ix=0;ix<_nx;ix++)
+//   // {
+//   //   for(int iy=0;iy<_ny;iy++)
+//   //   {
+//   //     out.atp(ix,iy,0)    = 0.0;
+//   //     out.atp(ix,iy,_nz-1) = 0.0;
+//   //   }
+//   // }
+//   // for(int ix=0;ix<_nx;ix++)
+//   // {
+//   //   for(int iz=0;iz<_nz;iz++)
+//   //   {
+//   //     out.atp(ix,0,   iz) = 0.0;
+//   //     out.atp(ix,_ny-1,iz) = 0.0;
+//   //   }
+//   // }
+//   // for(int iy=0;iy<_ny;iy++)
+//   // {
+//   //   for(int iz=0;iz<_nz;iz++)
+//   //   {
+//   //     out.atp(0,   iy,iz) = 0.0;
+//   //     out.atp(_nx-1,iy,iz) = 0.0;
+//   //   }
+//   // }
+//   for (int ix = 0; ix < _nx; ix++)
+//   {
+//     for (int iy = 0; iy < _ny; iy++)
+//     {
+//       out.at(ix, iy, 0)       = 0.0;
+//       out.at(ix, iy, _nz - 1) = 0.0;
+//     }
+//   }
+//   for (int ix = 0; ix < _nx; ix++)
+//   {
+//     for (int iz = 0; iz < _nz; iz++)
+//     {
+//       out.at(ix, 0, iz)       = 0.0;
+//       out.at(ix, _ny - 1, iz) = 0.0;
+//     }
+//   }
+//   for (int iy = 0; iy < _ny; iy++)
+//   {
+//     for (int iz = 0; iz < _nz; iz++)
+//     {
+//       out.at(0, iy, iz)       = 0.0;
+//       out.at(_nx - 1, iy, iz) = 0.0;
+//     }
+//   }
+// }
 
 /*-------------------------------------------------*/
 void Stencil3d27::dot(NodeVector& out, const NodeVector& in, double d) const
@@ -216,16 +204,12 @@ void Stencil3d27::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 // std::shared_ptr<MatrixInterface> Stencil3d27::get_sparse_matrix() const
 void Stencil3d27::get_locations_values(arma::umat& locations, armavec& values) const
 {
-  // (nx+2)*(ny+2)*(nz+2) - nx*ny*nz + nx*ny*z - (nx-2)*(ny-2)*(nz-2)
-  //= 8 + 4*(nx+ny+nz)+2*(nx*ny+nx*nz+ny*nz) -( -8 + 4*(nx+ny+nz) - 2*(nx*ny+nx*nz+ny*nz)  )
-  //= 16 + 4*(nx*ny+nx*nz+ny*nz)
   int size = 27 * (_nx - 2) * (_ny - 2) * (_nz - 2) + 16 + 4 * (_nx * _ny + _nx * _nz + _ny * _nz);
   int ofsy = _nz;
   int ofsx = ofsy * _ny;
 //  std::cerr << "ofsx " << ofsx << " ofsy " << ofsy << " ofsp " << ofsp<< " size " << size << "\n";
   int i, j;
-  Construct_Elements ce(locations, values, size);
-
+  Construct_Elements_Matrix ce(locations, values, size);
   for (int ix = 1; ix < _nx - 1; ix++)
   {
     for (int iy = 1; iy < _ny - 1; iy++)
@@ -233,7 +217,6 @@ void Stencil3d27::get_locations_values(arma::umat& locations, armavec& values) c
       for (int iz = 1; iz < _nz - 1; iz++)
       {
         i = ofsx * ix + ofsy * iy + iz;
-
         j = ofsx * (ix - 1) + ofsy * (iy - 1) + iz - 1;
         ce.add(i, j, _coef[0]);
         j = ofsx * (ix - 1) + ofsy * (iy - 1) + iz;
@@ -355,23 +338,6 @@ void Stencil3d27::get_locations_values(arma::umat& locations, armavec& values) c
       ce.add(i, i, 1);
     }
   }
-  // locations[:] = ce.locations();
-  // values[:] = ce.values();
-  // sp.set_elements(ce.locations(), ce.values());
-  // return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
-  // return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
-}
-
-/*-------------------------------------------------*/
-void Stencil3d7::set_grid(const armaicvec& n, const armavec& coef)
-{
-  _seam.set_size(n + 2);
-  assert(n.n_elem == 3);
-  _nx   = n[0];
-  _ny   = n[1];
-  _nz   = n[2];
-  _coef = coef;
-//  std::cerr << "Stencil3d27() _coef="<<arma::sum(_coef)<<"\n";
 }
 
 /*-------------------------------------------------*/
@@ -530,20 +496,14 @@ void Stencil3d7::gauss_seidel2(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-// std::shared_ptr<MatrixInterface> Stencil3d7::get_sparse_matrix() const
 void Stencil3d7::get_locations_values(arma::umat& locations, armavec& values) const
 {
-  // (nx+2)*(ny+2)*(nz+2) - nx*ny*nz + nx*ny*z - (nx-2)*(ny-2)*(nz-2)
-  //= 8 + 4*(nx+ny+nz)+2*(nx*ny+nx*nz+ny*nz) -( -8 + 4*(nx+ny+nz) - 2*(nx*ny+nx*nz+ny*nz)  )
-  //= 16 + 4*(nx*ny+nx*nz+ny*nz)
   int size = 7 * (_nx - 2) * (_ny - 2) * (_nz - 2) + 2 * _nx * _ny + 2 * _nx * (_nz - 2) + 2 * (_ny - 2) * (_nz - 2);
   int ofsy = _nz;
   int ofsx = ofsy * _ny;
 //  std::cerr << "ofsx " << ofsx << " ofsy " << ofsy << " ofsp " << ofsp<< " size " << size << "\n";
   int i, j;
-  // Construct_Elements ce(size);
-  Construct_Elements ce(locations, values, size);
-
+  Construct_Elements_Matrix ce(locations, values, size);
   for (int ix = 1; ix < _nx - 1; ix++)
   {
     for (int iy = 1; iy < _ny - 1; iy++)
@@ -551,7 +511,6 @@ void Stencil3d7::get_locations_values(arma::umat& locations, armavec& values) co
       for (int iz = 1; iz < _nz - 1; iz++)
       {
         i = ofsx * ix + ofsy * iy + iz;
-
         j = ofsx * (ix - 1) + ofsy * (iy) + iz;
         ce.add(i, j, _coef[0]);
 
@@ -604,9 +563,4 @@ void Stencil3d7::get_locations_values(arma::umat& locations, armavec& values) co
   // std::cerr << "locations i " << locations.row(0);
   // std::cerr << "locations j " << locations.row(1);
   // std::cerr << "values " << values.t();
-  // sp.set_elements(ce.locations(), ce.values());
-  // return std::shared_ptr<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
-  // return std::make_unique<MatrixInterface>(new SparseMatrix(ce.locations(), ce.values()));
-  // locations = ce.locations();
-  // values = ce.values();
 }

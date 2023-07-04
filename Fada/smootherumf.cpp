@@ -16,10 +16,10 @@ void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface const> matrix)
 {
   _umfmat.init(matrix);
   // _matrix = matrix;
-  // std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  // std::shared_ptr<FemAndMatrixAndSmootherInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
   // if(stencil)
   // {
-  //   std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  //   std::shared_ptr<FemAndMatrixAndSmootherInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
   //   arma::umat locations;
   //   armavec values;
   //   stencil->get_locations_values(locations, values);
@@ -38,7 +38,7 @@ void SmootherUmf::set_matrix(std::shared_ptr<MatrixInterface const> matrix)
   // }
   // else
   // {
-  //   std::shared_ptr<FemAndMatrixInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixInterface const>(matrix);
+  //   std::shared_ptr<FemAndMatrixAndSmootherInterface const> stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
   //   arma::umat locations;
   //   armavec values;
   //   stencil->get_locations_values(locations, values);

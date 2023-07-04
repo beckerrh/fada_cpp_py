@@ -40,6 +40,8 @@ public:
   double x(int ix, int iy=0, int iz=0) const {return ix*_dx[0];}
   double y(int ix, int iy, int iz=0) const {return iy*_dx[1];}
   double z(int ix, int iy, int iz) const {return iz*_dx[2];}
+  void savehdf5(const std::string& filename) const;
+  void loadhdf5(const std::string& filename);
 };
 
 

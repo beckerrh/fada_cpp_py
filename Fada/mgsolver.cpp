@@ -21,7 +21,7 @@ void MgSolver::set_parameters(int maxiter, double tol_rel, double tol_abs)
   _tol_abs = tol_abs;
 }
 /*-------------------------------------------------*/
-void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> fem, std::string smoothertype, int updatemem)
+void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model, int updatemem)
 {
   _timer.enrol("smooth");
   _timer.enrol("transfer");
@@ -30,7 +30,7 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   _timer.enrol("solvecoarse");
   //  std::cerr << "mggrid" << *mggrid << "\n";
   _nlevels = mgrid->nlevels();
-  _model = fem;
+  _model = model;
   _mgmem.resize(4);
   for(int i=0;i<_mgmem.size();i++)
   {
@@ -41,19 +41,20 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   {
     _mgmatrix[l] = _model->newMatrix(mgrid->get(l));
   }
-  _mgsmoother.resize(_nlevels);
-  for(int l=0;l<_nlevels;l++)
+  _mgsmoother.resize(_nlevels-1);
+  for(int l=0;l<_nlevels-1;l++)
   {
-    if(l<_nlevels-1)
-    {
-      _mgsmoother[l] = _model->newSmoother(smoothertype, mgrid->get(l), _mgmatrix[l]);
-    }
-    else
-    {
-      _mgsmoother[l] = _model->newCoarseSolver("direct", mgrid->get(l), _mgmatrix[l]);
-    }
+    // if(l<_nlevels-1)
+    // {
+      _mgsmoother[l] = _model->newSmoother(mgrid->get(l), _mgmatrix[l]);
+    // }
+    // else
+    // {
+    //   _mgsmoother[l] = _model->newCoarseSolver("direct", mgrid->get(l), _mgmatrix[l]);
+    // }
     // _mgsmoother[l]->set_matrix(_mgmatrix[l]);
   }
+  _mgcoarsesolver = _model->newCoarseSolver("direct", mgrid->get(_nlevels-1), _mgmatrix[_nlevels-1]);
   _mgtransfer.resize(_nlevels-1);
   for(int l=0;l<_nlevels-1;l++)
   {
@@ -104,7 +105,6 @@ void MgSolver::residual(int l, std::shared_ptr<VectorInterface> r, std::shared_p
   // r->save(std::cerr);
 }
 /*-------------------------------------------------*/
-// int MgSolver::solve(VectorInterface& u, const VectorInterface& f, bool print)
 int MgSolver::solve(bool print)
 {
   VectorMG& umg = _mgmem[0];
@@ -112,10 +112,7 @@ int MgSolver::solve(bool print)
   VectorMG& d   = _mgmem[2];
   VectorMG& w   = _mgmem[3];
 
-  // _model->vector2vectormg(*fmg[0], f);
-  // _model->vector2vectormg(*umg[0], u);
-  // fmg[0]->equal(f);
-  // umg[0]->equal(u);
+  umg[0]->equal(*fmg[0]);
 
   int maxlevel = 0;
   double res, tol=0;
@@ -154,7 +151,8 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
     // u[l]->save(std::cerr);
     // std::cerr << "\n BEFORE f\n";
     // f[l]->save(std::cerr);
-    _mgsmoother[l]->solve(u[l], f[l]);
+    // _mgsmoother[l]->solve(u[l], f[l]);
+    _mgcoarsesolver->solve(u[l], f[l]);
     // std::cerr << "\n AFTER u\n";
     // u[l]->save(std::cerr);
     _timer.stop("solvecoarse");
@@ -162,7 +160,7 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
   else
   {
     _timer.start("smooth");
-    _mgsmoother[l]->pre(w[l], d[l]);
+    _mgsmoother[l]->presmooth(w[l], d[l]);
     _timer.stop("smooth");
     _timer.start("update");
     //    _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
@@ -187,7 +185,7 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
     _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
     _timer.stop("update");
     _timer.start("smooth");
-    _mgsmoother[l]->post(w[l], d[l]);
+    _mgsmoother[l]->postsmooth(w[l], d[l]);
     _timer.stop("smooth");
     _timer.start("update");
     _mgupdate[l]->addUpdate(w[l], u[l], d[l]);
