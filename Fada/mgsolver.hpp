@@ -12,7 +12,6 @@
 #include  <vector>
 
 #include  "typedefs.hpp"
-
 #include  "coarsesolverinterface.hpp"
 #include  "modelinterface.hpp"
 #include  "updaterinterface.hpp"
@@ -45,7 +44,6 @@ protected:
   void mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol);
 
 public:
-
   void set_parameters(int maxiter=30, double tol_rel = 1e-8, double tol_abs = 1e-12);
   ~MgSolver() {}
   MgSolver(bool printtimer=true, bool debug=false): _model(nullptr), _timer(printtimer, debug)

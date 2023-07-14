@@ -29,7 +29,7 @@ public:
 
   void set_size(const armaicvec& n, std::shared_ptr<armamat> bounds=nullptr);
   size_t dim() const {return _n.n_elem;}
-  int nall() const { return arma::prod(_n);}
+  int n_fine() const { return arma::prod(_n);}
   size_t n(int i) const {return _n[i];}
   size_t nx() const {return _n[0];}
   size_t ny() const {return _n[1];}

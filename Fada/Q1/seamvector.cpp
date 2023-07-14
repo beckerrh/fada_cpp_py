@@ -9,7 +9,7 @@
 #include  <stdio.h>
 #include  "seamvector.hpp"
 #include  "../uniformgrid.hpp"
-#include  "nodevector.hpp"
+#include  "gridvector.hpp"
 
 /*-------------------------------------------------*/
 std::ostream& operator<<(std::ostream& os, const SeamVector& v)
@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& os, const SeamVector& v)
 }
 
 /*-------------------------------------------------*/
-void SeamVector::tovector(NodeVector& u) const
+void SeamVector::tovector(GridVector& u) const
 {
   armaicvec n = u.n();
   if (dim() == 2)
@@ -50,7 +50,7 @@ void SeamVector::tovector(NodeVector& u) const
 }
 
 /*-------------------------------------------------*/
-void SeamVector::fromvector(const NodeVector& u)
+void SeamVector::fromvector(const GridVector& u)
 {
   // std::cerr<<"_n="<<_n.t()<<"\n" << "u.n()"<<u.n()<<"\n";
   // std::cerr << "this " << data().t() << "\n";
@@ -86,7 +86,7 @@ void SeamVector::fromvector(const NodeVector& u)
 //
 //
 // /*-------------------------------------------------*/
-// void SeamVector::fill_bdry(double d)
+// void SeamVector::boundary_zero(double d)
 // {
 //   if(dim()==2)
 //   {

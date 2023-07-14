@@ -12,7 +12,7 @@
 #include  <armadillo>
 #include  "../typedefs.hpp"
 
-class NodeVector;
+class GridVector;
 
 /*-------------------------------------------------*/
 class SeamVector : public armavec
@@ -79,8 +79,8 @@ public:
   {
     return (*this)[_ofs[0]*ix+_ofs[1]*iy+iz+_ofsp];
   }
-  void tovector(NodeVector& u) const;
-  void fromvector(const NodeVector& u);
+  void tovector(GridVector& u) const;
+  void fromvector(const GridVector& u);
 };
 std::ostream& operator<<(std::ostream& os, const SeamVector& v);
 

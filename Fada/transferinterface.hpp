@@ -12,7 +12,7 @@
 #include  <memory>
 #include  "typedefs.hpp"
 
-class GridInterface;
+class BoundaryConditions;
 class VectorInterface;
 /*-------------------------------------------------*/
 class TransferInterface
@@ -29,9 +29,6 @@ public:
   TransferInterface(const TransferInterface& transfer)
   {
   }
-
-  virtual void set_grid(const armaicvec& n, const armavec& dx) = 0;
-
   virtual void restrict (std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const = 0;
   virtual void prolongate(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const = 0;
 };
@@ -61,8 +58,6 @@ protected:
     return(static_cast <VECTOR&>(*u));
   }
 
-// const VECTOR& getVector(std::shared_ptr<VectorInterface const>& u) const {return std::static_pointer_cast(u);}
-// VECTOR& getVector(std::shared_ptr<VectorInterface>& u) const{return std::static_pointer_cast(u);}
 public:
   Transfer <TRANSFER, VECTOR>() : TRANSFER(), TransferInterface()
   {
@@ -71,12 +66,16 @@ public:
   Transfer <TRANSFER, VECTOR>(const armaicvec& n, const armavec& dx) : TRANSFER(n, dx), TransferInterface()
   {
   }
-
-  void set_grid(const armaicvec& n, const armavec& dx)
+  Transfer <TRANSFER, VECTOR>(const arma::umat& locations, const armavec& values) : TRANSFER(locations, values), TransferInterface()
   {
-    get().set_grid(n, dx);
   }
+  
 
+  // void set_grid(const armaicvec& n, const armavec& dx)
+  // {
+  //   get().set_grid(n, dx);
+  // }
+  //
   void restrict (std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const { get().restrict (getVector(out), getVector(in)); }
   void prolongate(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const
   {

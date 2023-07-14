@@ -35,16 +35,11 @@ std::string UniformMultiGrid::toString() const
   return ss.str();
 }
 /*-------------------------------------------------*/
-void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bp)
+void UniformMultiGrid::set_size(int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bp)
 {
-  if(nlevels>nlevelmax)
+  if(nlevels==0)
   {
-    std::cerr << nlevels << " = nlevels > nlevelmax = " << nlevelmax << "\n";
-    exit(1);
-  }
-  if(nlevelmax==0)
-  {
-    std::cerr<< " nlevelmax = " << nlevelmax << "\n";
+    std::cerr<< " nlevels = " << nlevels << "\n";
     exit(1);
   }
   arma::uword dim = n0.n_elem;
@@ -68,7 +63,7 @@ void UniformMultiGrid::set_size(int nlevelmax, int nlevels, const armaicvec& n0,
   {
     for(int i=0;i<dim;i++)
     {
-      n[i] = int(pow(2,nlevelmax-1-l))*(n0[i]-1)+1;
+      n[i] = int(pow(2,nlevels-1-l))*(n0[i]-1)+1;
     }
     _grids[l] = std::shared_ptr<GridInterface>(new UniformGrid(n, bounds));
   }

@@ -17,7 +17,7 @@
 class UniformMultiGridPy : public UniformMultiGrid
 {
 public:
-  UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n);
+  UniformMultiGridPy(int nlevels, pybind11::array_t<int>& n);
   pybind11::array_t<int> get_dimensions() const;
 //  pybind11::array_t<int> n();
 //  pybind11::array_t<double> dx();

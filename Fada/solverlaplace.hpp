@@ -12,7 +12,7 @@
 #include  "modelinterface.hpp"
 #include  "multigridinterface.hpp"
 #include  "mgsolver.hpp"
-#include  "Q1/nodevector.hpp"
+#include  "Q1/gridvector.hpp"
 
 /*-------------------------------------------------*/
 class SolverLaplace
@@ -35,16 +35,16 @@ public:
 
   int testsolve(bool print = true, std::string problem = "DirichletRhsOne");
 
-  const NodeVector& get_solution() const
+  const GridVector& get_solution() const
   {
-    std::shared_ptr <const NodeVector> p = std::dynamic_pointer_cast <const NodeVector>(_mgsolver.getU());
+    std::shared_ptr <const GridVector> p = std::dynamic_pointer_cast <const GridVector>(_mgsolver.getU());
     assert(p);
     return(*p);
   }
 
-  NodeVector& get_solution()
+  GridVector& get_solution()
   {
-    std::shared_ptr <NodeVector> p = std::dynamic_pointer_cast <NodeVector>(_mgsolver.getU());
+    std::shared_ptr <GridVector> p = std::dynamic_pointer_cast <GridVector>(_mgsolver.getU());
     assert(p);
     return(*p);
   }

@@ -23,6 +23,7 @@ public:
   MatrixInterface(const MatrixInterface& matrix) {}
 
   virtual void dot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const=0;
+  // virtual void Tdot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const=0;
 
   virtual void jacobi       (std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{assert(0);}
   virtual void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{assert(0);}
@@ -46,9 +47,7 @@ public:
   MATRIX& get() { return static_cast<MATRIX&>(*this); }
   MATRIX const& get() const { return static_cast<MATRIX const&>(*this); }
   void dot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().dot(getVector(out),getVector(in), d);}
-  // void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
-  // void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
-  // void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
+  // void Tdot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().Tdot(getVector(out),getVector(in), d);}
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{get().save(out, datatype);}
 };
 

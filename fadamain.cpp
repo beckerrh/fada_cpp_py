@@ -22,11 +22,11 @@ int main(int argc, char** argv)
 {
   std::map<std::string,std::string> parameters;
   armaicvec n0;
-  int nlevelmax=-1, dim=2;
-  std::string stenciltype("Trapez"), matrixtype("stencil"), smoother("GS"), problem("DirichletRhsOne");
+  int nlevels=-1, dim=2;
+  std::string problem("Random");
   if(argc%2!=1)
   {
-    std::cerr << "arguments with '-d' or '-m' or '-st' or '-sm' '-smt' '-p'\n";
+    std::cerr << "arguments with '-d' or '-m' or '-st' or '-sm' '-smt' '-p' '-bc -tr'\n";
     std::cerr << "argc="<<argc<<" argv=" << *argv<<"\n";
     exit(1);
   }
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     }
     else if(!strcmp(argv[i], "-n"))
     {
-      nlevelmax = atoi(argv[i+1]);
+      nlevels = atoi(argv[i+1]);
     }
     else if(!strcmp(argv[i], "-st"))
     {
@@ -61,6 +61,14 @@ int main(int argc, char** argv)
     {
       problem = argv[i+1];
     }
+    else if(!strcmp(argv[i], "-bc"))
+    {
+      parameters["boundary_condition"] = argv[i+1];
+    }
+    else if(!strcmp(argv[i], "-tr"))
+    {
+      parameters["transfertype"] = argv[i+1];
+    }
     else
     {
       std::cerr << "unknown argument" << argv[i] << "\n";
@@ -71,22 +79,20 @@ int main(int argc, char** argv)
   if(dim==2)
   {
     n0 = {5,5};
-    if(nlevelmax==-1) nlevelmax = 9;
+    if(nlevels==-1) nlevels = 9;
   }
   else
   {
     n0 = {5,5,5};
-    if(nlevelmax==-1) nlevelmax = 6;
+    if(nlevels==-1) nlevels = 6;
   }
-  int nlevels=nlevelmax;
   double t0 = seconds();
   auto mggrid = std::make_shared<UniformMultiGrid>();
-  mggrid->set_size(nlevelmax, nlevels, n0);
+  mggrid->set_size(nlevels, n0);
   int updatemem = 0;
-  // auto solver = std::make_shared<SolverLaplace>(mggrid, stenciltype, matrixtype, smoother, updatemem);
   auto solver = std::make_shared<SolverLaplace>(mggrid, parameters);
   int iter = solver->testsolve(true, problem);
-  // const NodeVector& u = solver->get_solution();
+  // const GridVector& u = solver->get_solution();
   // printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
   //
   std::string filename("solution.hdf");
@@ -95,7 +101,7 @@ int main(int argc, char** argv)
   solver->get_solution().save(spec);
   mggrid->get(0)->savehdf5("grid.hdf");
 
-  printf("Vous avez utilise le lisseur %s\n", smoother.c_str());
-  printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, mggrid->get(0)->nall(), (int)mggrid->dim());
+  printf("Vous avez utilise le lisseur %s\n", parameters["smoother"].c_str());
+  printf("No. Iterations %3d (N = %6d dim = %2d)\n",iter, mggrid->get(0)->n_fine(), (int)mggrid->dim());
   printf("Total time: %6.2f\n", seconds()-t0);
 }

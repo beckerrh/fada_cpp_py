@@ -9,7 +9,7 @@
 #ifndef stencil3d_hpp
 #define stencil3d_hpp
 
-#include  "nodevector.hpp"
+#include  "gridvector.hpp"
 #include  "seamvector.hpp"
 
 class MatrixInterface;
@@ -21,7 +21,7 @@ protected:
   arma::vec::fixed<N> _coef;
   mutable SeamVector _seam;
   int _nx, _ny, _nz;
-  void _boundary(NodeVector& out) const;
+  void _boundary(GridVector& out) const;
 public:
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{out<<_coef;}
 };
@@ -38,10 +38,10 @@ public:
   }
 
   void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
@@ -57,10 +57,10 @@ public:
   }
 
   void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 

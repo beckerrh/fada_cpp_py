@@ -21,5 +21,11 @@ typedef arma::Mat<int> armaimat;
 typedef double (*function2d)(double, double);
 typedef double (*function3d)(double, double, double);
 
+inline void _not_written_(std::string msg="")
+{
+    std::cerr << "--NotWritten--" << msg << "\n";
+    assert(0);
+    exit(1);    
+}
 
-#endif /* typedefs_h */
+#endif

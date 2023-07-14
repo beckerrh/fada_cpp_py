@@ -30,6 +30,17 @@ void SparseMatrix::dot(armavec& x, const armavec& b, double d) const
     }
   }
 }
+/*-------------------------------------------------*/
+void SparseMatrix::Tdot(armavec& x, const armavec& b, double d) const
+{
+  for(int i=0;i<nrows();i++)
+  {
+    for(int pos=_rows[i];pos<_rows[i+1];pos++)
+    {
+      x[_cols[pos]] += d*_values[pos] * b[i];
+    }
+  }
+}
 
 /*-------------------------------------------------*/
 void SparseMatrix::set_elements(const arma::umat& locations, const armavec& values)
@@ -40,6 +51,7 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
   _cols.set_size(n);
   _values.set_size(n);
   // std::cerr << "locations\n" << locations.row(0) << "\n" << locations.row(1) << "\n";
+  // sort the indices !!
   arma::uvec ind = arma::sort_index(arma::max(locations.row(1))*locations.row(0)+locations.row(1));
   arma::uword nrows = locations(0,ind[n-1])+1;
   _rows.set_size(nrows+1);
@@ -58,6 +70,7 @@ void SparseMatrix::set_elements(const arma::umat& locations, const armavec& valu
     _cols[i] = locations.at(1,index);
   }
   _rows[nrows] = n;
+  // store diagonal positions
   _diags.set_size(nrows);
   for(int i=0;i<nrows;i++)
   {

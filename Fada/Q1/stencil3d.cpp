@@ -11,7 +11,7 @@
 
 // /*-------------------------------------------------*/
 // template<int N>
-// void Stencil3d<N>::_boundary(NodeVector& out) const
+// void Stencil3d<N>::_boundary(GridVector& out) const
 // {
 //   // for(int ix=0;ix<_nx;ix++)
 //   // {
@@ -64,7 +64,7 @@
 // }
 
 /*-------------------------------------------------*/
-void Stencil3d27::dot(NodeVector& out, const NodeVector& in, double d) const
+void Stencil3d27::dot(GridVector& out, const GridVector& in, double d) const
 {
   _seam.fromvector(in);
   arma::vec::fixed <27> coef = d * _coef;
@@ -111,7 +111,7 @@ void Stencil3d27::dot(NodeVector& out, const NodeVector& in, double d) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d27::jacobi(NodeVector& out, const NodeVector& in) const
+void Stencil3d27::jacobi(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[13];
 
@@ -129,7 +129,7 @@ void Stencil3d27::jacobi(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d27::gauss_seidel1(NodeVector& out, const NodeVector& in) const
+void Stencil3d27::gauss_seidel1(GridVector& out, const GridVector& in) const
 {
   /*
    * (ix+p)*ny*nz + (iy+q)*nz + iz+r < ix*ny*nz + iy*nz + iz
@@ -168,7 +168,7 @@ void Stencil3d27::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d27::gauss_seidel2(NodeVector& out, const NodeVector& in) const
+void Stencil3d27::gauss_seidel2(GridVector& out, const GridVector& in) const
 {
   _seam.fromvector(out);
   double d0inv = 1.0 / _coef[13];
@@ -341,7 +341,7 @@ void Stencil3d27::get_locations_values(arma::umat& locations, armavec& values) c
 }
 
 /*-------------------------------------------------*/
-void Stencil3d7::dot(NodeVector& out, const NodeVector& in, double d) const
+void Stencil3d7::dot(GridVector& out, const GridVector& in, double d) const
 {
   _seam.fromvector(in);
 // std::cerr << "**_seam" << _seam.data().t() << "\n";
@@ -371,7 +371,7 @@ void Stencil3d7::dot(NodeVector& out, const NodeVector& in, double d) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d7::jacobi(NodeVector& out, const NodeVector& in) const
+void Stencil3d7::jacobi(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[3];
 
@@ -389,7 +389,7 @@ void Stencil3d7::jacobi(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d7::gauss_seidel1(NodeVector& out, const NodeVector& in) const
+void Stencil3d7::gauss_seidel1(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[3];
   out.at(0, 0, 0) = d0inv * in.at(0, 0, 0);
@@ -451,7 +451,7 @@ void Stencil3d7::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil3d7::gauss_seidel2(NodeVector& out, const NodeVector& in) const
+void Stencil3d7::gauss_seidel2(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0/_coef[3];
   out.at(_nx - 1, _ny - 1, _nz - 1) = d0inv * in.at(_nx - 1, _ny - 1, _nz - 1);

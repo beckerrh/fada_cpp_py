@@ -28,7 +28,7 @@ public:
   virtual size_t nx() const=0;
   virtual size_t ny() const=0;
   virtual size_t nz() const=0;
-  virtual int nall() const=0;
+  virtual int n_fine() const=0;
   virtual void savehdf5(const std::string& filename) const=0;
   virtual void loadhdf5(const std::string& filename)=0;
 };

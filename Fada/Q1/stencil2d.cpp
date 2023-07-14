@@ -6,59 +6,11 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#include "stencil.hpp"
-#include "../construct_elements_matrix.hpp"
-
-// /*-------------------------------------------------*/
-// template <int DIM, int N>
-// void Stencil<DIM, N>::_boundary(NodeVector& out) const
-// {
-//   // std::cerr << "_boundary() _nx="<<_nx << "_ny=" << _ny <<"\n";
-//   //  std::cerr << "Stencil2d9() _coef="<<_coef.t();
-//   if(DIM==2)
-//   {
-//     for (int ix = 0; ix < _nx; ix++)
-//     {
-//       out.at(ix, 0)       = 0.0;
-//       out.at(ix, _ny - 1) = 0.0;
-//     }
-//     for (int iy = 0; iy < _ny; iy++)
-//     {
-//       out.at(0, iy)       = 0.0;
-//       out.at(_nx - 1, iy) = 0.0;
-//     }
-//   }
-//   else
-//   {
-//     for (int ix = 0; ix < _nx; ix++)
-//     {
-//       for (int iy = 0; iy < _ny; iy++)
-//       {
-//         out.at(ix, iy, 0)       = 0.0;
-//         out.at(ix, iy, _nz - 1) = 0.0;
-//       }
-//     }
-//     for (int ix = 0; ix < _nx; ix++)
-//     {
-//       for (int iz = 0; iz < _nz; iz++)
-//       {
-//         out.at(ix, 0, iz)       = 0.0;
-//         out.at(ix, _ny - 1, iz) = 0.0;
-//       }
-//     }
-//     for (int iy = 0; iy < _ny; iy++)
-//     {
-//       for (int iz = 0; iz < _nz; iz++)
-//       {
-//         out.at(0, iy, iz)       = 0.0;
-//         out.at(_nx - 1, iy, iz) = 0.0;
-//       }
-//     }
-//   }
-// }
+#include  "stencil.hpp"
+#include  "../construct_elements_matrix.hpp"
 
 /*-------------------------------------------------*/
-void Stencil2d9::dot(NodeVector& out, const NodeVector& in, double d) const
+void Stencil2d9::dot(GridVector& out, const GridVector& in, double d) const
 {
   arma::vec::fixed <9> coef = d * _coef;
   _seam.fromvector(in);
@@ -83,7 +35,7 @@ void Stencil2d9::dot(NodeVector& out, const NodeVector& in, double d) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d9::jacobi(NodeVector& out, const NodeVector& in) const
+void Stencil2d9::jacobi(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[4];
   for (int ix = 0; ix < _nx; ix++)
@@ -97,7 +49,7 @@ void Stencil2d9::jacobi(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d9::gauss_seidel1(NodeVector& out, const NodeVector& in) const
+void Stencil2d9::gauss_seidel1(GridVector& out, const GridVector& in) const
 {
   /*
    * (ix+p)*ny + iy+q < ix*ny + iy
@@ -124,7 +76,7 @@ void Stencil2d9::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d9::gauss_seidel2(NodeVector& out, const NodeVector& in) const
+void Stencil2d9::gauss_seidel2(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[4];
   _seam.fromvector(out);
@@ -214,7 +166,7 @@ void Stencil2d9::get_locations_values(arma::umat& locations, armavec& values) co
 }
 
 /*-------------------------------------------------*/
-void Stencil2d5::dot(NodeVector& out, const NodeVector& in, double d) const
+void Stencil2d5::dot(GridVector& out, const GridVector& in, double d) const
 {
   arma::vec::fixed <5> coef = d * _coef;
   // std::cerr << "Stencil2d5::dot() _nx="<<_nx << "_ny=" << _ny <<"\n";
@@ -236,7 +188,7 @@ void Stencil2d5::dot(NodeVector& out, const NodeVector& in, double d) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d5::jacobi(NodeVector& out, const NodeVector& in) const
+void Stencil2d5::jacobi(GridVector& out, const GridVector& in) const
 {
   double d0inv = 1.0 / _coef[2];
   for (int ix = 0; ix < _nx; ix++)
@@ -250,7 +202,7 @@ void Stencil2d5::jacobi(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d5::gauss_seidel1(NodeVector& out, const NodeVector& in) const
+void Stencil2d5::gauss_seidel1(GridVector& out, const GridVector& in) const
 {
   /*
    * (ix+p)*ny + iy+q < ix*ny + iy
@@ -287,7 +239,7 @@ void Stencil2d5::gauss_seidel1(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void Stencil2d5::gauss_seidel2(NodeVector& out, const NodeVector& in) const
+void Stencil2d5::gauss_seidel2(GridVector& out, const GridVector& in) const
 {
   double omega = 1.0;
   double d0inv = 1.0 / _coef[2] * omega;

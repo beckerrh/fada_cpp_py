@@ -9,7 +9,7 @@
 #include  <stdio.h>
 #include  <iostream>
 #include  <armadillo>
-#include  "Fada/Q1/nodevector.hpp"
+#include  "Fada/Q1/gridvector.hpp"
 #include  "Fada/umfmatrix.hpp"
 #include  <amgcl/solver/lgmres.hpp>
 #include  "Fada/uniformmultigrid.hpp"
@@ -17,7 +17,7 @@
 
 
 /*-------------------------------------------------*/
-void solve_umf(std::shared_ptr <MatrixInterface const> A, NodeVector& x, NodeVector& b)
+void solve_umf(std::shared_ptr <MatrixInterface const> A, GridVector& x, GridVector& b)
 {
   UmfMatrix umf;
 
@@ -37,12 +37,12 @@ void solve_umf(std::shared_ptr <MatrixInterface const> A, NodeVector& x, NodeVec
 int main(int argc, char **argv)
 {
   armaicvec n0     = { 3, 3 };
-  auto mggrid = std::make_shared <UniformMultiGrid>(1, 1, n0);
+  auto mggrid = std::make_shared <UniformMultiGrid>(1, n0);
   std::map<std::string,std::string> parameters;
   parameters["matrixtype"] = "matrix";
   auto solver = std::make_shared <SolverLaplace>(mggrid, parameters);
-  auto u = std::make_shared <Vector <NodeVector>>();
-  auto f = std::make_shared <Vector <NodeVector>>();
+  auto u = std::make_shared <Vector <GridVector>>();
+  auto f = std::make_shared <Vector <GridVector>>();
 
   u->set_size(mggrid->get(0)->n());
   u->fill(0);
@@ -62,11 +62,11 @@ int main(int argc, char **argv)
   //
   // n = { 4, 2, 3 };
   // // n << 4 << 2 << 3 << arma::endr;
-  // NodeVector v(n), w(n);
+  // GridVector v(n), w(n);
   // v.fill(2);
   // w.data().randu();
   //
-  // NodeVector u(v);
+  // GridVector u(v);
   //
   // u = 3 * v.data() + w.data();
   // std::cerr << u << std::endl;

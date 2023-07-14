@@ -25,7 +25,7 @@ public:
   std::shared_ptr<GridInterface> get(int l) {return _grids[l];}
   std::shared_ptr<const GridInterface> get(int l) const {return _grids[l];}
   size_t dim() const {return _grids[0]->dim();}
-  int nall() const { return _grids[0]->nall();}
+  int n_fine() const { return _grids[0]->n_fine();}
 };
 
 #endif /* multigrid_hpp */

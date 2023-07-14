@@ -14,6 +14,7 @@
 #include  <string>
 #include  <map>
 
+class BoundaryConditions;
 class GridInterface;
 class MatrixInterface;
 class SmootherInterface;
@@ -33,7 +34,8 @@ public:
   virtual void set_grid(std::shared_ptr<GridInterface const> grid)=0;
   virtual void rhs_one(std::shared_ptr<VectorInterface> v) const=0;
   virtual void rhs_random(std::shared_ptr<VectorInterface> v) const=0;
-  virtual void boundary(std::shared_ptr<VectorInterface> v) const=0;
+  virtual void boundary_zero(std::shared_ptr<VectorInterface> v) const=0;
+  virtual void boundary_linear(std::shared_ptr<VectorInterface> v) const=0;
   virtual std::shared_ptr<MatrixInterface const> newMatrix(std::shared_ptr<GridInterface const> grid) const=0;
   virtual std::shared_ptr<SmootherInterface const> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const=0;
   virtual std::shared_ptr<CoarseSolverInterface const> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const=0;
@@ -52,12 +54,13 @@ protected:
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
 public:
   Model<MODEL,VECTOR>() : MODEL(), ModelInterface() {}
-  Model<MODEL,VECTOR>(const std::map <std::string, std::string>& parameters) : MODEL(parameters), ModelInterface() {}
+  Model<MODEL,VECTOR>(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : MODEL(parameters, bc), ModelInterface() {}
   std::string toString() const {return get().toString();}
   void set_grid(std::shared_ptr<GridInterface const> grid){get().set_grid(grid);}
   void rhs_one(std::shared_ptr<VectorInterface> v) const{get().rhs_one(getVector(v));}
   void rhs_random(std::shared_ptr<VectorInterface> v) const{get().rhs_random(getVector(v));}
-  void boundary(std::shared_ptr<VectorInterface> v) const{get().boundary(getVector(v));}
+  void boundary_zero(std::shared_ptr<VectorInterface> v) const{get().boundary_zero(getVector(v));}
+  void boundary_linear(std::shared_ptr<VectorInterface> v) const{get().boundary_linear(getVector(v));}
   std::shared_ptr<MatrixInterface const> newMatrix(std::shared_ptr<GridInterface const> grid) const{return get().newMatrix(grid);};
   std::shared_ptr<SmootherInterface const> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newSmoother(grid, matrix);}
   std::shared_ptr<CoarseSolverInterface const> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const>grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newCoarseSolver(type,grid, matrix);}

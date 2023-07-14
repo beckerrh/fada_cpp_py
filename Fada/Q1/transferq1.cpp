@@ -8,81 +8,121 @@
 
 #include  "transferq1.hpp"
 
-TransferQ12d::~TransferQ12d()
-{
-}
-
-TransferQ13d::~TransferQ13d()
-{
-}
+// /*-------------------------------------------------*/
+// void TransferBase::_boundary(GridVector& v) const
+// {
+//   // return;
+//   // for(const auto p: *_boundaryconditions) for( auto q: p) std::cerr << q ;
+//   if(_dim==2)
+//   {
+//       if ((*_boundaryconditions)[0][0] == "dir")
+//       {
+//         for (int iy = 0; iy < _ny; iy++)
+//         {
+//           v.at(0, iy) = 0;
+//         }
+//       }
+//       if ((*_boundaryconditions)[0][1] == "dir")
+//       {
+//         for (int iy = 0; iy < _ny; iy++)
+//         {
+//           v.at(_nx - 1, iy) = 0;
+//         }
+//       }
+//       if ((*_boundaryconditions)[1][0] == "dir")
+//       {
+//         for (int ix = 0; ix < _nx; ix++)
+//         {
+//           v.at(ix, 0) = 0;
+//         }
+//       }
+//       if ((*_boundaryconditions)[1][1] == "dir")
+//       {
+//         for (int ix = 0; ix < _nx; ix++)
+//         {
+//           v.at(ix, _ny - 1) = 0;
+//         }
+//       }
+//     }
+//     else
+//     {
+//   if ((*_boundaryconditions)[0][0] == "dir")
+//   {
+//     for (int iy = 0; iy < _ny; iy++)
+//     {
+//       for (int iz = 0; iz < _nz; iz++)
+//       {
+//         v.at(0, iy, iz)       = 0;
+//       }
+//     }
+//   }
+//   if ((*_boundaryconditions)[0][1] == "dir")
+//   {
+//     for (int iy = 0; iy < _ny; iy++)
+//     {
+//       for (int iz = 0; iz < _nz; iz++)
+//       {
+//         v.at(_nx - 1, iy, iz) = 0;
+//       }
+//     }
+//   }
+//   if ((*_boundaryconditions)[1][0] == "dir")
+//   {
+//     for (int ix = 0; ix < _nx; ix++)
+//     {
+//       for (int iz = 0; iz < _nz; iz++)
+//       {
+//         v.at(ix, 0, iz)       = 0;
+//       }
+//     }
+//   }
+//   if ((*_boundaryconditions)[1][1] == "dir")
+//   {
+//     for (int ix = 0; ix < _nx; ix++)
+//     {
+//       for (int iz = 0; iz < _nz; iz++)
+//       {
+//         v.at(ix, _ny - 1, iz) = 0;
+//       }
+//     }
+//   }
+//   if ((*_boundaryconditions)[2][0] == "dir")
+//   {
+//     for (int ix = 0; ix < _nx; ix++)
+//     {
+//       for (int iy = 0; iy < _ny; iy++)
+//       {
+//         v.at(ix, iy, 0)       = 0;
+//       }
+//     }
+//   }
+//   if ((*_boundaryconditions)[2][1] == "dir")
+//   {
+//     for (int ix = 0; ix < _nx; ix++)
+//     {
+//       for (int iy = 0; iy < _ny; iy++)
+//       {
+//         v.at(ix, iy, _nz - 1) = 0;
+//       }
+//     }
+//   }
+// }
+// }
 
 /*-------------------------------------------------*/
-void TransferQ12d::set_grid(const armaicvec& n, const armavec& dx)
+void TransferBase::set_grid(const armaicvec& n, const armavec& dx)
 {
-//  std::shared_ptr<UniformGrid> ug = std::dynamic_pointer_cast<UniformGrid>(grid);
-//  assert(ug);
-  assert(n.n_elem == 2);
+  _dim = n.n_elem;
   _nx = n[0];
   _ny = n[1];
+  if(_dim==3)
+  {
+    _nz = n[2];
+  }
   _seam.set_size(2 * n + 2);
 }
-
 /*-------------------------------------------------*/
-void TransferQ13d::set_grid(const armaicvec& n, const armavec& dx)
-{
-  assert(n.n_elem == 3);
-  _nx = n[0];
-  _ny = n[1];
-  _nz = n[2];
-  _seam.set_size(2 * n + 2);
-}
-
-/*-------------------------------------------------*/
-void TransferQ12d::_boundary(NodeVector& v) const
-{
-  for (int ix = 0; ix < _nx; ix++)
-  {
-    v.at(ix, 0)       = 0;
-    v.at(ix, _ny - 1) = 0;
-  }
-  for (int iy = 0; iy < _ny; iy++)
-  {
-    v.at(0, iy)       = 0;
-    v.at(_nx - 1, iy) = 0;
-  }
-}
-
-/*-------------------------------------------------*/
-void TransferQ13d::_boundary(NodeVector& v) const
-{
-  for (int ix = 0; ix < _nx; ix++)
-  {
-    for (int iy = 0; iy < _ny; iy++)
-    {
-      v.at(ix, iy, 0)       = 0;
-      v.at(ix, iy, _nz - 1) = 0;
-    }
-  }
-  for (int ix = 0; ix < _nx; ix++)
-  {
-    for (int iz = 0; iz < _nz; iz++)
-    {
-      v.at(ix, 0, iz)       = 0;
-      v.at(ix, _ny - 1, iz) = 0;
-    }
-  }
-  for (int iy = 0; iy < _ny; iy++)
-  {
-    for (int iz = 0; iz < _nz; iz++)
-    {
-      v.at(0, iy, iz)       = 0;
-      v.at(_nx - 1, iy, iz) = 0;
-    }
-  }
-}
-
-/*-------------------------------------------------*/
-void TransferQ12d::restrict (NodeVector & out, const NodeVector& in) const
+void TransferQ12d::restrict (GridVector & out, const GridVector& in) const
 {
   // _seam.fromvector(in);
   // out.fill(0.0);
@@ -173,10 +213,11 @@ void TransferQ12d::restrict (NodeVector & out, const NodeVector& in) const
                              + 0.5 * in.at(2 * _nx - 2, 2 * _ny - 3)
                              + 0.25 * in.at(2 * _nx - 3, 2 * _ny - 3)
   ;
-  _boundary(out);
+  // _boundary(out);
+  out.boundary_zero();
 }
 /*-------------------------------------------------*/
-void TransferQ12d::prolongate(NodeVector& out, const NodeVector& in) const
+void TransferQ12d::prolongate(GridVector& out, const GridVector& in) const
 {
   _seam.fill(0.0);
   for (int ix = 0; ix < _nx; ix++)
@@ -198,7 +239,7 @@ void TransferQ12d::prolongate(NodeVector& out, const NodeVector& in) const
 }
 
 /*-------------------------------------------------*/
-void TransferQ13d::restrict (NodeVector & out, const NodeVector& in) const
+void TransferQ13d::restrict (GridVector & out, const GridVector& in) const
 {
   _seam.fromvector(in);
   out.fill(0.0);
@@ -244,10 +285,11 @@ void TransferQ13d::restrict (NodeVector & out, const NodeVector& in) const
       }
     }
   }
-  _boundary(out);
+  out.boundary_zero();
+  // _boundary(out);
 }
 /*-------------------------------------------------*/
-void TransferQ13d::prolongate(NodeVector& out, const NodeVector& in) const
+void TransferQ13d::prolongate(GridVector& out, const GridVector& in) const
 {
   _seam.fill(0.0);
   for (int ix = 0; ix < _nx; ix++)

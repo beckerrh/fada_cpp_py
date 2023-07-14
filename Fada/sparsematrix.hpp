@@ -41,6 +41,7 @@ public:
   arma::uword nrows() const {return _rows.n_elem-1;}
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const;
   void dot(armavec& x, const armavec& b, double d=1) const;
+  void Tdot(armavec& x, const armavec& b, double d=1) const;
 
   void jacobi       (armavec& out, const armavec& in) const;
   void gauss_seidel1(armavec& out, const armavec& in) const;

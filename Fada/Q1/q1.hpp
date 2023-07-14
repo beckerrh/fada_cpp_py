@@ -11,62 +11,30 @@
 
 #include  "../feminterface.hpp"
 #include  "../modelinterface.hpp"
-#include  "nodevector.hpp"
+#include  "gridvector.hpp"
+#include  "boundary_conditions.hpp"
+#include  "modelbase.hpp"
 
 class UniformGrid;
 
 /*-------------------------------------------------*/
-class Q1
+class Q1 : public ModelBase
 {
 protected:
-  std::shared_ptr <UniformGrid const> _ug;
-  std::string _stenciltype, _matrixtype, _smoothertype, _smoother, _coarsesolver;
   size_t _nx, _ny, _nz;
   double _vol;
+  virtual void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const=0;
 
 public:
   ~Q1()
   {
   }
 
-  // Q1() : _ug(nullptr), _stenciltype(), _matrixtype() {}
-  Q1(const std::map <std::string, std::string>& parameters) : _ug(nullptr)
+  Q1(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> boundaryconditions=nullptr) : ModelBase(parameters, boundaryconditions)
   {
-    _stenciltype  = "Trapez";
-    _matrixtype   = "stencil";
-    _smoothertype   = "matrix";
-    _smoother     = "GS";
-    _coarsesolver = "direct";
-    for (std::map <std::string, std::string>::const_iterator p = parameters.begin(); p != parameters.end(); p++)
-    {
-      if (p->first == "stenciltype")
-      {
-        _stenciltype = p->second;
-      }
-      else if (p->first == "matrixtype")
-      {
-        _matrixtype = p->second;
-      }
-      else if (parameters.find("smoother") != parameters.end())
-      {
-        _smoother = p->second;
-      }
-      else if (parameters.find("smoothertype") != parameters.end())
-      {
-        _smoothertype = p->second;
-      }
-      else if (parameters.find("coarsesolver") != parameters.end())
-      {
-        _coarsesolver = p->second;
-      }
-    }
-    if(_matrixtype!="stencil")
-    {
-      assert(_smoothertype!="stencil");
-    }
   }
 
-  Q1(const Q1& model) : _ug(model._ug), _stenciltype(model._stenciltype)
+  Q1(const Q1& model) : ModelBase(model)
   {
   }
 
@@ -75,23 +43,25 @@ public:
   std::shared_ptr <SmootherInterface const> newSmoother(std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface const> matrix) const;
   std::shared_ptr <CoarseSolverInterface const> newCoarseSolver(std::string type, std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface const> matrix) const;
   std::shared_ptr <MatrixInterface const>   newMatrix(std::shared_ptr <GridInterface const>grid) const;
+  std::shared_ptr <TransferInterface const> newTransfer(std::shared_ptr <GridInterface const>grid) const;
 
-  // virtual std::shared_ptr<MatrixInterface> newStencil(std::shared_ptr<GridInterface const>grid) const=0;
   virtual std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const = 0;
-  void rhs_one(NodeVector& v) const;
-  void rhs_random(NodeVector& v) const;
+  void rhs_one(GridVector& v) const;
+  void rhs_random(GridVector& v) const;
 };
 
 /*-------------------------------------------------*/
 class Q12d : public Q1
 {
+protected:
+    void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
+    
 public:
   ~Q12d()
   {
   }
 
-  // Q12d() : Q1() {}
-  Q12d(const std::map <std::string, std::string>& parameters) : Q1(parameters)
+  Q12d(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : Q1(parameters, bc)
   {
   }
 
@@ -104,23 +74,23 @@ public:
     return("Q12d");
   }
 
-  void boundary(NodeVector& v) const;
+  void boundary_zero(GridVector& v) const;
+  void boundary_linear(GridVector& v) const;
 
-  // std::shared_ptr<MatrixInterface> newStencil(std::shared_ptr<GridInterface const>grid) const;
   std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
-  std::shared_ptr <TransferInterface const> newTransfer(std::shared_ptr <GridInterface const>grid) const;
 };
 
 /*-------------------------------------------------*/
 class Q13d : public Q1
 {
+protected:
+    void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
+    
 public:
   ~Q13d()
   {
   }
-
-  // Q13d() : Q1() {}
-  Q13d(const std::map <std::string, std::string>& parameters) : Q1(parameters)
+  Q13d(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : Q1(parameters, bc)
   {
   }
 
@@ -133,11 +103,10 @@ public:
     return("Q13d");
   }
 
-  void boundary(NodeVector& v) const;
+  void boundary_zero(GridVector& v) const;
+  void boundary_linear(GridVector& v) const;
 
-  // std::shared_ptr<MatrixInterface> newStencil(std::shared_ptr<GridInterface const> grid) const;
   std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
-  std::shared_ptr <TransferInterface const> newTransfer(std::shared_ptr <GridInterface const>grid) const;
 };
 
 #endif /* q1_hpp */

@@ -44,15 +44,7 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
   _mgsmoother.resize(_nlevels-1);
   for(int l=0;l<_nlevels-1;l++)
   {
-    // if(l<_nlevels-1)
-    // {
-      _mgsmoother[l] = _model->newSmoother(mgrid->get(l), _mgmatrix[l]);
-    // }
-    // else
-    // {
-    //   _mgsmoother[l] = _model->newCoarseSolver("direct", mgrid->get(l), _mgmatrix[l]);
-    // }
-    // _mgsmoother[l]->set_matrix(_mgmatrix[l]);
+    _mgsmoother[l] = _model->newSmoother(mgrid->get(l), _mgmatrix[l]);
   }
   _mgcoarsesolver = _model->newCoarseSolver("direct", mgrid->get(_nlevels-1), _mgmatrix[_nlevels-1]);
   _mgtransfer.resize(_nlevels-1);
@@ -100,6 +92,7 @@ void MgSolver::residual(int l, std::shared_ptr<VectorInterface> r, std::shared_p
 
   r->equal(*f);
   _mgmatrix[l]->dot(r, u, -1.0);
+  r->boundary_zero();
 
   // std::cerr << "\nr\n";
   // r->save(std::cerr);
@@ -121,7 +114,7 @@ int MgSolver::solve(bool print)
     _timer.start("residual");
     // residual(maxlevel, *d[maxlevel], *umg[maxlevel], *fmg[maxlevel]);
     residual(maxlevel, d[maxlevel], umg[maxlevel], fmg[maxlevel]);
-    d[maxlevel]->fill_bdry(0);
+    // boundary_zero// d[maxlevel]->fill_bdry(0);
     _timer.stop("residual");
     res = d[maxlevel]->norm();
     if(iter==0)

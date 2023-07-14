@@ -6,10 +6,10 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#ifndef stencil2d_hpp
-#define stencil2d_hpp
+#ifndef stencil_hpp
+#define stencil_hpp
 
-#include  "nodevector.hpp"
+#include  "gridvector.hpp"
 #include  "seamvector.hpp"
 
 class MatrixInterface;
@@ -22,7 +22,7 @@ protected:
   mutable SeamVector _seam;
   int _nx, _ny, _nz;
   std::string _smoother;
-  void _boundary(NodeVector& out) const
+  void _boundary(GridVector& out) const
   {
   // std::cerr << "_boundary() _nx="<<_nx << "_ny=" << _ny <<"\n";
   //  std::cerr << "Stencil2d9() _coef="<<_coef.t();
@@ -92,7 +92,7 @@ public:
   }
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{out<<_coef;}
   void set_grid(const armaicvec& n, const armavec& dx){assert(0); exit(1);}
-  void presmooth(NodeVector& out, const NodeVector& in) const
+  void presmooth(GridVector& out, const GridVector& in) const
   {
     if(_smoother=="Jac")
     {
@@ -115,7 +115,7 @@ public:
       throw std::runtime_error("Stencil<DIM,N>: unknown smoother " + _smoother);
     }
   }
-  void postsmooth(NodeVector& out, const NodeVector& in) const
+  void postsmooth(GridVector& out, const GridVector& in) const
   {
     if(_smoother=="Jac")
     {
@@ -138,9 +138,9 @@ public:
       throw std::runtime_error("Stencil<DIM,N>: unknown smoother " + _smoother);
     }
   }
-  virtual void jacobi       (NodeVector& out, const NodeVector& in) const=0;
-  virtual void gauss_seidel1(NodeVector& out, const NodeVector& in) const=0;
-  virtual void gauss_seidel2(NodeVector& out, const NodeVector& in) const=0;
+  virtual void jacobi       (GridVector& out, const GridVector& in) const=0;
+  virtual void gauss_seidel1(GridVector& out, const GridVector& in) const=0;
+  virtual void gauss_seidel2(GridVector& out, const GridVector& in) const=0;
 };
 
 /*-------------------------------------------------*/
@@ -150,15 +150,11 @@ public:
   Stencil2d9() : Stencil<2,9>() {}
   Stencil2d9(const Stencil2d9& stencil) : Stencil<2,9>(stencil) {}
   Stencil2d9(const armaicvec& n, const armavec& coef, std::string smoother) : Stencil<2,9>(n, coef, smoother) {}
-  // {
-  //   set_grid(n, coef);
-  // }
 
-  // void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
@@ -169,16 +165,11 @@ public:
   Stencil2d5() : Stencil<2,5>() {}
   Stencil2d5(const Stencil2d5& stencil) : Stencil<2,5>(stencil) {}
   Stencil2d5(const armaicvec& n, const armavec& coef, std::string smoother) : Stencil<2,5>(n, coef, smoother) {}
-  // Stencil2d5(const armaicvec& n, const armavec& coef) : Stencil<2,5>()
-  // {
-  //   set_grid(n, coef);
-  // }
 
-  // void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
@@ -189,16 +180,11 @@ public:
   Stencil3d27() : Stencil<3,27>() {}
   Stencil3d27(const Stencil3d27& stencil) : Stencil<3,27>(stencil) {}
   Stencil3d27(const armaicvec& n, const armavec& coef, std::string smoother) : Stencil<3,27>(n, coef, smoother) {}
-  // Stencil3d27(const armaicvec& n, const armavec& coef) : Stencil<3,27>()
-  // {
-  //   set_grid(n, coef);
-  // }
 
-  // void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
@@ -209,17 +195,12 @@ public:
   Stencil3d7() : Stencil<3,7>() {}
   Stencil3d7(const Stencil3d7& stencil) : Stencil<3,7>(stencil) {}
   Stencil3d7(const armaicvec& n, const armavec& coef, std::string smoother) : Stencil<3,7>(n, coef, smoother) {}
-  // Stencil3d7(const armaicvec& n, const armavec& coef) : Stencil<3,7>()
-  // {
-  //   set_grid(n, coef);
-  // }
 
-  // void set_grid(const armaicvec& n, const armavec& coef);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_locations_values(arma::umat& locations, armavec& values) const;
 };
 
-#endif /* stencil2d_hpp */
+#endif

@@ -12,13 +12,13 @@ def testsparameters(pname, parameters, methods, getMgSolver, title):
   for parameter in parameters:
     for method in methods:
       umg, solver = getMgSolver(parameter, method)
-      print("parameter", parameter, "nall", umg.nall())
+      print("parameter", parameter, "n_fine", umg.n_fine())
       t0 = time.time()
       iter = solver.testsolve(print=False)
       t1 = time.time()
       iters[method].append(iter)
       times[method].append(t1-t0)
-    Ns.append(umg.nall())
+    Ns.append(umg.n_fine())
   if pname=="N":
       plabel = r'$\log_{10}(N)$'
       pplot = np.log10(Ns)

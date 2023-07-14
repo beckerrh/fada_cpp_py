@@ -10,7 +10,7 @@
 #include  <carma>
 
 /*-------------------------------------------------*/
-UniformMultiGridPy::UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::array_t<int>& n) : UniformMultiGrid()
+UniformMultiGridPy::UniformMultiGridPy(int nlevels, pybind11::array_t<int>& n) : UniformMultiGrid()
 {
   armaicvec n0(pybind11::len(n));
   auto buf = n.request();
@@ -20,7 +20,7 @@ UniformMultiGridPy::UniformMultiGridPy(int nlevelmax, int nlevels, pybind11::arr
     n0[i] =  ptr[i];
   }
 //  std::cerr << "UniformMultiGridPy::UniformMultiGridPy() " << nlevelmax << " " << nlevels << " " << n0<<"\n";
-  UniformMultiGrid::set_size(nlevelmax, nlevels, n0);
+  UniformMultiGrid::set_size(nlevels, n0);
 //  std::cerr << "UniformMultiGridPy::UniformMultiGridPy() n = " << UniformMultiGrid::n()<<"\n";
 }
 //

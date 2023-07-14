@@ -27,7 +27,7 @@ def visu(filename_grid="grid.hdf", filename_solution="solution.hdf"):
   u = np.array(f['dataset'][:])
   print(f"u: {u.mean()} {u.max()}")
   grid.point_data['u'] = u.T
-  plotter.add_mesh(grid, show_edges=True, scalars='u', opacity=0.8)
+  plotter.add_mesh(grid, show_edges=True, scalars='u', opacity=0.3)
   plotter.add_mesh_isovalue(grid, show_edges=True, scalars='u', widget_color=[0.1,0.1,0.1], line_width=2)
   plotter.view_isometric()
   if ugrid.dim()==2: plotter.view_xy()

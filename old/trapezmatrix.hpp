@@ -13,7 +13,7 @@
 #include  "matrixinterface.hpp"
 #include  "uniformmultigrid.hpp"
 #include  "uniformgrid.hpp"
-#include  "nodevector.hpp"
+#include  "gridvector.hpp"
 
 /*-------------------------------------------------*/
 class TrapezMatrix2d
@@ -21,7 +21,7 @@ class TrapezMatrix2d
 protected:
   int _nx, _ny;
   double _vol, _dx, _dy;
-  void _boundary(NodeVector& out) const;
+  void _boundary(GridVector& out) const;
 
 public:
   ~TrapezMatrix2d();
@@ -34,10 +34,10 @@ public:
 
   void set_grid(const armaicvec& n, const armavec& dx);
 //  void set_grid(std::shared_ptr<GridInterface> grid);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 
@@ -47,7 +47,7 @@ class TrapezMatrix3d
 protected:
   int _nx, _ny, _nz;
   double _vol, _dx, _dy, _dz;
-  void _boundary(NodeVector& out) const;
+  void _boundary(GridVector& out) const;
 
 public:
   ~TrapezMatrix3d();
@@ -60,10 +60,10 @@ public:
 
   void set_grid(const armaicvec& n, const armavec& dx);
 //  void set_grid(std::shared_ptr<GridInterface> grid);
-  void jacobi       (NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel1(NodeVector& out, const NodeVector& in) const;
-  void gauss_seidel2(NodeVector& out, const NodeVector& in) const;
-  void dot(NodeVector& out, const NodeVector& in, double d) const;
+  void jacobi       (GridVector& out, const GridVector& in) const;
+  void gauss_seidel1(GridVector& out, const GridVector& in) const;
+  void gauss_seidel2(GridVector& out, const GridVector& in) const;
+  void dot(GridVector& out, const GridVector& in, double d) const;
   void get_sparse_matrix(SparseMatrix& sp) const;
 };
 

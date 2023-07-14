@@ -74,9 +74,6 @@ public:
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{get().save(out, datatype);}
   void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().presmooth(getVector(out),getVector(in));}
   void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().postsmooth(getVector(out),getVector(in));}
-  // void jacobi(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().jacobi(getVector(out),getVector(in));}
-  // void gauss_seidel1(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel1(getVector(out),getVector(in));}
-  // void gauss_seidel2(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().gauss_seidel2(getVector(out),getVector(in));}
 };
 
 

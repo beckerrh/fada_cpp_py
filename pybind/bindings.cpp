@@ -27,13 +27,13 @@ PYBIND11_MODULE(pyfada, m) {
       .def("loadhdf5", &UniformGridPy::loadhdf5);
 #
     pybind11::class_<UniformMultiGridPy>(m, "UniformMultiGrid")
-      .def(pybind11::init<int, int, pybind11::array_t<int>& >(), pybind11::arg("nlevelmax"),pybind11::arg("nlevels"),pybind11::arg("n0"))
+      .def(pybind11::init<int, pybind11::array_t<int>& >(),pybind11::arg("nlevels"),pybind11::arg("n0"))
       .def("get_dimensions", &UniformMultiGridPy::get_dimensions)
     //      .def("n", &UniformMultiGridPy::n)
     //      .def("bounds", &UniformMultiGridPy::bounds)
     //      .def("dx", &UniformMultiGridPy::dx)
       .def("dim", &UniformMultiGridPy::dim)
-      .def("nall", &UniformMultiGridPy::nall)
+      .def("n_fine", &UniformMultiGridPy::n_fine)
       .def("__repr__", &UniformMultiGridPy::toString);
 #
     pybind11::class_<SolverLaplacePy>(m, "SolverLaplace")
@@ -46,7 +46,7 @@ PYBIND11_MODULE(pyfada, m) {
 //      .def("get_test", &MgSolverPy::get_test)
 //      .def("set_test", &MgSolverPy::set_test)
 //      .def("get_dimensions", &MgSolverPy::get_dimensions)
-//      .def("nall", &MgSolverPy::nall)
+//      .def("n_fine", &MgSolverPy::n_fine)
 //      .def("dim", &MgSolverPy::dim)
 //      .def_readwrite("maxiter", &MgSolverPy::maxiter);
 }
