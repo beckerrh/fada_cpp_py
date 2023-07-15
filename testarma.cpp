@@ -9,7 +9,7 @@
 #include  <stdio.h>
 #include  <iostream>
 #include  <armadillo>
-#include  "Fada/Q1/gridvector.hpp"
+#include  "Fada/gridvector.hpp"
 #include  "Fada/umfmatrix.hpp"
 #include  <amgcl/solver/lgmres.hpp>
 #include  "Fada/uniformmultigrid.hpp"

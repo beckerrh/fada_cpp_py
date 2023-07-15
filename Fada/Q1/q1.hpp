@@ -9,12 +9,12 @@
 #ifndef q1_hpp
 #define q1_hpp
 
-#include  "../feminterface.hpp"
-#include  "../modelinterface.hpp"
-#include  "gridvector.hpp"
-#include  "boundary_conditions.hpp"
-#include  "modelbase.hpp"
+#include  "../modelbase.hpp"
 
+class BoundaryConditions;
+class GridVector;
+class GridInterface;
+class FemAndMatrixAndSmootherInterface;
 class UniformGrid;
 
 /*-------------------------------------------------*/

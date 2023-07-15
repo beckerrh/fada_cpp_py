@@ -8,7 +8,7 @@
 
 #include  "solverlaplace.hpp"
 #include  "Q1/q1.hpp"
-#include  "Q1/boundary_conditions.hpp"
+#include  "boundary_conditions.hpp"
 
 /*-------------------------------------------------*/
 std::string SolverLaplace::toString() const

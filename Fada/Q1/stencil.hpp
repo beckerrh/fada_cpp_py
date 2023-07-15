@@ -9,8 +9,8 @@
 #ifndef stencil_hpp
 #define stencil_hpp
 
-#include  "gridvector.hpp"
-#include  "seamvector.hpp"
+#include  "../gridvector.hpp"
+#include  "../seamvector.hpp"
 
 class MatrixInterface;
 /*-------------------------------------------------*/

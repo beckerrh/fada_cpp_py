@@ -86,8 +86,6 @@ public:
     }
     void scale(double d)
     {
-        //    this->arma() *= d;
-        // _data *= d;
         *this *= d;
     }
     double norm(double p=2) const

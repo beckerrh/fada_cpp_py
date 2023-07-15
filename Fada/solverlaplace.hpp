@@ -12,7 +12,7 @@
 #include  "modelinterface.hpp"
 #include  "multigridinterface.hpp"
 #include  "mgsolver.hpp"
-#include  "Q1/gridvector.hpp"
+#include  "gridvector.hpp"
 
 /*-------------------------------------------------*/
 class SolverLaplace

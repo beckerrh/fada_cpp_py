@@ -9,7 +9,7 @@
 #ifndef transferbymatrix_h
 #define transferbymatrix_h
 
-#include  "../sparsematrix.hpp"
+#include  "sparsematrix.hpp"
 #include  "gridvector.hpp"
 
 
