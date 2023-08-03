@@ -12,6 +12,8 @@
 #include  <array>
 #include  <vector>
 #include  <string>
+#include  <ostream>
+#include  <memory>
 
 /*-------------------------------------------------*/
 class BoundaryConditions : public std::vector<std::array<std::string,2>>
@@ -20,15 +22,23 @@ protected:
 
 public:
   BoundaryConditions(const BoundaryConditions& bc) : std::vector<std::array<std::string,2>>(bc){}
-  BoundaryConditions(int dim) : std::vector<std::array<std::string,2>>(dim)
+  BoundaryConditions(int dim, std::string cond="dir") : std::vector<std::array<std::string,2>>(dim)
   {
     for(int i=0;i<dim;i++)
     {
-      (*this)[i][0] = "dir";
-      (*this)[i][1] = "dir";
+      (*this)[i][0] = cond;
+      (*this)[i][1] = cond;
     }
   }
 };
+static std::ostream& operator<<(std::ostream& os, const BoundaryConditions& v)
+{
+    for(auto p:v)
+    {
+        os << p[0] << " " << p[1] << std::endl;        
+    }
+    return os;
+}
 
 /*-------------------------------------------------*/
 class BoundaryConditionsBool : public std::vector<std::array<bool,2>>
@@ -46,5 +56,13 @@ public:
     }
   }
 };
+static std::ostream& operator<<(std::ostream& os, const BoundaryConditionsBool& v)
+{
+    for(auto p:v)
+    {
+        os << p[0] << " " << p[1] << std::endl;        
+    }
+    return os;
+}
 
 #endif

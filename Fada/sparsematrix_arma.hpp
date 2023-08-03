@@ -20,11 +20,26 @@ protected:
 public:
   SparseMatrix_arma() : arma::sp_mat() {}
   SparseMatrix_arma(const SparseMatrix_arma& matrix) : arma::sp_mat(matrix) {}
-  SparseMatrix_arma(const arma::umat& locations, const armavec& values) : arma::sp_mat(locations, values)
+  SparseMatrix_arma(const arma::umat& locations, const armavec& values, bool compute_diag=true) : arma::sp_mat(locations, values)
   {
     const arma::sp_mat& tarma = static_cast<const arma::sp_mat&>(*this);
-    _diag = tarma.diag();
+    if(compute_diag)
+    {
+        _diag = tarma.diag();        
+    }
   }
+  void set_elements(const arma::umat& locations, const armavec& values, bool compute_diag)
+  {
+      _not_written_("don't know how to set alamants in arma_spmat");
+      const arma::sp_mat& tarma = static_cast<const arma::sp_mat&>(*this);
+      if(compute_diag)
+      {
+          _diag = tarma.diag();        
+      }      
+  }
+  int nrows() const {return n_rows;}
+  int ncols() const {return n_cols;}
+  int nelem() const {return n_elem;}
 
   void dot(armavec& out, const armavec& in, double d=1) const
   {
@@ -34,6 +49,11 @@ public:
     // std::cerr << "in=\n" << in.t() << "\n";
     // std::cerr << "tarma=\n" << tarma << "\n";
     // std::cerr << "out=\n" << out.t() << "\n";
+  }
+  void Tdot(armavec& out, const armavec& in, double d=1) const
+  {
+    const arma::sp_mat& tarma = static_cast<const arma::sp_mat&>(*this);
+    out += d* tarma.t()*in;
   }
   void jacobi       (armavec& out, const armavec& in) const;
   void gauss_seidel1(armavec& out, const armavec& in) const;

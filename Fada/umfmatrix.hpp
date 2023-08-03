@@ -12,6 +12,7 @@
 #include  <iostream>
 #include  "typedefs.hpp"
 #include  "sparsematrix.hpp"
+#include  "matrixinterface.hpp"
 
 /*-------------------------------------------------*/
 class UmfMatrix
@@ -30,7 +31,7 @@ protected:
   #endif
   const double* mb;
 
-  std::shared_ptr<MatrixInterface const> _matrix;
+  std::shared_ptr<SparseMatrix const> _matrix;
 
 public:
   ~UmfMatrix();
@@ -39,8 +40,10 @@ public:
 
   void save(std::ostream& os, arma::file_type datatype = arma::arma_binary) const;
   void init(std::shared_ptr<MatrixInterface const> matrix);
+  void init(std::shared_ptr<SparseMatrix const> matrix);
   void computeLu();
   void solve(armavec& x, const armavec& b) const;
+  void update(std::shared_ptr<MatrixInterface const> matrix) {_not_written_();}
 };
 
 #endif /* umfmatrix_hpp */

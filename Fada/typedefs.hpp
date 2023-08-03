@@ -11,7 +11,11 @@
 
 // #define _LONG_LONG
 
+#include  <map>
+#include  <utility>
+#include  <vector>
 #include  <armadillo>
+#include  <cassert>
 
 typedef arma::Col<double> armavec;
 typedef arma::Mat<double> armamat;
@@ -20,6 +24,8 @@ typedef arma::Row<int> armairvec;
 typedef arma::Mat<int> armaimat;
 typedef double (*function2d)(double, double);
 typedef double (*function3d)(double, double, double);
+
+typedef std::map<std::string,std::shared_ptr<armavec>> PointDataMap;
 
 inline void _not_written_(std::string msg="")
 {

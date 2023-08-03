@@ -71,9 +71,14 @@ public:
   void get_locations_values(arma::umat& locations, armavec& values) const{get().get_locations_values(locations, values);}
   void set_grid(const armaicvec& n, const armavec& dx){get().set_grid(n, dx);}
   void dot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().dot(getVector(out),getVector(in), d);}
+  void Tdot(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in, double d=1) const {get().Tdot(getVector(out),getVector(in), d);}
   void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const{get().save(out, datatype);}
   void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().presmooth(getVector(out),getVector(in));}
   void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const{get().postsmooth(getVector(out),getVector(in));}
+  void update(std::shared_ptr<MatrixInterface const> matrix) {get().update(matrix);}
+  int nrows() const{_not_written_(); return 0;}
+  int ncols() const{_not_written_(); return 0;}
+  int nelem() const{_not_written_(); return 0;}
 };
 
 

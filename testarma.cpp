@@ -13,7 +13,8 @@
 #include  "Fada/umfmatrix.hpp"
 #include  <amgcl/solver/lgmres.hpp>
 #include  "Fada/uniformmultigrid.hpp"
-#include  "Fada/solverlaplace.hpp"
+#include  "Fada/Q1/solverlaplace.hpp"
+#include  "Fada/analyticalfunctioninterface.hpp"
 
 
 /*-------------------------------------------------*/
@@ -40,6 +41,7 @@ int main(int argc, char **argv)
   auto mggrid = std::make_shared <UniformMultiGrid>(1, n0);
   std::map<std::string,std::string> parameters;
   parameters["matrixtype"] = "matrix";
+  parameters["application"] = "Random";
   auto solver = std::make_shared <SolverLaplace>(mggrid, parameters);
   auto u = std::make_shared <Vector <GridVector>>();
   auto f = std::make_shared <Vector <GridVector>>();
@@ -47,7 +49,8 @@ int main(int argc, char **argv)
   u->set_size(mggrid->get(0)->n());
   u->fill(0);
   f->set_size(mggrid->get(0)->n());
-  solver->getModel()->rhs_random(f);
+  auto p = std::make_shared<RandomFunction>();
+  solver->getModel()->rhs(f, mggrid->get(0), solver->getApplication());
 
   auto M = solver->getModel()->newMatrix(mggrid->get(0));
   // arma::umat locations;

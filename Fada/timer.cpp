@@ -35,6 +35,11 @@ void Timer::stop(std::string name)
   (*this)[name] += seconds()-_temp[name];
 }
 /*-------------------------------------------------*/
+double Timer::get(std::string name)
+{
+  return (*this)[name];
+}
+/*-------------------------------------------------*/
 double Timer::total() const
 {
   double d = 0.;

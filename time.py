@@ -7,11 +7,11 @@ def test(n, nlevelmax=12, stenciltype="Trapez", matrixtype="stencil", smootherty
   umg = pyfada.UniformMultiGrid(nlevelmax, nlevels, n)
   solver = pyfada.SolverLaplace(umg, stenciltype, matrixtype, smoothertype)
   t0 = time.time()
-  iter = solver.testsolve(problem="DirichletRhsOne")
+  iter = solver.testsolve(application="DirichletRhsOne")
   t1 = time.time()
   process = psutil.Process(os.getpid())
   mem = process.memory_info().rss//10**6
-  print(f"No. Iterations {iter:3d}  8 (N = {umg.n_fine():8d} dim = {umg.dim():1d})")
+  print(f"No. Iterations {iter:3d}  8 (N = {umg.n_gridpoints():8d} dim = {umg.dim():1d})")
   print(f"Total time: {t1-t0:6.2f} Memory: {mem//10**3:3d}.{mem%10**3:3d} GB")
 
 

@@ -12,6 +12,7 @@
 #include  <stdio.h>
 #include  <ctime>
 #include  <map>
+#include  <set>
 
 /*-------------------------------------------------*/
 class Timer : public std::map<std::string, double>
@@ -26,15 +27,22 @@ protected:
         return ( (double) clock() ) * secs_per_tick;
     }
     double total() const;
-
-public:
     typedef std::map<std::string, double>::const_iterator const_iterator;
     typedef std::map<std::string, double>::iterator iterator;
+
+public:
     ~Timer();
-    Timer(bool print, bool debug=false) : std::map<std::string, double>(), _print(print), _debug(debug) {}
+    Timer(bool print=true, bool debug=false, std::set<std::string> names={}) : std::map<std::string, double>(), _print(print), _debug(debug) 
+    {
+        for(auto p: names)
+        {
+            enrol(p);
+        }
+    }
     void enrol(std::string name, bool sum = true);
     void start(std::string name);
     void stop(std::string name);
+    double get(std::string name);
     void print(std::ostream& os) const;
 };
 

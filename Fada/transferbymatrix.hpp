@@ -32,9 +32,12 @@ public:
   {
       _not_written_();
   }
-  TransferByMatrix(const arma::umat& locations, const armavec& values) : _matrix(locations, values) {}
+  TransferByMatrix(const arma::umat& locations, const armavec& values) : _matrix(locations, values, false) {}
 
-  void restrict (GridVector & out, const GridVector& in) const{out.fill(0); _matrix.dot(out,in); out.boundary_zero();}
+  const SparseMatrix& getMatrix() const {return _matrix;}
+  void save(std::ostream& out, arma::file_type datatype = arma::arma_ascii) const {_matrix.save(out, datatype);}
+  void restrict (GridVector & out, const GridVector& in) const{out.fill(0); _matrix.dot(out,in);}
+  // void restrict (GridVector & out, const GridVector& in) const{out.fill(0); _matrix.dot(out,in); out.boundary_zero();}
   void prolongate(GridVector& out, const GridVector& in) const{out.fill(0); _matrix.Tdot(out,in);}
 };
 #endif

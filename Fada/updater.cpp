@@ -10,7 +10,7 @@
 #include  "mgsolver.hpp"
 
 /*--------------------------------------------------------------------------*/
-void UpdaterConstant::setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type, const std::string& solutiontype)
+void UpdaterConstant::setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat)
 {
   _mat = mat;
   _mem = model.newVector(grid);
@@ -21,8 +21,8 @@ void UpdaterConstant::addUpdate(std::shared_ptr<VectorInterface const> w, std::s
 {
   _mem->fill(0.0);
   _mat->dot(_mem, w, 1.0);
-  u->add(_omega, *w);
-  r->add(-_omega, *_mem);
+  u->add(_omega, w);
+  r->add(-_omega, _mem);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -30,22 +30,34 @@ void UpdaterSimple::addUpdate(std::shared_ptr<VectorInterface const> w, std::sha
 {
   _mem->fill(0.0);
   _mat->dot(_mem, w, 1.0);
-  double d1 = w->dot(*r);
-  double d2 = w->dot(*_mem);
+  double d1, d2;
+  if(_type=="gal")
+  {
+      d1 = w->dot(r);
+      d2 = w->dot(_mem);      
+  }
+  else if(_type=="ls")
+  {
+    d1 = _mem->dot(r);
+    d2 = _mem->dot(_mem);
+  }
+  else
+  {
+      _not_written_();
+  }
   double omega = d1/d2;
-  omega = fmax(fmin(omega, 10.0),0.1);
+  omega = fmax(fmin(omega, 10.0),0.05);
 //  omega = fmax(fmin(omega, 2.0),0.2);
 //  double omega = 1.0;
-// std::cerr << "d1=" << d1 << " d2=" << d2 << " omega="<<omega<<"\n";
+std::cerr  << _name << " omega="<<omega<< " (" << d1 << " " << d2 << ")\n";
 // omega = 1;
-  u->add(omega, *w);
-  r->add(-omega, *_mem);
+  u->add(omega, w);
+  r->add(-omega, _mem);
 }
 
 /*--------------------------------------------------------------------------*/
-Updater::~Updater(){}
-Updater::Updater() : UpdaterInterface(), _mat(nullptr) {}
-Updater::Updater(const Updater& updater) : UpdaterInterface()
+Updater::Updater(std::string name, const std::string& droptype, const std::string& solutiontype, int nvectors) : UpdaterInterface(name), _mem(), _mat(nullptr), _droptype(droptype), _solutiontype(solutiontype), _nvectors(nvectors) {}
+Updater::Updater(const Updater& updater) : UpdaterInterface(updater)
 {
   assert(0);
 }
@@ -54,18 +66,20 @@ Updater& Updater::operator=(const Updater& updater)
   assert(0);
   return *this;
 }
-void Updater::setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type, const std::string& solutiontype)
+void Updater::setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat)
 {
+    // _type = "cyc";
+    // _solutiontype = "ls";
+        
   _scale = false;
   _mat = mat;
-  _nvectors = nvectors;
-  assert(nvectors>0);
+  assert(_nvectors>0);
   _nextupdate = _nextproduct = _nmemory = _nextmemory = _niterafterrestar = 0;
-  _type = type;
-  _solutiontype = solutiontype;
-  assert(_type == "cyc" or _type == "coef" or _type == "ortho" or _type == "restart");
+  // _type = type;
+  // _solutiontype = solutiontype;
+  assert(_droptype == "cyc" or _droptype == "coef" or _droptype == "ortho" or _droptype == "restart");
   assert(_solutiontype == "ls" or _solutiontype == "gal" or _solutiontype == "gals");
-  // std::cerr << "_type = " << _type << " _solutiontype " << _solutiontype << "\n";
+  std::cerr << "_nvectors = " << _nvectors << "_scale = " << _scale << "_droptype = " << _droptype << " _solutiontype " << _solutiontype << "\n";
   _H.set_size(_nvectors, _nvectors);
   _H.eye();
   _b.set_size(_nvectors);
@@ -104,8 +118,8 @@ void Updater::addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_pt
   _rnorm = res->norm();
 
   // getV(_nextmemory) = w;
-  getV(_nextmemory)->equal(*w);
-  if(_type == "ortho")
+  getV(_nextmemory)->equal(w);
+  if(_droptype == "ortho")
   {
     for(int i = 0; i < _nmemory; i++)
     {
@@ -113,13 +127,14 @@ void Updater::addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_pt
       {
         continue;
       }
-      double scal = getV(i)->dot(*getV(_nextmemory));
-      getV(_nextmemory)->add(-scal, *getV(i));
+      double scal = getV(i)->dot(getV(_nextmemory));
+      getV(_nextmemory)->add(-scal, getV(i));
     }
   }
   double wnorm = w->norm();
   // cela ne change pas la solution, ni le résidu
-  getV(_nextmemory)->scale(1.0/wnorm);
+  // getV(_nextmemory)->scale(1.0/wnorm);
+  
   getAV(_nextmemory)->fill(0.0);
 //  _op->dot(_level, getAV(_nextmemory), getV(_nextmemory), 1.0);
   _mat->dot(getAV(_nextmemory), getV(_nextmemory), 1.0);
@@ -127,19 +142,20 @@ void Updater::addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_pt
   int nmemory = _nmemory+1;
   _computeSmallSystem(_nextmemory, nmemory, res);
   _x = arma::solve( _H, _b, arma::solve_opts::fast);
+  std::cerr << _name << " _x=" << _x.t();
 //  _x = arma::pinv(_H)*_b;
   if(print) printf("'%4.2f' %10.3e %10.3e %10.3e\n", _x[0]/wnorm, w->norm(), getAV(_nextmemory)->norm()*wnorm, _rnorm);
   for(int i = 0; i < nmemory; i++)
   {
     if(_scale)
     {
-      u->add(_rnorm*_x[i], *getV(i));
-      res->add(-_rnorm*_x[i], *getAV(i));
+      u->add(_rnorm*_x[i], getV(i));
+      res->add(-_rnorm*_x[i], getAV(i));
     }
     else
     {
-      u->add(_x[i], *getV(i));
-      res->add(-_x[i], *getAV(i));
+      u->add(_x[i], getV(i));
+      res->add(-_x[i], getAV(i));
     }
   }
 
@@ -151,7 +167,7 @@ void Updater::addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_pt
   else
     // memoire pleine !
   {
-    if( ( _type == "cyc" )or ( _type == "ortho") )
+    if( ( _droptype == "cyc" )or ( _droptype == "ortho") )
     {
       if(_nextmemory == _nvectors-1)
       {
@@ -162,14 +178,14 @@ void Updater::addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_pt
         _nextmemory++;
       }
     }
-    else if(_type == "coef")
+    else if(_droptype == "coef")
     {
       arma::uword ind;
       armavec s = arma::abs(_x);
       s.min(ind);
       _nextmemory = ind;
     }
-    else if(_type == "restart")
+    else if(_droptype == "restart")
     {
       getV(0) = getV(_nextmemory);
       getAV(0) =  getAV(_nextmemory);
@@ -200,12 +216,12 @@ void Updater::_computeSmallSystem(int index, int nmemory, std::shared_ptr<Vector
   {
     for(int i = 0; i < nmemory; i++)
     {
-      _H(index, i) = getAV(i)->dot(*getV(index));
+      _H(index, i) = getAV(i)->dot(getV(index));
       if(index != i)
       {
-        _H(i, index) = getAV(index)->dot(*getV(i));
+        _H(i, index) = getAV(index)->dot(getV(i));
       }
-      _b[i] = r->dot(*getV(i));
+      _b[i] = r->dot(getV(i));
     }
   }
   //-------------------------------------------------
@@ -214,13 +230,13 @@ void Updater::_computeSmallSystem(int index, int nmemory, std::shared_ptr<Vector
   {
     for(int i = 0; i < nmemory; i++)
     {
-      double d = getAV(i)->dot(*getAV(index));
+      double d = getAV(i)->dot(getAV(index));
       _H(index, i) = d;
       if(index != i)
       {
         _H(i, index) = d;
       }
-      _b[i] = r->dot(*getAV(i));
+      _b[i] = r->dot(getAV(i));
     }
   }
   //-------------------------------------------------
@@ -231,22 +247,22 @@ void Updater::_computeSmallSystem(int index, int nmemory, std::shared_ptr<Vector
     for(int i = 0; i < nmemory; i++)
     {
       //ls
-      double d = getAV(i)->dot(*getAV(index));
+      double d = getAV(i)->dot(getAV(index));
       _H(index, i) = alpha*d;
       if(index != i)
       {
         _H(i, index) = alpha*d;
       }
       //gal
-      _H(index, i) += getAV(i)->dot(*getV(index));
+      _H(index, i) += getAV(i)->dot(getV(index));
       if(index != i)
       {
-        _H(i, index) += getAV(index)->dot(*getV(i));
+        _H(i, index) += getAV(index)->dot(getV(i));
       }
       //ls
-      _b[i] = alpha* r->dot(*getAV(i));
+      _b[i] = alpha* r->dot(getAV(i));
       //gal
-      _b[i] += r->dot(*getV(i));
+      _b[i] += r->dot(getV(i));
     }
   }
   else

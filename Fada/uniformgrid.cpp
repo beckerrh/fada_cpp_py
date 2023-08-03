@@ -19,6 +19,7 @@ void UniformGrid::savehdf5(const std::string& filename) const
 /*-------------------------------------------------*/
 void UniformGrid::loadhdf5(const std::string& filename)
 {
+  // std::cerr <<"@@@@@ loadhdf5\n";
   _n.load(arma::hdf5_name(filename,"n"));
   _dx.load(arma::hdf5_name(filename,"dx"));
   _bounds.load(arma::hdf5_name(filename,"bounds"));

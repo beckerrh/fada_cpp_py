@@ -21,16 +21,17 @@ class UniformGrid;
 class Q1 : public ModelBase
 {
 protected:
-  size_t _nx, _ny, _nz;
-  double _vol;
+  // size_t _nx, _ny, _nz;
+  // double _vol;
   virtual void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const=0;
+  virtual std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const = 0;
 
 public:
   ~Q1()
   {
   }
 
-  Q1(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> boundaryconditions=nullptr) : ModelBase(parameters, boundaryconditions)
+  Q1(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app=nullptr) : ModelBase(parameters, app)
   {
   }
 
@@ -40,14 +41,16 @@ public:
 
   void set_grid(std::shared_ptr <GridInterface const> grid);
   std::shared_ptr <VectorInterface>   newVector(std::shared_ptr <GridInterface const>grid) const;
-  std::shared_ptr <SmootherInterface const> newSmoother(std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface const> matrix) const;
-  std::shared_ptr <CoarseSolverInterface const> newCoarseSolver(std::string type, std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface const> matrix) const;
-  std::shared_ptr <MatrixInterface const>   newMatrix(std::shared_ptr <GridInterface const>grid) const;
-  std::shared_ptr <TransferInterface const> newTransfer(std::shared_ptr <GridInterface const>grid) const;
+  std::shared_ptr <SmootherInterface> newSmoother(std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface> matrix) const;
+  std::shared_ptr <CoarseSolverInterface> newCoarseSolver(std::string type, std::shared_ptr <GridInterface const>grid, std::shared_ptr <MatrixInterface const> matrix) const;
+  std::shared_ptr <MatrixInterface>   newMatrix(std::shared_ptr <GridInterface const>grid) const;
+  std::shared_ptr <TransferInterface> newTransfer(std::shared_ptr <GridInterface const>grid, int ref_factor) const;
 
-  virtual std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const = 0;
-  void rhs_one(GridVector& v) const;
-  void rhs_random(GridVector& v) const;
+  // void rhs_one(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  // void rhs_random(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  PointDataMap to_point_data(const GridVector& v, std::shared_ptr<GridInterface const> grid) const {_not_written_(); return PointDataMap();}
+  void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt) {}
+  
 };
 
 /*-------------------------------------------------*/
@@ -55,13 +58,14 @@ class Q12d : public Q1
 {
 protected:
     void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
+    std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
     
 public:
   ~Q12d()
   {
   }
 
-  Q12d(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : Q1(parameters, bc)
+  Q12d(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : Q1(parameters, app)
   {
   }
 
@@ -74,10 +78,9 @@ public:
     return("Q12d");
   }
 
-  void boundary_zero(GridVector& v) const;
-  void boundary_linear(GridVector& v) const;
-
-  std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
+  void boundary_zero(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  void boundary_linear(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  std::map<std::string,double> compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const;
 };
 
 /*-------------------------------------------------*/
@@ -85,12 +88,13 @@ class Q13d : public Q1
 {
 protected:
     void get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
+    std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
     
 public:
   ~Q13d()
   {
   }
-  Q13d(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : Q1(parameters, bc)
+  Q13d(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : Q1(parameters, app)
   {
   }
 
@@ -103,10 +107,10 @@ public:
     return("Q13d");
   }
 
-  void boundary_zero(GridVector& v) const;
-  void boundary_linear(GridVector& v) const;
+  void boundary_zero(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  void boundary_linear(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  std::map<std::string,double> compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const;
 
-  std::shared_ptr <FemAndMatrixAndSmootherInterface> newStencil(std::shared_ptr <GridInterface const>grid) const;
 };
 
 #endif /* q1_hpp */

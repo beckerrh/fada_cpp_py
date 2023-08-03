@@ -16,13 +16,16 @@ class VectorInterface;
 /*-------------------------------------------------*/
 class UpdaterInterface
 {
+protected:
+    std::string _name;
 public:
-  virtual ~UpdaterInterface() {}
-  UpdaterInterface() {}
-  UpdaterInterface(const UpdaterInterface& updater) {}
+    virtual ~UpdaterInterface() {}
+    UpdaterInterface(std::string name) : _name(name) {}
+    UpdaterInterface(const UpdaterInterface& updater) : _name(updater._name) {}
 
-  virtual void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat, int nvectors, const std::string& type="cyc", const std::string& solutiontype="ls")=0;
-  virtual void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false)=0;
+    std::string toString() const {return _name;}
+    virtual void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat)=0;
+    virtual void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false)=0;
 };
 
 

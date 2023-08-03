@@ -15,21 +15,21 @@
 class GridIndex
 {
 protected:
-    armaicvec _n, _ofs;
-    void set_ofs()
+    armaicvec _ofs;
+    void set_ofs(const armaicvec& n)
     {
-        _ofs.set_size(_n.n_elem);
+        _ofs.set_size(n.n_elem);
         _ofs.fill(1);
-        for(int i=0;i<_n.n_elem;i++)
+        for(int i=0;i<n.n_elem;i++)
         {
-            for(int j=i+1;j<_n.n_elem;j++)
+            for(int j=i+1;j<n.n_elem;j++)
             {
-                _ofs[i] *= _n[j];
+                _ofs[i] *= n[j];
             }
         }
     }    
 public:
-  GridIndex(const armaicvec& n) : _n(n) {set_ofs();}
+  GridIndex(const armaicvec& n) {set_ofs(n);}
   inline int operator()(int ix, int iy)
   {
       return _ofs[0]*ix+iy;

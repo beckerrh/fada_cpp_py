@@ -37,5 +37,6 @@ public:
   {
     arma::spsolve(out, *_matrix, in);
   }
+  void update(std::shared_ptr<MatrixInterface const> matrix) {_not_written_();}
 };
 #endif

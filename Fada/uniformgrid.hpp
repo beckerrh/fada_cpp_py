@@ -24,12 +24,13 @@ public:
   UniformGrid() : GridInterface() {}
   UniformGrid(const UniformGrid& uniformgrid) : GridInterface(uniformgrid), _n(uniformgrid._n), _dx(uniformgrid._dx), _bounds(uniformgrid._bounds) {}
   UniformGrid(const armaicvec& n, std::shared_ptr<armamat> bounds=nullptr) {set_size(n, bounds);}
+  UniformGrid(const std::string& filename) {loadhdf5(filename);}
 
   std::string toString() const;
 
   void set_size(const armaicvec& n, std::shared_ptr<armamat> bounds=nullptr);
   size_t dim() const {return _n.n_elem;}
-  int n_fine() const { return arma::prod(_n);}
+  int n_gridpoints() const { return arma::prod(_n);}
   size_t n(int i) const {return _n[i];}
   size_t nx() const {return _n[0];}
   size_t ny() const {return _n[1];}
@@ -40,6 +41,9 @@ public:
   double x(int ix, int iy=0, int iz=0) const {return ix*_dx[0];}
   double y(int ix, int iy, int iz=0) const {return iy*_dx[1];}
   double z(int ix, int iy, int iz) const {return iz*_dx[2];}
+  double xmid(int ix, int iy=0, int iz=0) const {return (ix+0.5)*_dx[0];}
+  double ymid(int ix, int iy, int iz=0) const {return (iy+0.5)*_dx[1];}
+  double zmid(int ix, int iy, int iz) const {return (iz+0.5)*_dx[2];}
   void savehdf5(const std::string& filename) const;
   void loadhdf5(const std::string& filename);
 };

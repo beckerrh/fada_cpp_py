@@ -164,26 +164,30 @@ void UmfMatrix::save(std::ostream& os, arma::file_type datatype) const
 /*---------------------------------------------------------*/
 void UmfMatrix::init(std::shared_ptr<MatrixInterface const> matrix)
 {
-  _matrix = matrix;
-  if(std::dynamic_pointer_cast<SparseMatrix const>(matrix))
-  {
-    std::shared_ptr<SparseMatrix const> _sp = std::dynamic_pointer_cast<SparseMatrix const>(matrix);
-    n = _sp->nrows();
-    mb = _sp->values().begin();
+    if(std::dynamic_pointer_cast<SparseMatrix const>(matrix))
+    {
+      std::shared_ptr<SparseMatrix const> sp = std::dynamic_pointer_cast<SparseMatrix const>(matrix);
+      init(sp);
+    }
+    else
+    {
+        _not_written_("*** ERROR UmfMatrix: unknown sparse matrix");
+    }
+    
+}
+/*---------------------------------------------------------*/
+void UmfMatrix::init(std::shared_ptr<SparseMatrix const> sp)
+{
+    _matrix = sp;
+    n = sp->nrows();
+    mb = sp->values().begin();
     #ifdef _LONG_LONG
-      sb = (const long long*) _sp->rows().begin();
-      cb = (const long long*) _sp->cols().begin();
+      sb = (const long long*) sp->rows().begin();
+      cb = (const long long*) sp->cols().begin();
     #else
-      sb = (const int*) _sp->rows().begin();
-      cb = (const int*) _sp->cols().begin();
+      sb = (const int*) sp->rows().begin();
+      cb = (const int*) sp->cols().begin();
     #endif
-  }
-  else
-  {
-    std::cerr<<"*** ERROR UmfMatrix: unknown sparse matrix\n";
-    assert(0);
-    exit(1);
-  }
   #ifdef _LONG_LONG
     umfpack_dl_free_symbolic (&Symbolic);
     int status = umfpack_dl_symbolic(n, n, sb, cb, NULL, &Symbolic, Control, Info);
@@ -204,7 +208,7 @@ void UmfMatrix::init(std::shared_ptr<MatrixInterface const> matrix)
   if(status != UMFPACK_OK)
   {
     std::cerr<<"*** ERROR UmfMatrix: umfpack_symbolic failed\n";
-    matrix->save(std::cerr);
+    sp->save(std::cerr);
     assert(0);
     exit(1);
   }
@@ -212,8 +216,8 @@ void UmfMatrix::init(std::shared_ptr<MatrixInterface const> matrix)
 /*---------------------------------------------------------*/
 void UmfMatrix::computeLu()
 {
-  std::shared_ptr<SparseMatrix const> _sp = std::dynamic_pointer_cast<SparseMatrix const>(_matrix);
-  assert(_sp);
+  std::shared_ptr<SparseMatrix const> sp = std::dynamic_pointer_cast<SparseMatrix const>(_matrix);
+  assert(sp);
   #ifdef _LONG_LONG
     int status = umfpack_dl_numeric(sb, cb, mb, Symbolic, &Numeric, Control, Info);
     if(status != UMFPACK_OK)

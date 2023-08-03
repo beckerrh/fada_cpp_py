@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const UniformMultiGrid& mg)
 std::string UniformMultiGrid::toString() const
 {
   std::stringstream ss;
-  ss << "nlevels = " << nlevels() << "\n";
+  ss << "\nnlevels = " << nlevels() << "\n";
   for(int l=0;l<nlevels();l++)
   {
     ss << get(l)->toString();
@@ -35,12 +35,12 @@ std::string UniformMultiGrid::toString() const
   return ss.str();
 }
 /*-------------------------------------------------*/
-void UniformMultiGrid::set_size(int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bp)
+void UniformMultiGrid::set_size(int nlevels, const armaicvec& n0, std::shared_ptr<armamat> bp, int ref_factor)
 {
+    _ref_factor = ref_factor;
   if(nlevels==0)
   {
-    std::cerr<< " nlevels = " << nlevels << "\n";
-    exit(1);
+      _not_written_("nlevels=0");
   }
   arma::uword dim = n0.n_elem;
   armaicvec n(dim);
@@ -63,7 +63,7 @@ void UniformMultiGrid::set_size(int nlevels, const armaicvec& n0, std::shared_pt
   {
     for(int i=0;i<dim;i++)
     {
-      n[i] = int(pow(2,nlevels-1-l))*(n0[i]-1)+1;
+      n[i] = int(pow(ref_factor,nlevels-1-l))*(n0[i]-1)+1;
     }
     _grids[l] = std::shared_ptr<GridInterface>(new UniformGrid(n, bounds));
   }

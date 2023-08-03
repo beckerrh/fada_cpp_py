@@ -49,13 +49,14 @@ class FadaRun:
                     ''')
         parser.add_argument('command', help='subcommand to run')
         parser.add_argument('-t', default = self.CMAKE_BUILD_TYPES[0], help='build type', choices=self.CMAKE_BUILD_TYPES)
+        parser.add_argument('-compiler', default = "", help='compiler')
         parser.add_argument('--cleanlib', default = False, action="store_true", help='clean library (build)')
         parser.add_argument('--verbose', default = False, action="store_true", help='compile blabbing')
         args = vars(parser.parse_args(sys.argv[1:]))
         if args['verbose']:
             print ('ArgumentsParser() args', args)
         if args['command']=='cmake':
-            self.cmake(build_type=args['t'], verbose=args['verbose'], cleanlib=args['cleanlib'])
+            self.cmake(build_type=args['t'], verbose=args['verbose'], cleanlib=args['cleanlib'], compiler=args['compiler'], )
         elif args['command']=='compile':
             self.compile(build_type=args['t'], verbose=args['verbose'])
         elif args['command']=='copypython':
@@ -66,7 +67,7 @@ class FadaRun:
         files = self.sourcedir.glob("*.py")
         for file in files:
             shutil.copy(file, self.installdir)
-    def cmake(self, build_type=None, verbose=False, cleanlib=False):
+    def cmake(self, build_type=None, verbose=False, cleanlib=False, compiler=""):
         if build_type is None: build_type=self.CMAKE_BUILD_TYPES[0]
         localbuilddir = self.builddir / build_type
         if verbose:
@@ -75,7 +76,8 @@ class FadaRun:
             print ('compile: installdir', self.installdir)
             print ('compile: builddir', self.builddir)
             print ('compile: localbuilddir', localbuilddir)
-        if cleanlib:
+            print ('compile: compiler', compiler)
+        if cleanlib or compiler:
             shutil.rmtree(localbuilddir, ignore_errors=True)
         try:
             os.makedirs(localbuilddir)
@@ -84,6 +86,8 @@ class FadaRun:
         startdir = os.getcwd()
         os.chdir(localbuilddir)
         cmakeoptions = " -DCMAKE_BUILD_TYPE="+build_type + " -DCMAKE_INSTALL_PREFIX="+str(self.installdir)
+        if compiler != "":
+            cmakeoptions += " -DCMAKE_CXX_COMPILER="+compiler
         command = "cmake " + str(self.sourcedir) + cmakeoptions
         if verbose:
             print ('compile: command', command)

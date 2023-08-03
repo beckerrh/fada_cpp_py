@@ -22,6 +22,7 @@ public:
   MultiGridInterface(const MultiGridInterface& multigrid) {}
 
   virtual std::string toString() const=0;
+  virtual int get_ref_factor() const=0;
   virtual size_t nlevels() const=0;
   virtual size_t dim() const=0;
   virtual std::shared_ptr<GridInterface> get(int l) =0;

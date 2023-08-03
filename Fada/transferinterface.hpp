@@ -76,11 +76,46 @@ public:
   //   get().set_grid(n, dx);
   // }
   //
-  void restrict (std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const { get().restrict (getVector(out), getVector(in)); }
+  void restrict(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const { get().restrict (getVector(out), getVector(in)); }
   void prolongate(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const
   {
     get().prolongate(getVector(out), getVector(in));
   }
 };
 
-#endif /* transferinterface_h */
+
+/*-------------------------------------------------*/
+class SystemTransfer : public  virtual TransferInterface
+{
+protected:
+    std::vector<std::shared_ptr<TransferInterface>> _transfers;
+public:
+    SystemTransfer(int n):_transfers(n) {}
+    SystemTransfer(const SystemTransfer& transfer):_transfers(transfer._transfers) {}
+    void restrict(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const
+    {
+        auto pout = std::dynamic_pointer_cast<SystemVector>(out);
+        assert(pout);
+        auto pin = std::dynamic_pointer_cast<SystemVector const>(in);
+        assert(pin);
+        for(int i=0; i<_transfers.size();i++)
+        {
+           _transfers[i]->restrict(pout->get(i), pin->get(i)); 
+        }        
+    }
+    void prolongate(std::shared_ptr <VectorInterface> out, std::shared_ptr <VectorInterface const> in) const
+    {
+        auto pout = std::dynamic_pointer_cast<SystemVector>(out);
+        assert(pout);
+        auto pin = std::dynamic_pointer_cast<SystemVector const>(in);
+        assert(pin);
+        for(int i=0; i<_transfers.size();i++)
+        {
+           _transfers[i]->prolongate(pout->get(i), pin->get(i)); 
+        }                
+    }
+    std::shared_ptr<TransferInterface>& get(int i) {return _transfers[i];}
+    const std::shared_ptr<TransferInterface>& get(int i) const {return _transfers[i];}
+};
+
+#endif

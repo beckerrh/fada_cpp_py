@@ -141,6 +141,8 @@ public:
   virtual void jacobi       (GridVector& out, const GridVector& in) const=0;
   virtual void gauss_seidel1(GridVector& out, const GridVector& in) const=0;
   virtual void gauss_seidel2(GridVector& out, const GridVector& in) const=0;
+  void update(std::shared_ptr<MatrixInterface const> matrix) {_not_written_();}
+  void Tdot(GridVector& out, const GridVector& in, double d) const{_not_written_();}
 };
 
 /*-------------------------------------------------*/

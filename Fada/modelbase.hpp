@@ -10,27 +10,31 @@
 #define modelbase_hpp
 
 #include  <map>
-#include  "boundary_conditions.hpp"
+#include  "applicationinterface.hpp"
 
+class AnalyticalFunctionInterface;
+class GridInterface;
+class GridVector;
 class UniformGrid;
 
 /*-------------------------------------------------*/
 class ModelBase
 {
 protected:
-  std::shared_ptr <UniformGrid const> _ug;
+  // std::shared_ptr <UniformGrid const> _ug;
   std::string _stenciltype, _matrixtype, _smoothertype, _smoother, _coarsesolver, _transfertype;
-  std::shared_ptr <BoundaryConditions const> _boundaryconditions;
+  std::shared_ptr <ApplicationInterface const> _app;
 
 public:
   ~ModelBase()
   {
   }
 
-  ModelBase(const std::map <std::string, std::string>& parameters, std::shared_ptr <BoundaryConditions const> boundaryconditions = nullptr);
-  ModelBase(const ModelBase& model) : _ug(model._ug), _stenciltype(model._stenciltype), _boundaryconditions(model._boundaryconditions)
+  ModelBase(const std::map <std::string, std::string>& parameters, std::shared_ptr <ApplicationInterface const> app = nullptr);
+  ModelBase(const ModelBase& model) : _stenciltype(model._stenciltype), _app(model._app)
   {
   }
+  void rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const;
 };
 
 #endif

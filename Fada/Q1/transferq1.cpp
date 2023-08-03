@@ -214,7 +214,7 @@ void TransferQ12d::restrict (GridVector & out, const GridVector& in) const
                              + 0.25 * in.at(2 * _nx - 3, 2 * _ny - 3)
   ;
   // _boundary(out);
-  out.boundary_zero();
+  // out.boundary_zero();
 }
 /*-------------------------------------------------*/
 void TransferQ12d::prolongate(GridVector& out, const GridVector& in) const
@@ -285,7 +285,7 @@ void TransferQ13d::restrict (GridVector & out, const GridVector& in) const
       }
     }
   }
-  out.boundary_zero();
+  // out.boundary_zero();
   // _boundary(out);
 }
 /*-------------------------------------------------*/

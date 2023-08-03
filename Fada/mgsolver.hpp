@@ -28,19 +28,20 @@ typedef std::vector<std::shared_ptr<VectorInterface>> VectorMG;
 class MgSolver
 {
 protected:
-  Timer _timer;
+  mutable Timer _timer;
   size_t _nlevels;
-  std::shared_ptr<ModelInterface const> _model;
-  std::vector<std::shared_ptr<MatrixInterface const> > _mgmatrix;
-  std::vector<std::shared_ptr<SmootherInterface const> > _mgsmoother;
-  std::vector<std::shared_ptr<TransferInterface const> > _mgtransfer;
-  std::shared_ptr<CoarseSolverInterface const> _mgcoarsesolver;
+  std::shared_ptr<MultiGridInterface> _mgrid;
+  std::shared_ptr<ModelInterface> _model;
+  std::vector<std::shared_ptr<MatrixInterface> > _mgmatrix;
+  std::vector<std::shared_ptr<SmootherInterface> > _mgsmoother;
+  std::vector<std::shared_ptr<TransferInterface> > _mgtransfer;
+  std::shared_ptr<CoarseSolverInterface> _mgcoarsesolver;
   mutable std::vector<std::shared_ptr<UpdaterInterface> > _mgupdate, _mgupdatesmooth;
-  int _maxiter;
+  int _maxiter, _niter_post, _niter_pre;
   double _tol_rel, _tol_abs;
   std::vector<VectorMG> _mgmem;
   void _set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, VectorMG& v) const;
-  void residual(int l, std::shared_ptr<VectorInterface> r, std::shared_ptr<VectorInterface const> u, std::shared_ptr<VectorInterface const>  f) const;
+  // void residual(int l, std::shared_ptr<VectorInterface> r, std::shared_ptr<VectorInterface const> u, std::shared_ptr<VectorInterface const>  f) const;
   void mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol);
 
 public:
@@ -53,9 +54,12 @@ public:
   void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model, int updatemem=0);
   std::string toString() const;
   int solve(bool print=true);
+  std::shared_ptr<MatrixInterface const> getMatrix(int level=0) const {return _mgmatrix[level];}
   std::shared_ptr<VectorInterface const> getU() const {return _mgmem[0][0];}
   std::shared_ptr<VectorInterface> getU() {return _mgmem[0][0];}
+  std::shared_ptr<VectorInterface const> getF() const {return _mgmem[1][0];}
   std::shared_ptr<VectorInterface> getF() {return _mgmem[1][0];}
+  void update_coefficients(double dt);
 };
 
 #endif

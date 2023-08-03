@@ -17,7 +17,7 @@
 #include  "../matrixinterface.hpp"
 #include  "../uniformgrid.hpp"
 #include  "../smoothersimple.hpp"
-#include  "../smootherumf.hpp"
+#include  "../solverumf.hpp"
 #include  "../sparsematrix.hpp"
 #include  "../sparsematrix_arma.hpp"
 #include  "../transferbymatrix.hpp"
@@ -30,35 +30,35 @@ double lin2d(double x, double y) {return 3.0*x+2.0*y;}
 double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
 
 
-/*-------------------------------------------------*/
-void Q1::set_grid(std::shared_ptr<GridInterface const> grid)
-{
-    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
-    assert(ug);
-    assert(ug->dx().n_elem == ug->dim());
-    assert(ug->n().n_elem == ug->dim());
-    _nx = ug->nx();
-    _ny = ug->ny();
-    _nz = -1;
-    if(ug->dim()==3) _nz = ug->nz();
-    _vol = arma::prod(ug->dx());
-    _ug = ug;
-    if (_boundaryconditions == nullptr)
-    {
-        _boundaryconditions = std::make_shared<BoundaryConditions>(ug->dim());
-    }
-}
+// /*-------------------------------------------------*/
+// void Q1::set_grid(std::shared_ptr<GridInterface const> grid)
+// {
+//     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+//     assert(ug);
+//     assert(ug->dx().n_elem == ug->dim());
+//     assert(ug->n().n_elem == ug->dim());
+//     _nx = ug->nx();
+//     _ny = ug->ny();
+//     _nz = -1;
+//     if(ug->dim()==3) _nz = ug->nz();
+//     _vol = arma::prod(ug->dx());
+//     _ug = ug;
+//     if (_boundaryconditions == nullptr)
+//     {
+//         _boundaryconditions = std::make_shared<BoundaryConditions>(ug->dim());
+//     }
+// }
 /*-------------------------------------------------*/
 std::shared_ptr<VectorInterface> Q1::newVector(std::shared_ptr<GridInterface const> grid) const
 {
-    auto p = std::make_shared<Vector<GridVector>>(grid->n(), _boundaryconditions);
+    auto p = std::make_shared<Vector<GridVector>>(grid->n(), _app->get_bc());
     p->boundary_zero();
     return p;
 }
 /*-------------------------------------------------*/
-std::shared_ptr<SmootherInterface const> Q1::newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
+std::shared_ptr<SmootherInterface> Q1::newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const
 {
-    auto stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface const>(matrix);
+    auto stencil = std::dynamic_pointer_cast<FemAndMatrixAndSmootherInterface>(matrix);
     if (_smoothertype=="stencil")
     {
         assert(stencil);
@@ -80,7 +80,7 @@ std::shared_ptr<SmootherInterface const> Q1::newSmoother(std::shared_ptr<GridInt
     return std::make_shared<Smoother<SmootherSimple<SparseMatrix>,Vector<armavec>>>(_smoother, matrixforumf);
 }
 /*-------------------------------------------------*/
-std::shared_ptr<CoarseSolverInterface const> Q1::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
+std::shared_ptr<CoarseSolverInterface> Q1::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
 {
     // return std::shared_ptr<SmootherInterface>(new CoarseSolver<SmootherSimple,Vector<armavec>>("GS", matrix));
     auto armamat = std::dynamic_pointer_cast<Matrix<SparseMatrix_arma,Vector<armavec>> const>(matrix);
@@ -105,11 +105,11 @@ std::shared_ptr<CoarseSolverInterface const> Q1::newCoarseSolver(std::string typ
         matrixforumf = matrix;
     }
     // return std::shared_ptr<SmootherInterface>(new Smoother<arma::sp_mat, Vector<armavec>>(matrix));
-    return std::shared_ptr<CoarseSolverInterface>(new CoarseSolver<SmootherUmf, Vector<armavec>>(matrixforumf,_coarsesolver));
+    return std::shared_ptr<CoarseSolverInterface>(new CoarseSolver<SolverUmf, Vector<armavec>>(matrixforumf,_coarsesolver));
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<MatrixInterface const> Q1::newMatrix(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<MatrixInterface> Q1::newMatrix(std::shared_ptr<GridInterface const> grid) const
 {
     std::shared_ptr<FemAndMatrixAndSmootherInterface> p = newStencil(grid);
     if(_matrixtype=="stencil")
@@ -135,8 +135,9 @@ std::shared_ptr<MatrixInterface const> Q1::newMatrix(std::shared_ptr<GridInterfa
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<TransferInterface const> Q1::newTransfer(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<TransferInterface> Q1::newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const
 {
+    assert(ref_factor==2);
     if(_transfertype=="matrix")
     {
         arma::umat locations;
@@ -167,20 +168,26 @@ std::shared_ptr<TransferInterface const> Q1::newTransfer(std::shared_ptr<GridInt
     return nullptr;
 }
 
-/*-------------------------------------------------*/
-void Q1::rhs_one(GridVector& v) const
-{
-    v.fill(_vol*12.0);
-}
-/*-------------------------------------------------*/
-void Q1::rhs_random(GridVector& v) const
-{
-    arma::arma_rng::set_seed_random();
-    // v.data().randu();
-    v.randu();
-    v *= 100*_vol;
-}
-/*-------------------------------------------------*/
+// /*-------------------------------------------------*/
+// void Q1::rhs_one(GridVector& v, std::shared_ptr<GridInterface const> grid) const
+// {
+//     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+//     assert(ug);
+//     double vol = arma::prod(ug->dx());
+//     v.fill(vol*12.0);
+// }
+// /*-------------------------------------------------*/
+// void Q1::rhs_random(GridVector& v, std::shared_ptr<GridInterface const> grid) const
+// {
+//     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+//     assert(ug);
+//     double vol = arma::prod(ug->dx());
+//     arma::arma_rng::set_seed_random();
+//     // v.data().randu();
+//     v.randu();
+//     v *= 100*vol;
+// }
+// /*-------------------------------------------------*/
 void Q12d::get_locations_values_transfer(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     // std::cerr << "grid " << grid->toString() << "\n";
@@ -949,91 +956,119 @@ std::shared_ptr<FemAndMatrixAndSmootherInterface> Q13d::newStencil(std::shared_p
 }
 
 /*-------------------------------------------------*/
-void Q12d::boundary_zero(GridVector& u) const
+void Q12d::boundary_zero(GridVector& u, std::shared_ptr<GridInterface const> grid) const
 {
-    for(int ix=0;ix<_nx;ix++)
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    size_t nx = ug->nx();
+    size_t ny = ug->ny();
+    for(int ix=0;ix<nx;ix++)
     {
         u.at(ix,0)    = 0;
-        u.at(ix,_ny-1) = 0;
+        u.at(ix,ny-1) = 0;
     }
-    for(int iy=0;iy<_ny;iy++)
+    for(int iy=0;iy<ny;iy++)
     {
         u.at(0,iy)    = 0;
-        u.at(_nx-1,iy) = 0;
+        u.at(nx-1,iy) = 0;
     }
 }
 
 
 /*-------------------------------------------------*/
-void Q13d::boundary_zero(GridVector& u) const
+void Q13d::boundary_zero(GridVector& u, std::shared_ptr<GridInterface const> grid) const
 {
-    for(int ix=0;ix<_nx;ix++)
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    size_t nx = ug->nx();
+    size_t ny = ug->ny();
+    size_t nz = ug->nz();
+    for(int ix=0;ix<nx;ix++)
     {
-        for(int iy=0;iy<_ny;iy++)
+        for(int iy=0;iy<ny;iy++)
         {
             u.at(ix,iy,0)     = 0;
-            u.at(ix,iy,_nz-1) = 0;
+            u.at(ix,iy,nz-1) = 0;
         }
     }
-    for(int ix=0;ix<_nx;ix++)
+    for(int ix=0;ix<nx;ix++)
     {
-        for(int iz=0;iz<_nz;iz++)
+        for(int iz=0;iz<nz;iz++)
         {
             u.at(ix,0,   iz)   = 0;
-            u.at(ix,_ny-1,iz)  = 0;
+            u.at(ix,ny-1,iz)  = 0;
         }
     }
-    for(int iy=0;iy<_ny;iy++)
+    for(int iy=0;iy<ny;iy++)
     {
-        for(int iz=0;iz<_nz;iz++)
+        for(int iz=0;iz<nz;iz++)
         {
             u.at(0,   iy,iz)  = 0;
-            u.at(_nx-1,iy,iz) = 0;
+            u.at(nx-1,iy,iz) = 0;
         }
     }
 }
+/*-------------------------------------------------*/
+std::map<std::string,double> Q12d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
+{
+    _not_written_();
+}
+/*-------------------------------------------------*/
+std::map<std::string,double> Q13d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
+{
+    _not_written_();
+}
 
 /*-------------------------------------------------*/
-void Q12d::boundary_linear(GridVector& u) const
+void Q12d::boundary_linear(GridVector& u, std::shared_ptr<GridInterface const> grid) const
 {
-    for(int ix=0;ix<_nx;ix++)
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    size_t nx = ug->nx();
+    size_t ny = ug->ny();
+    for(int ix=0;ix<nx;ix++)
     {
-        u.at(ix,0)    = lin2d(_ug->x(ix,0), _ug->y(ix,0));
-        u.at(ix,_ny-1) = lin2d(_ug->x(ix,_ny-1), _ug->y(ix,_ny-1));
+        u.at(ix,0)    = lin2d(ug->x(ix,0), ug->y(ix,0));
+        u.at(ix,ny-1) = lin2d(ug->x(ix,ny-1), ug->y(ix,ny-1));
     }
-    for(int iy=0;iy<_ny;iy++)
+    for(int iy=0;iy<ny;iy++)
     {
-        u.at(0,iy)    = lin2d(_ug->x(0,iy), _ug->y(0,iy));
-        u.at(_nx-1,iy) = lin2d(_ug->x(_nx-1,iy), _ug->y(_nx-1,iy));
+        u.at(0,iy)    = lin2d(ug->x(0,iy), ug->y(0,iy));
+        u.at(nx-1,iy) = lin2d(ug->x(nx-1,iy), ug->y(nx-1,iy));
     }
 }
 
 
 /*-------------------------------------------------*/
-void Q13d::boundary_linear(GridVector& u) const
+void Q13d::boundary_linear(GridVector& u, std::shared_ptr<GridInterface const> grid) const
 {
-    for(int ix=0;ix<_nx;ix++)
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    size_t nx = ug->nx();
+    size_t ny = ug->ny();
+    size_t nz = ug->nz();
+    for(int ix=0;ix<nx;ix++)
     {
-        for(int iy=0;iy<_ny;iy++)
+        for(int iy=0;iy<ny;iy++)
         {
-            u.at(ix,iy,0)     = lin3d(_ug->x(ix,iy,0), _ug->y(ix,iy,0), _ug->z(ix,iy,0));
-            u.at(ix,iy,_nz-1) = lin3d(_ug->x(ix,iy,_nz-1), _ug->y(ix,iy,_nz-1), _ug->z(ix,iy,_nz-1));
+            u.at(ix,iy,0)    = lin3d(ug->x(ix,iy,0), ug->y(ix,iy,0), ug->z(ix,iy,0));
+            u.at(ix,iy,nz-1) = lin3d(ug->x(ix,iy,nz-1), ug->y(ix,iy,nz-1), ug->z(ix,iy,nz-1));
         }
     }
-    for(int ix=0;ix<_nx;ix++)
+    for(int ix=0;ix<nx;ix++)
     {
-        for(int iz=0;iz<_nz;iz++)
+        for(int iz=0;iz<nz;iz++)
         {
-            u.at(ix,0,   iz)   = lin3d(_ug->x(ix,0,   iz), _ug->y(ix,0,   iz), _ug->z(ix,0,   iz));
-            u.at(ix,_ny-1,iz)  = lin3d(_ug->x(ix,_ny-1,iz), _ug->y(ix,_ny-1,iz), _ug->z(ix,_ny-1,iz));
+            u.at(ix,0,   iz)  = lin3d(ug->x(ix,0,   iz), ug->y(ix,0,   iz), ug->z(ix,0,   iz));
+            u.at(ix,ny-1,iz)  = lin3d(ug->x(ix,ny-1,iz), ug->y(ix,ny-1,iz), ug->z(ix,ny-1,iz));
         }
     }
-    for(int iy=0;iy<_ny;iy++)
+    for(int iy=0;iy<ny;iy++)
     {
-        for(int iz=0;iz<_nz;iz++)
+        for(int iz=0;iz<nz;iz++)
         {
-            u.at(0,   iy,iz)  = lin3d(_ug->x(0,   iy,iz), _ug->y(0,   iy,iz), _ug->z(0,   iy,iz));
-            u.at(_nx-1,iy,iz) = lin3d(_ug->x(_nx-1,iy,iz), _ug->y(_nx-1,iy,iz), _ug->z(_nx-1,iy,iz));
+            u.at(0,   iy,iz) = lin3d(ug->x(0,   iy,iz), ug->y(0,   iy,iz), ug->z(0,   iy,iz));
+            u.at(nx-1,iy,iz) = lin3d(ug->x(nx-1,iy,iz), ug->y(nx-1,iy,iz), ug->z(nx-1,iy,iz));
         }
     }
 }

@@ -7,9 +7,9 @@ import pyvista
 def vista(umg, plot=True):
   solver = pyfada.SolverLaplace(umg, {"stenciltype":"Trapez", "matrix":"matrix", "smoother":"GS"})
   print("solver", solver)
-  problem="DirichletRhsOne"
-  problem="Linear"
-  iter = solver.testsolve(problem=problem)
+  application="DirichletRhsOne"
+  application="Linear"
+  iter = solver.testsolve(application=application)
   plotter = pyvista.Plotter()
   plotter.set_background([0.9,0.9,0.9])
   print(f"dims = {umg.get_dimensions().flat}")

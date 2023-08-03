@@ -24,6 +24,7 @@ public:
 
   virtual void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const=0;
   virtual void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const=0;
+  virtual void update(std::shared_ptr<MatrixInterface const> matrix)=0;
 };
 
 /*-------------------------------------------------*/
@@ -40,6 +41,7 @@ public:
   Smoother<SMOOTHER, VECTOR>(std::string type, std::shared_ptr<MatrixInterface const> matrix) : SMOOTHER(type, matrix), SmootherInterface() {}
   void presmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().presmooth(getVector(out), getVector(in));}
   void postsmooth(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().postsmooth(getVector(out), getVector(in));}
+  void update(std::shared_ptr<MatrixInterface const> matrix) {get().update(matrix);}
 };
 
 

@@ -9,6 +9,7 @@
 #ifndef coarsesolverinterface_h
 #define coarsesolverinterface_h
 
+#include  <string>
 #include  <memory>
 
 class MatrixInterface;
@@ -22,6 +23,7 @@ public:
   CoarseSolverInterface(const CoarseSolverInterface& smoother) {}
 
   virtual void solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const = 0;
+  virtual void update(std::shared_ptr<MatrixInterface const> matrix)=0;
 };
 
 /*-------------------------------------------------*/
@@ -36,8 +38,9 @@ protected:
 
 public:
   // CoarseSolver<COARSESOLVER, VECTOR>(std::shared_ptr<MatrixInterface const> matrix) : COARSESOLVER(matrix), CoarseSolverInterface() {}
-  CoarseSolver<COARSESOLVER, VECTOR>(std::shared_ptr<MatrixInterface const> matrix, std::string type) : COARSESOLVER(matrix, type), CoarseSolverInterface() {}
+  CoarseSolver<COARSESOLVER, VECTOR>(std::shared_ptr<MatrixInterface const> matrix, std::string type="") : COARSESOLVER(matrix, type), CoarseSolverInterface() {}
   void solve(std::shared_ptr<VectorInterface> out, std::shared_ptr<VectorInterface const> in) const {get().solve(getVector(out), getVector(in));}
+  void update(std::shared_ptr<MatrixInterface const> matrix) {get().update(matrix);}
 };
 
 

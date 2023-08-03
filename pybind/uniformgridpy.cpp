@@ -27,12 +27,13 @@ UniformGridPy::UniformGridPy(pybind11::array_t<int>& n) : UniformGrid()
 /*-------------------------------------------------*/
 pybind11::array_t<int> UniformGridPy::get_dimensions() const
 {
-    arma::Col<int> dims; dims.ones(3);
-    // std::cerr<< "UniformGrid::n()=" << UniformGrid::n() << "\n";
-    // std::cerr<< "UniformGrid::dim()=" << UniformGrid::dim() << "\n";
-    for(int i=0;i<UniformGrid::dim();i++) dims[i] =  UniformGrid::n(i);
-    // std::cerr<< "dims" << dims << "\n";
-    return carma::col_to_arr<int>(dims, true);
+    return carma::col_to_arr<int>(UniformGrid::n());
+    // arma::Col<int> dims; dims.ones(3);
+    // // std::cerr<< "UniformGrid::n()=" << UniformGrid::n() << "\n";
+    // // std::cerr<< "UniformGrid::dim()=" << UniformGrid::dim() << "\n";
+    // for(int i=0;i<UniformGrid::dim();i++) dims[i] =  UniformGrid::n(i);
+    // // std::cerr<< "dims" << dims << "\n";
+    // return carma::col_to_arr<int>(dims, true);
 }
 //
 ///*-------------------------------------------------*/

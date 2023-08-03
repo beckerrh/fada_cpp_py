@@ -13,8 +13,11 @@
 #include  <memory>
 #include  <string>
 #include  <map>
+#include  "typedefs.hpp"
+#include  "applicationinterface.hpp"
 
-class BoundaryConditions;
+class AnalyticalFunctionInterface;
+// class ApplicationInterface;
 class GridInterface;
 class MatrixInterface;
 class SmootherInterface;
@@ -25,22 +28,27 @@ class UniformMultiGrid;
 /*-------------------------------------------------*/
 class ModelInterface
 {
+protected:
+    std::string _varname;
 public:
   virtual ~ModelInterface() {}
-  ModelInterface() {}
-  ModelInterface(const ModelInterface& model) {}
+  ModelInterface(std::string varname) : _varname(varname) {}
+  ModelInterface(const ModelInterface& model) : _varname(model._varname) {}
 
   virtual std::string toString() const=0;
-  virtual void set_grid(std::shared_ptr<GridInterface const> grid)=0;
-  virtual void rhs_one(std::shared_ptr<VectorInterface> v) const=0;
-  virtual void rhs_random(std::shared_ptr<VectorInterface> v) const=0;
-  virtual void boundary_zero(std::shared_ptr<VectorInterface> v) const=0;
-  virtual void boundary_linear(std::shared_ptr<VectorInterface> v) const=0;
-  virtual std::shared_ptr<MatrixInterface const> newMatrix(std::shared_ptr<GridInterface const> grid) const=0;
-  virtual std::shared_ptr<SmootherInterface const> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const=0;
-  virtual std::shared_ptr<CoarseSolverInterface const> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const=0;
-  virtual std::shared_ptr<TransferInterface const> newTransfer(std::shared_ptr<GridInterface const> grid) const=0;
+  
+  virtual std::shared_ptr<MatrixInterface> newMatrix(std::shared_ptr<GridInterface const> grid) const=0;
+  virtual std::shared_ptr<SmootherInterface> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const=0;
+  virtual std::shared_ptr<CoarseSolverInterface> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const=0;
+  virtual std::shared_ptr<TransferInterface> newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const=0;
   virtual std::shared_ptr<VectorInterface> newVector(std::shared_ptr<GridInterface const> grid) const=0;
+
+  virtual PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const=0;
+  virtual void rhs(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const=0;
+  virtual void boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const=0;
+  virtual void boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const=0;
+  virtual void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt)=0;
+  virtual std::map<std::string,double> compute_error(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const=0;
 };
 
 /*-------------------------------------------------*/
@@ -49,23 +57,26 @@ class Model : public MODEL, public ModelInterface
 {
 protected:
   MODEL& get() { return static_cast<MODEL&>(*this); }
-  MODEL const& get() const { return static_cast<MODEL const&>(*this); }
   const VECTOR& getVector(std::shared_ptr<VectorInterface const> u) const {return static_cast<const VECTOR&>(*u);}
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
+  
 public:
-  Model<MODEL,VECTOR>() : MODEL(), ModelInterface() {}
-  Model<MODEL,VECTOR>(const std::map <std::string, std::string>& parameters, std::shared_ptr<BoundaryConditions const> bc) : MODEL(parameters, bc), ModelInterface() {}
+  Model<MODEL,VECTOR>(std::string varname) : MODEL(), ModelInterface(varname) {}
+  Model<MODEL,VECTOR>(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : MODEL(parameters, app), ModelInterface(varname) {}
+  
+  MODEL const& get() const { return static_cast<MODEL const&>(*this); }
   std::string toString() const {return get().toString();}
-  void set_grid(std::shared_ptr<GridInterface const> grid){get().set_grid(grid);}
-  void rhs_one(std::shared_ptr<VectorInterface> v) const{get().rhs_one(getVector(v));}
-  void rhs_random(std::shared_ptr<VectorInterface> v) const{get().rhs_random(getVector(v));}
-  void boundary_zero(std::shared_ptr<VectorInterface> v) const{get().boundary_zero(getVector(v));}
-  void boundary_linear(std::shared_ptr<VectorInterface> v) const{get().boundary_linear(getVector(v));}
-  std::shared_ptr<MatrixInterface const> newMatrix(std::shared_ptr<GridInterface const> grid) const{return get().newMatrix(grid);};
-  std::shared_ptr<SmootherInterface const> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newSmoother(grid, matrix);}
-  std::shared_ptr<CoarseSolverInterface const> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const>grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newCoarseSolver(type,grid, matrix);}
-  std::shared_ptr<TransferInterface const> newTransfer(std::shared_ptr<GridInterface const> grid) const {return get().newTransfer(grid);}
+  void rhs(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const{get().rhs(getVector(v), grid, app->rhs(_varname));}
+  void boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const{get().boundary_zero(getVector(v), grid);}
+  void boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const{get().boundary_linear(getVector(v), grid);}
+  std::shared_ptr<MatrixInterface> newMatrix(std::shared_ptr<GridInterface const> grid) const{return get().newMatrix(grid);};
+  std::shared_ptr<SmootherInterface> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const{return get().newSmoother(grid, matrix);}
+  std::shared_ptr<CoarseSolverInterface> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const>grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newCoarseSolver(type,grid, matrix);}
+  std::shared_ptr<TransferInterface> newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const {return get().newTransfer(grid, ref_factor);}
   std::shared_ptr<VectorInterface> newVector(std::shared_ptr<GridInterface const> grid) const {return get().newVector(grid);}
+  PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const {return get().to_point_data(getVector(v), grid);}
+  void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt){get().update_coefficients(grid, matrix, dt);}
+  std::map<std::string,double> compute_error(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const {return get().compute_error(getVector(v), grid, app->solution(_varname));}
 };
 
 #endif /* modelinterface_h */
