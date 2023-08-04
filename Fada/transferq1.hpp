@@ -9,10 +9,10 @@
 #ifndef transferq1_h
 #define transferq1_h
 
-#include  "../gridvector.hpp"
-#include  "../seamvector.hpp"
-#include  "../boundary_conditions.hpp"
-#include  "../typedefs.hpp"
+#include  "gridvector.hpp"
+#include  "seamvector.hpp"
+#include  "boundary_conditions.hpp"
+#include  "typedefs.hpp"
 
 
 /*-------------------------------------------------*/

@@ -9,7 +9,7 @@
 #ifndef q1_hpp
 #define q1_hpp
 
-#include  "../modelbase.hpp"
+#include  "modelbase.hpp"
 
 class BoundaryConditions;
 class GridVector;
@@ -79,7 +79,7 @@ public:
   }
 
   void boundary_zero(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
-  void boundary_linear(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  void boundary(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const;
   std::map<std::string,double> compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const;
 };
 
@@ -108,7 +108,7 @@ public:
   }
 
   void boundary_zero(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
-  void boundary_linear(GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  void boundary(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const;
   std::map<std::string,double> compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const;
 
 };

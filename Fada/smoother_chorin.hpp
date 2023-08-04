@@ -10,9 +10,9 @@
 #define smoother_chorin_hpp
 
 
-#include  "../smootherinterface.hpp"
-#include  "../smoothersimple.hpp"
-#include  "../sparsematrix.hpp"
+#include  "smootherinterface.hpp"
+#include  "smoothersimple.hpp"
+#include  "sparsematrix.hpp"
 
 class GridInterface;
 

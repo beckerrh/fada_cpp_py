@@ -8,9 +8,13 @@
 
 #include  "solverlaplace.hpp"
 #include  "q1.hpp"
-#include  "../tokenize.hpp"
+#include  "tokenize.hpp"
 // #include  "../analyticalfunctioninterface.hpp"
 
+
+/*-------------------------------------------------*/
+double Linear2D::operator()(double x, double y) const {return 3.3+2.2*x-1.1*y;}
+double Sinus2D::operator()(double x, double y) const {return sin(2.2*x-1.1*y);}
 
 /*-------------------------------------------------*/
 void LaplaceApplication::set_application(int dim, std::string name)
@@ -25,6 +29,11 @@ void LaplaceApplication::set_application(int dim, std::string name)
     if(tokens[0]=="Linear")
     {
         _rhs["u"] = std::make_shared<ConstantFunction>(0.0);
+        _sol["u"] = std::make_shared<Linear2D>();
+        for(int i=0;i<dim;i++)
+            for(int j=0;j<2;j++)
+                _boundaryconditions->get_bf(i,j)["u"] = _sol["u"];
+        std::cerr << "_boundaryconditions = " << *_boundaryconditions <<"\n";
     }
     else if(tokens[0]=="RhsOne")
     {
@@ -82,11 +91,11 @@ void SolverLaplace::set_data(std::shared_ptr <MultiGridInterface> mggrid, const 
 }
 
 /*-------------------------------------------------*/
-LaplaceInfo SolverLaplace::testsolve(bool print, std::string application)
+LaplaceInfo SolverLaplace::testsolve(bool print)
 {
     LaplaceInfo info;
     _model->rhs(_mgsolver.getF(), _mggrid->get(0), _application);
-    _model->boundary_zero(_mgsolver.getF(), _mggrid->get(0));
+    _model->boundary(_mgsolver.getF(), _mggrid->get(0), _application->get_bc());
     // // _u.set_size(_mggrid->get(0)->n());
     // // _u.fill(0);
     // // _f.set_size(_u);

@@ -9,7 +9,7 @@
 #ifndef uniformmultigridpy_hpp
 #define uniformmultigridpy_hpp
 
-#include  "../Fada/uniformmultigrid.hpp"
+#include  "Fada/uniformmultigrid.hpp"
 #include  <pybind11/pybind11.h>
 #include  <pybind11/numpy.h>
 

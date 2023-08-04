@@ -9,14 +9,24 @@
 #ifndef solverlaplace_hpp
 #define solverlaplace_hpp
 
-#include  "../applicationinterface.hpp"
-#include  "../modelinterface.hpp"
-#include  "../multigridinterface.hpp"
-#include  "../mgsolver.hpp"
-#include  "../gridvector.hpp"
+#include  "applicationinterface.hpp"
+#include  "modelinterface.hpp"
+#include  "multigridinterface.hpp"
+#include  "mgsolver.hpp"
+#include  "gridvector.hpp"
 
 
 /*-------------------------------------------------*/
+class Linear2D: public AnalyticalFunctionInterface
+{
+public:
+    double operator()(double x, double y) const;
+};
+class Sinus2D: public AnalyticalFunctionInterface
+{
+public:
+    double operator()(double x, double y) const;
+};
 class LaplaceApplication: public ApplicationInterface
 {
 protected:
@@ -54,7 +64,7 @@ public:
         return(_model);
     }
 
-    LaplaceInfo testsolve(bool print = true, std::string application = "DirichletRhsOne");
+    LaplaceInfo testsolve(bool print = true);
     std::shared_ptr<ApplicationInterface const> getApplication() const {return _application;}
     const GridVector& get_solution() const
     {

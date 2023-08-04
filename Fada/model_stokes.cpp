@@ -10,21 +10,21 @@
 #include  <cmath>
 #include  <armadillo>
 #include  <sstream>
-#include  "../analyticalfunctioninterface.hpp"
-#include  "../coarsesolverinterface.hpp"
-#include  "../coarsesolver_arma.hpp"
-#include  "../construct_elements_matrix.hpp"
-#include  "../feminterface.hpp"
-#include  "../gridindex.hpp"
-#include  "../gridvector.hpp"
-#include  "../matrixinterface.hpp"
-#include  "../uniformgrid.hpp"
-#include  "../smoothersimple.hpp"
-#include  "../solverumf.hpp"
-#include  "../sparsematrix.hpp"
-#include  "../sparsematrix_arma.hpp"
-#include  "../transferbymatrix.hpp"
-#include  "../transferinterface.hpp"
+#include  "analyticalfunctioninterface.hpp"
+#include  "coarsesolverinterface.hpp"
+#include  "coarsesolver_arma.hpp"
+#include  "construct_elements_matrix.hpp"
+#include  "feminterface.hpp"
+#include  "gridindex.hpp"
+#include  "gridvector.hpp"
+#include  "matrixinterface.hpp"
+#include  "uniformgrid.hpp"
+#include  "smoothersimple.hpp"
+#include  "solverumf.hpp"
+#include  "sparsematrix.hpp"
+#include  "sparsematrix_arma.hpp"
+#include  "transferbymatrix.hpp"
+#include  "transferinterface.hpp"
 #include  "model_stokes.hpp"
 #include  "model_p.hpp"
 #include  "model_v.hpp"
@@ -203,13 +203,13 @@ void ModelStokes::boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_
     }    
 }
 /*-------------------------------------------------*/
-void ModelStokes::boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const
+void ModelStokes::boundary(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const
 {
     int dim = grid->dim();
     auto pv = std::dynamic_pointer_cast<StokesVector>(v);  
-    _model_p->boundary_linear(*pv->get_p(), grid);
+    _model_p->boundary(*pv->get_p(), grid, bc);
     for(int i=0;i<dim;i++)
     {
-      _model_v[i]->boundary_linear(*pv->get_v(i), grid);
+      _model_v[i]->boundary(*pv->get_v(i), grid, bc);
     }        
 }

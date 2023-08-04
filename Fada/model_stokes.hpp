@@ -10,8 +10,8 @@
 #define model_stokes_hpp
 
 
-#include  "../gridvector.hpp"
-#include  "../modelinterface.hpp"
+#include  "gridvector.hpp"
+#include  "modelinterface.hpp"
 #include  "model_p.hpp"
 #include  "model_v.hpp"
 
@@ -53,7 +53,7 @@ public:
   PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const;
   void rhs(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const;
   void boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const;
-  void boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const;
+  void boundary(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const;
   void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt);
   std::map<std::string,double> compute_error(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const;
 };

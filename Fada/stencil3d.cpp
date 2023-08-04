@@ -7,7 +7,7 @@
 //
 
 #include  "stencil.hpp"
-#include  "../construct_elements_matrix.hpp"
+#include  "construct_elements_matrix.hpp"
 
 // /*-------------------------------------------------*/
 // template<int N>

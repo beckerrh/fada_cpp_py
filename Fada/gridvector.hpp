@@ -11,8 +11,8 @@
 
 #include  <armadillo>
 #include  "boundary_conditions.hpp"
-#include  "../typedefs.hpp"
-#include  "../vectorinterface.hpp"
+#include  "typedefs.hpp"
+#include  "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 class GridVector : public armavec

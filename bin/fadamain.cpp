@@ -7,7 +7,7 @@
 //
 
 #include  <ctime>
-#include  "Fada/Q1/solverlaplace.hpp"
+#include  "Fada/solverlaplace.hpp"
 #include  "Fada/timer.hpp"
 #include  "Fada/uniformmultigrid.hpp"
 //
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     std::map<std::string,std::string> parameters;
     armaicvec n0;
     int nlevels=-1, dim=2, n00=-1;
-    std::string application("Random");
+    parameters["application"] = "Random_dir";
     if(argc%2!=1)
     {
         std::cerr << "arguments with '-d' or '-m' or '-st' or '-sm' '-smt' '-p' '-bc -tr'\n";
@@ -65,10 +65,6 @@ int main(int argc, char** argv)
         {
             parameters["smoother"] = argv[i+1];
         }
-        else if(!strcmp(argv[i], "-p"))
-        {
-            application = argv[i+1];
-        }
         else if(!strcmp(argv[i], "-app"))
         {
             parameters["application"] = argv[i+1];
@@ -99,7 +95,7 @@ int main(int argc, char** argv)
     mggrid->set_size(nlevels, n0);
     int updatemem = 0;
     auto solver = std::make_shared<SolverLaplace>(mggrid, parameters);
-    LaplaceInfo info = solver->testsolve(true, application);
+    LaplaceInfo info = solver->testsolve(true);
     // const GridVector& u = solver->get_solution();
     // printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
     //
@@ -112,4 +108,5 @@ int main(int argc, char** argv)
     T.stop("all");
     printf("No. Iterations %3d (N = %6d dim = %2d)\n",info.niter, mggrid->get(0)->n_gridpoints(), (int)mggrid->dim());
     printf("Total time: %6.2f\n", T.get("all"));
+    if(info.err) printf("Error: %12.3e\n", info.err);
 }

@@ -1,10 +1,10 @@
 #include  <sstream>
 #include  "smoother_chorin.hpp"
 #include  "stokesvector.hpp"
-#include  "../typedefs.hpp"
-#include  "../gridinterface.hpp"
-#include  "../matrixinterface.hpp"
-#include  "../vectorinterface.hpp"
+#include  "typedefs.hpp"
+#include  "gridinterface.hpp"
+#include  "matrixinterface.hpp"
+#include  "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 Smoother_Chorin::Smoother_Chorin(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) : SmootherInterface()

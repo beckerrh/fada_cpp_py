@@ -11,7 +11,7 @@
 
 #include  <sstream>
 #include  <string>
-#include  "../applicationinterface.hpp"
+#include  "applicationinterface.hpp"
 
 
 /*-------------------------------------------------*/

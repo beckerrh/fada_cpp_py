@@ -13,7 +13,7 @@
 #include  "Fada/umfmatrix.hpp"
 #include  <amgcl/solver/lgmres.hpp>
 #include  "Fada/uniformmultigrid.hpp"
-#include  "Fada/Q1/solverlaplace.hpp"
+#include  "Fada/solverlaplace.hpp"
 #include  "Fada/analyticalfunctioninterface.hpp"
 
 

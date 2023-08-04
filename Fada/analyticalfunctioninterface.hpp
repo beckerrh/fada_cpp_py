@@ -24,6 +24,16 @@ public:
   virtual double operator()(double x, double y, double z)const {_not_written_(); return 0;}
 };
 
+typedef std::map<std::string, std::shared_ptr<AnalyticalFunctionInterface>> FunctionMap;
+static std::ostream& operator<<(std::ostream& os, const FunctionMap& v)
+{
+    for(auto p:v)
+    {
+        os << p.first << " : " << p.second << "\n";
+    }
+    return os;
+}
+
 /*-------------------------------------------------*/
 class ConstantFunction: public AnalyticalFunctionInterface
 {

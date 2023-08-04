@@ -10,9 +10,9 @@
 #define StokesVector_h
 
 #include  <armadillo>
-#include  "../typedefs.hpp"
-#include  "../gridvector.hpp"
-#include  "../vectorinterface.hpp"
+#include  "typedefs.hpp"
+#include  "gridvector.hpp"
+#include  "vectorinterface.hpp"
 
 /*-------------------------------------------------*/
 class StokesVector : public SystemVector

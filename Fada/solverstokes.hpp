@@ -10,11 +10,11 @@
 #define  solverstokes_hpp
 
 #include  <sstream>
-#include  "../gridvector.hpp"
-#include  "../mgsolver.hpp"
-#include  "../modelinterface.hpp"
-#include  "../sparsematrix.hpp"
-#include  "../uniformmultigrid.hpp"
+#include  "gridvector.hpp"
+#include  "mgsolver.hpp"
+#include  "modelinterface.hpp"
+#include  "sparsematrix.hpp"
+#include  "uniformmultigrid.hpp"
 #include  "model_p.hpp"
 #include  "model_v.hpp"
 #include  "model_stokes.hpp"

@@ -8,26 +8,23 @@
 
 #include  <cassert>
 #include  <armadillo>
-#include  "../coarsesolverinterface.hpp"
-#include  "../coarsesolver_arma.hpp"
-#include  "../construct_elements_matrix.hpp"
-#include  "../feminterface.hpp"
-#include  "../gridindex.hpp"
-#include  "../gridvector.hpp"
-#include  "../matrixinterface.hpp"
-#include  "../uniformgrid.hpp"
-#include  "../smoothersimple.hpp"
-#include  "../solverumf.hpp"
-#include  "../sparsematrix.hpp"
-#include  "../sparsematrix_arma.hpp"
-#include  "../transferbymatrix.hpp"
-#include  "../transferinterface.hpp"
+#include  "coarsesolverinterface.hpp"
+#include  "coarsesolver_arma.hpp"
+#include  "construct_elements_matrix.hpp"
+#include  "feminterface.hpp"
+#include  "gridindex.hpp"
+#include  "gridvector.hpp"
+#include  "matrixinterface.hpp"
+#include  "uniformgrid.hpp"
+#include  "smoothersimple.hpp"
+#include  "solverumf.hpp"
+#include  "sparsematrix.hpp"
+#include  "sparsematrix_arma.hpp"
+#include  "transferbymatrix.hpp"
+#include  "transferinterface.hpp"
 #include  "q1.hpp"
 #include  "transferq1.hpp"
 #include  "stencil.hpp"
-
-double lin2d(double x, double y) {return 3.0*x+2.0*y;}
-double lin3d(double x, double y, double z) {return 3.0*x+2.0*y+z;}
 
 
 // /*-------------------------------------------------*/
@@ -1011,7 +1008,24 @@ void Q13d::boundary_zero(GridVector& u, std::shared_ptr<GridInterface const> gri
 /*-------------------------------------------------*/
 std::map<std::string,double> Q12d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
 {
-    _not_written_();
+    std::map<std::string,double> err;
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    double vol = arma::prod(ug->dx());
+    const armaicvec& n = grid->n();
+    int nx(n[0]), ny(n[1]);
+    double err_glob=0.0;
+    for (int ix = 0; ix < nx; ix++)
+    {
+        for (int iy = 0; iy < ny; iy++)
+        {
+            // double err_loc = v.at(ix,iy) - u_fct_p(ug->xmid(ix,iy), ug->ymid(ix,iy));
+            double err_loc = v.at(ix,iy) - (*sol)(ug->x(ix,iy), ug->y(ix,iy));
+            err_glob += vol*err_loc*err_loc;
+        }
+    }
+    err["u"] = sqrt(err_glob);
+    return err;    
 }
 /*-------------------------------------------------*/
 std::map<std::string,double> Q13d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
@@ -1020,55 +1034,236 @@ std::map<std::string,double> Q13d::compute_error(const GridVector& v, std::share
 }
 
 /*-------------------------------------------------*/
-void Q12d::boundary_linear(GridVector& u, std::shared_ptr<GridInterface const> grid) const
+void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const
 {
+    const std::vector<std::vector<FunctionMap>>& bf = bc->get_bf();
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
     assert(ug);
     size_t nx = ug->nx();
     size_t ny = ug->ny();
-    for(int ix=0;ix<nx;ix++)
+    std::cerr << *bc << "\n";
+    if((*bc)[0][0]=="dir")
     {
-        u.at(ix,0)    = lin2d(ug->x(ix,0), ug->y(ix,0));
-        u.at(ix,ny-1) = lin2d(ug->x(ix,ny-1), ug->y(ix,ny-1));
-    }
-    for(int iy=0;iy<ny;iy++)
+        if(bf[0][0].at("u"))
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                u.at(ix,0) = (*bf[0][0].at("u"))(ug->x(ix,0), ug->y(ix,0));            
+            }                
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                u.at(ix,0) = 0.0;            
+            }                            
+        }
+    }            
+    if((*bc)[0][1]=="dir")
     {
-        u.at(0,iy)    = lin2d(ug->x(0,iy), ug->y(0,iy));
-        u.at(nx-1,iy) = lin2d(ug->x(nx-1,iy), ug->y(nx-1,iy));
+        if(bf[0][1].at("u"))
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                u.at(ix,ny-1) = (*bf[0][1].at("u"))(ug->x(ix,ny-1), ug->y(ix,ny-1));
+            }                
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                u.at(ix,ny-1) = 0.0;            
+            }                            
+        }
     }
+    if((*bc)[1][0]=="dir")
+    {
+        if(bf[1][0].at("u"))
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                {
+                    u.at(0,iy) = (*bf[1][0].at("u"))(ug->x(0,iy), ug->y(0,iy));
+                }                
+            }
+        }
+        else
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                {
+                    u.at(0,iy) = 0.0;
+                }                            
+            }
+        }
+    }  
+    if((*bc)[1][1]=="dir")
+    {
+        if(bf[1][1].at("u"))
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                u.at(nx-1,iy) = (*bf[1][1].at("u"))(ug->x(nx-1,iy), ug->y(nx-1,iy));
+            }                
+        }
+        else
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                u.at(nx-1,iy) = 0.0;
+            }                            
+        }
+    }  
 }
 
 
 /*-------------------------------------------------*/
-void Q13d::boundary_linear(GridVector& u, std::shared_ptr<GridInterface const> grid) const
+void Q13d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const
 {
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
     assert(ug);
     size_t nx = ug->nx();
     size_t ny = ug->ny();
     size_t nz = ug->nz();
-    for(int ix=0;ix<nx;ix++)
+
+    const std::vector<std::vector<FunctionMap>>& bf = bc->get_bf();
+
+    if((*bc)[0][0]=="dir")
     {
-        for(int iy=0;iy<ny;iy++)
+        if(bf[0][0].at("u"))
         {
-            u.at(ix,iy,0)    = lin3d(ug->x(ix,iy,0), ug->y(ix,iy,0), ug->z(ix,iy,0));
-            u.at(ix,iy,nz-1) = lin3d(ug->x(ix,iy,nz-1), ug->y(ix,iy,nz-1), ug->z(ix,iy,nz-1));
+            for(int iy=0;iy<ny;iy++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(0,   iy,iz) = (*bf[0][0].at("u"))(ug->x(0,   iy,iz), ug->y(0,   iy,iz), ug->z(0,   iy,iz));
+                }
+            }
+        }
+        else
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(0,   iy,iz) = 0.0;
+                }
+            }
         }
     }
-    for(int ix=0;ix<nx;ix++)
+    if((*bc)[0][1]=="dir")
     {
-        for(int iz=0;iz<nz;iz++)
+        if(bf[0][1].at("u"))
         {
-            u.at(ix,0,   iz)  = lin3d(ug->x(ix,0,   iz), ug->y(ix,0,   iz), ug->z(ix,0,   iz));
-            u.at(ix,ny-1,iz)  = lin3d(ug->x(ix,ny-1,iz), ug->y(ix,ny-1,iz), ug->z(ix,ny-1,iz));
+            for(int iy=0;iy<ny;iy++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(nx-1,iy,iz) = (*bf[0][1].at("u"))(ug->x(nx-1,iy,iz), ug->y(nx-1,iy,iz), ug->z(nx-1,iy,iz));
+                }
+            }
+        }
+        else
+        {
+            for(int iy=0;iy<ny;iy++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(nx-1,iy,iz) = 0.0;
+                }
+            }
         }
     }
-    for(int iy=0;iy<ny;iy++)
+    if((*bc)[1][0]=="dir")
     {
-        for(int iz=0;iz<nz;iz++)
+        if(bf[1][0].at("u"))
         {
-            u.at(0,   iy,iz) = lin3d(ug->x(0,   iy,iz), ug->y(0,   iy,iz), ug->z(0,   iy,iz));
-            u.at(nx-1,iy,iz) = lin3d(ug->x(nx-1,iy,iz), ug->y(nx-1,iy,iz), ug->z(nx-1,iy,iz));
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(ix,0,   iz)  = (*bf[1][0].at("u"))(ug->x(ix,0,   iz), ug->y(ix,0,   iz), ug->z(ix,0,   iz));
+                }
+            }
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(ix,0,   iz)  = 0.0;
+                }
+            }
+        }
+    }
+    if((*bc)[1][1]=="dir")
+    {
+        if(bf[1][1].at("u"))
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(ix,ny-1,iz)  = (*bf[1][1].at("u"))(ug->x(ix,ny-1,iz), ug->y(ix,ny-1,iz), ug->z(ix,ny-1,iz));
+                }
+            }
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iz=0;iz<nz;iz++)
+                {
+                    u.at(ix,ny-1,iz)  = 0.0;
+                }
+            }
+        }
+    }
+    if((*bc)[2][0]=="dir")
+    {
+        if(bf[2][0].at("u"))
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iy=0;iy<ny;iy++)
+                {
+                    u.at(ix,iy,0)    = (*bf[2][0].at("u"))(ug->x(ix,iy,0), ug->y(ix,iy,0), ug->z(ix,iy,0));
+                }
+            }
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iy=0;iy<ny;iy++)
+                {
+                    u.at(ix,iy,0)    = 0.0;
+                }
+            }
+        }
+    }
+    if((*bc)[2][1]=="dir")
+    {
+        if(bf[2][1].at("u"))
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iy=0;iy<ny;iy++)
+                {
+                    u.at(ix,iy,nz-1) = (*bf[2][1].at("u"))(ug->x(ix,iy,nz-1), ug->y(ix,iy,nz-1), ug->z(ix,iy,nz-1));
+                }
+            }
+        }
+        else
+        {
+            for(int ix=0;ix<nx;ix++)
+            {
+                for(int iy=0;iy<ny;iy++)
+                {
+                    u.at(ix,iy,nz-1) = 0.0;
+                }
+            }
         }
     }
 }

@@ -33,7 +33,8 @@ public:
     bool has_solution() const {return _sol.size();}
     std::string toString() const {return _name;}
     int get_dim()const {return _boundaryconditions->size();}
-    std::shared_ptr<BoundaryConditions const> get_bc() const {return _boundaryconditions;}
+    const std::shared_ptr<BoundaryConditions>& get_bc() const {return _boundaryconditions;}
+    std::shared_ptr<BoundaryConditions>& get_bc() {return _boundaryconditions;}
     std::shared_ptr<AnalyticalFunctionInterface const> solution(std::string name) const {return _sol.at(name);}
     std::shared_ptr<AnalyticalFunctionInterface const> rhs(std::string name) const {return _rhs.at(name);}
 };

@@ -9,11 +9,10 @@
 #include  <omp.h>
 #include  <sstream>
 #include  <iomanip>
-// #include  <dirent.hnt.h>
 #include  "solverstokes.hpp"
-#include  "../sparsematrix.hpp"
-#include  "../boundary_conditions.hpp"
-#include  "../uniformgrid.hpp"
+#include  "sparsematrix.hpp"
+#include  "boundary_conditions.hpp"
+#include  "uniformgrid.hpp"
 #include <filesystem>
 #include <fstream>
 namespace fs = std::filesystem;

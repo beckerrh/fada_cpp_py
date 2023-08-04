@@ -10,7 +10,7 @@
 #define model_p_hpp
 
 
-#include  "../modelbase.hpp"
+#include  "modelbase.hpp"
 
 class BoundaryConditions;
 class GridVector;
@@ -46,7 +46,7 @@ public:
   std::shared_ptr <TransferInterface> newTransfer(std::shared_ptr <GridInterface const>grid, int ref_factor) const;
 
   void boundary_zero(GridVector& v, std::shared_ptr<GridInterface const> grid) const{_not_written_();}
-  void boundary_linear(GridVector& v, std::shared_ptr<GridInterface const> grid) const{_not_written_();}
+  void boundary(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const{_not_written_();}
   void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt) {}
 };
 

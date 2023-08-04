@@ -8,7 +8,7 @@
 
 #include  <stdio.h>
 #include  "seamvector.hpp"
-#include  "../uniformgrid.hpp"
+#include  "uniformgrid.hpp"
 #include  "gridvector.hpp"
 
 /*-------------------------------------------------*/

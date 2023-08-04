@@ -10,7 +10,7 @@
 #define  solverlaplacepy_hpp
 
 #include  <carma>
-#include  "../Fada/Q1/solverlaplace.hpp"
+#include  "Fada/solverlaplace.hpp"
 #include  "uniformmultigridpy.hpp"
 
 

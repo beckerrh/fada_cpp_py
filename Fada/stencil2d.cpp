@@ -7,7 +7,7 @@
 //
 
 #include  "stencil.hpp"
-#include  "../construct_elements_matrix.hpp"
+#include  "construct_elements_matrix.hpp"
 
 /*-------------------------------------------------*/
 void Stencil2d9::dot(GridVector& out, const GridVector& in, double d) const

@@ -10,7 +10,7 @@
 #define SeamVector_h
 
 #include  <armadillo>
-#include  "../typedefs.hpp"
+#include  "typedefs.hpp"
 
 class GridVector;
 

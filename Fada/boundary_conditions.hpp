@@ -14,26 +14,38 @@
 #include  <string>
 #include  <ostream>
 #include  <memory>
+#include  "analyticalfunctioninterface.hpp"
 
 /*-------------------------------------------------*/
 class BoundaryConditions : public std::vector<std::array<std::string,2>>
 {
 protected:
-
+    std::vector<std::vector<FunctionMap>> _bdry_fct;
+    
 public:
-  BoundaryConditions(const BoundaryConditions& bc) : std::vector<std::array<std::string,2>>(bc){}
-  BoundaryConditions(int dim, std::string cond="dir") : std::vector<std::array<std::string,2>>(dim)
+  BoundaryConditions(const BoundaryConditions& bc) : std::vector<std::array<std::string,2>>(bc), _bdry_fct(bc._bdry_fct){}
+  BoundaryConditions(int dim, std::string cond="dir") : std::vector<std::array<std::string,2>>(dim), _bdry_fct(dim)
   {
     for(int i=0;i<dim;i++)
     {
       (*this)[i][0] = cond;
       (*this)[i][1] = cond;
     }
+    for(int i=0;i<dim;i++)
+    {
+        _bdry_fct[i].resize(2);
+    }
   }
+  FunctionMap& get_bf(int i, int j) {return _bdry_fct[i][j];}
+  const std::vector<std::vector<FunctionMap>>& get_bf() const {return _bdry_fct;}
 };
 static std::ostream& operator<<(std::ostream& os, const BoundaryConditions& v)
 {
     for(auto p:v)
+    {
+        os << p[0] << " " << p[1] << std::endl;        
+    }
+    for(auto p:v.get_bf())
     {
         os << p[0] << " " << p[1] << std::endl;        
     }

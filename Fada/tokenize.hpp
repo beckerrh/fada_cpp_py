@@ -15,7 +15,7 @@
 #include  <vector>
 #include  <bits/stdc++.h>
 
-std::vector<std::string> tokenize(std::string s, std::string del) {
+static std::vector<std::string> tokenize(std::string s, std::string del) {
     std::vector<std::string> tokens;
     int end = s.find(del); 
     while (end != -1) {

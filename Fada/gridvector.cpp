@@ -8,7 +8,7 @@
 
 #include  <stdio.h>
 #include  "gridvector.hpp"
-#include  "../uniformgrid.hpp"
+#include  "uniformgrid.hpp"
 
 /*-------------------------------------------------*/
 std::ostream& operator<<(std::ostream& os, const GridVector& v)

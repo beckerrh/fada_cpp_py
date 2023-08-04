@@ -17,6 +17,7 @@
 #include  "applicationinterface.hpp"
 
 class AnalyticalFunctionInterface;
+class BoundaryConditions;
 // class ApplicationInterface;
 class GridInterface;
 class MatrixInterface;
@@ -46,7 +47,7 @@ public:
   virtual PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const=0;
   virtual void rhs(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const=0;
   virtual void boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const=0;
-  virtual void boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const=0;
+  virtual void boundary(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const=0;
   virtual void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt)=0;
   virtual std::map<std::string,double> compute_error(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const=0;
 };
@@ -68,7 +69,7 @@ public:
   std::string toString() const {return get().toString();}
   void rhs(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const{get().rhs(getVector(v), grid, app->rhs(_varname));}
   void boundary_zero(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const{get().boundary_zero(getVector(v), grid);}
-  void boundary_linear(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid) const{get().boundary_linear(getVector(v), grid);}
+  void boundary(std::shared_ptr<VectorInterface> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const{get().boundary(getVector(v), grid, bc);}
   std::shared_ptr<MatrixInterface> newMatrix(std::shared_ptr<GridInterface const> grid) const{return get().newMatrix(grid);};
   std::shared_ptr<SmootherInterface> newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const{return get().newSmoother(grid, matrix);}
   std::shared_ptr<CoarseSolverInterface> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const>grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newCoarseSolver(type,grid, matrix);}
