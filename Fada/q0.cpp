@@ -24,29 +24,29 @@
 #include  "sparsematrix_arma.hpp"
 #include  "transferbymatrix.hpp"
 #include  "transferinterface.hpp"
-#include  "model_p.hpp"
+#include  "q0.hpp"
 
 
 /*-------------------------------------------------*/
-std::shared_ptr<VectorInterface> ModelP::newVector(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<VectorInterface> Q0::newVector(std::shared_ptr<GridInterface const> grid) const
 {
     // return std::make_shared<Vector<GridVector>>(grid->n()-1, _boundaryconditions, false);
     return std::make_shared<Vector<GridVector>>(grid->n()-1, _app->get_bc(), true);
 }
 /*-------------------------------------------------*/
-std::shared_ptr<SmootherInterface> ModelP::newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const
+std::shared_ptr<SmootherInterface> Q0::newSmoother(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix) const
 {
     return std::make_shared<Smoother<SmootherSimple<SparseMatrix>,Vector<armavec>>>(_smoother, matrix);
 }
 /*-------------------------------------------------*/
-std::shared_ptr<CoarseSolverInterface> ModelP::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
+std::shared_ptr<CoarseSolverInterface> Q0::newCoarseSolver(std::string type, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> matrix) const
 {
     return std::make_shared<CoarseSolver<SolverUmf, Vector<armavec>>>(matrix,_coarsesolver);
     // return std::shared_ptr<CoarseSolverInterface>(new CoarseSolver<SolverUmf, Vector<armavec>>(matrix,_coarsesolver));
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<MatrixInterface> ModelP::newMatrix(std::shared_ptr<GridInterface const> grid) const
+std::shared_ptr<MatrixInterface> Q0::newMatrix(std::shared_ptr<GridInterface const> grid) const
 {
     arma::umat locations;
     armavec values;
@@ -70,7 +70,7 @@ std::shared_ptr<MatrixInterface> ModelP::newMatrix(std::shared_ptr<GridInterface
 }
 
 /*-------------------------------------------------*/
-std::shared_ptr<TransferInterface> ModelP::newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const
+std::shared_ptr<TransferInterface> Q0::newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const
 {
     arma::umat locations;
     armavec values;
@@ -96,14 +96,16 @@ std::shared_ptr<TransferInterface> ModelP::newTransfer(std::shared_ptr<GridInter
     return p;    
 }
 /*-------------------------------------------------*/
-PointDataMap ModelP2d::to_point_data(const GridVector& v, std::shared_ptr<GridInterface const> grid) const
+PointDataMap Q02d::to_point_data(std::shared_ptr<GridVector const> vp, std::shared_ptr<GridInterface const> grid) const
 {
+    const GridVector& v = *vp;
     const armaicvec& n = grid->n();
     int nx(n[0]), ny(n[1]);
     int nxc(n[0]-1), nyc(n[1]-1);
     GridIndex IC(n-1), IN(n);
     PointDataMap pdmap;
-    pdmap["p"] = std::make_shared<armavec>(arma::prod(n), arma::fill::zeros);
+    // pdmap["p"] = std::make_shared<armavec>(arma::prod(n), arma::fill::zeros);
+    auto p_intp = std::make_shared<armavec>(arma::prod(n), arma::fill::zeros);
     // armavec p_intp(arma::prod(n), arma::fill::zeros);
     for (int ix = 0; ix < nx; ix++)
     {
@@ -120,17 +122,18 @@ PointDataMap ModelP2d::to_point_data(const GridVector& v, std::shared_ptr<GridIn
             int i3 = IC(ixc2, iyc1);
             int i4 = IC(ixc2, iyc2);
             
-            // p_intp.at(in) = 0.25 * (v[i1]+v[i2]+v[i3]+v[i4]);
-            pdmap["p"]->at(in) = 0.25 * (v[i1]+v[i2]+v[i3]+v[i4]);
+            p_intp->at(in) = 0.25 * (v[i1]+v[i2]+v[i3]+v[i4]);
+            // pdmap["p"]->at(in) = 0.25 * (v[i1]+v[i2]+v[i3]+v[i4]);
         }
     }
+    pdmap["p"] = p_intp;
     return pdmap;
     // return p_intp;
 }
 
 
 /*-------------------------------------------------*/
-void ModelP2d::get_locations_values_transfer_3(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q02d::get_locations_values_transfer_3(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     // std::cerr << "grid " << grid->toString() << "\n";
     const armaicvec& n = grid->n();
@@ -162,7 +165,7 @@ void ModelP2d::get_locations_values_transfer_3(arma::umat& locations, armavec& v
     }
 }
 /*-------------------------------------------------*/
-void ModelP2d::get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q02d::get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     // std::cerr << "grid " << grid->toString() << "\n";
     const armaicvec& n = grid->n();
@@ -205,7 +208,7 @@ void ModelP2d::get_locations_values_transfer_2(arma::umat& locations, armavec& v
     //bdry -sides
 }
 /*-------------------------------------------------*/
-void ModelP2d::get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q02d::get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
     double h = ug->dx(0);
@@ -302,19 +305,19 @@ void ModelP2d::get_locations_values_matrix(arma::umat& locations, armavec& value
 }
 
 /*-------------------------------------------------*/
-void ModelP3d::get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q03d::get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     _not_written_();
 }
 
 /*-------------------------------------------------*/
-void ModelP3d::get_locations_values_transfer_3(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q03d::get_locations_values_transfer_3(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     _not_written_();
 }
 
 /*-------------------------------------------------*/
-void ModelP3d::get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
+void Q03d::get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const
 {
     _not_written_();
 }
@@ -328,7 +331,7 @@ void ModelP3d::get_locations_values_matrix(arma::umat& locations, armavec& value
 // double rhs_fct_p(double x, double y) {return  (C*C+D*D)*4*M_PI*M_PI*cos(C*2*M_PI*x)*cos(D*2*M_PI*y);}
 
 
-void ModelP2d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const
+void Q02d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const
 {
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
     assert(ug);
@@ -344,7 +347,7 @@ void ModelP2d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std
         }
     }    
 }
-std::map<std::string,double> ModelP2d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
+std::map<std::string,double> Q02d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
 {
     std::map<std::string,double> err;
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);

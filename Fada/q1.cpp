@@ -26,6 +26,12 @@
 #include  "transferq1.hpp"
 #include  "stencil.hpp"
 
+/*-------------------------------------------------*/
+Q1::Q1(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : ModelBase(varname, parameters, app)
+{
+    bool _periodic = app->get_bc()->all("per");
+    assert(not _periodic);
+}
 
 // /*-------------------------------------------------*/
 // void Q1::set_grid(std::shared_ptr<GridInterface const> grid)
@@ -49,7 +55,7 @@
 std::shared_ptr<VectorInterface> Q1::newVector(std::shared_ptr<GridInterface const> grid) const
 {
     auto p = std::make_shared<Vector<GridVector>>(grid->n(), _app->get_bc());
-    p->boundary_zero();
+    // p->boundary_zero();
     return p;
 }
 /*-------------------------------------------------*/
@@ -163,6 +169,17 @@ std::shared_ptr<TransferInterface> Q1::newTransfer(std::shared_ptr<GridInterface
         _not_written_();
     }
     return nullptr;
+}
+/*-------------------------------------------------*/
+PointDataMap Q1::to_point_data(std::shared_ptr<GridVector const> v, std::shared_ptr<GridInterface const> grid) const 
+{
+    PointDataMap m;
+    // const armavec& av = v.get_arma();
+    // std::shared_ptr<armavec const> sp(&av);
+    // m[_varname] = sp;
+    // m[_varname] = std::static_pointer_cast<armavec const>(&av);
+    m[_varname] = std::static_pointer_cast<armavec const>(v);
+    return m;
 }
 
 // /*-------------------------------------------------*/
@@ -1032,6 +1049,28 @@ std::map<std::string,double> Q13d::compute_error(const GridVector& v, std::share
 {
     _not_written_();
 }
+/*-------------------------------------------------*/
+void Q12d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const
+{
+    if(std::dynamic_pointer_cast<ConstantFunction const>(fct) or std::dynamic_pointer_cast<ConstantFunction const>(fct))
+    {
+        ModelBase::rhs(v, grid, fct);
+        return;
+    }
+    auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
+    assert(ug);
+    double vol = arma::prod(ug->dx());
+
+    const armaicvec& n = grid->n();
+    int nx(n[0]), ny(n[1]);
+    for (int ix = 0; ix < nx; ix++)
+    {
+        for (int iy = 0; iy < ny; iy++)
+        {
+            v.at(ix,iy) = vol*(*fct)(ug->x(ix,iy), ug->y(ix,iy));
+        }
+    }        
+}
 
 /*-------------------------------------------------*/
 void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, std::shared_ptr<BoundaryConditions const> bc) const
@@ -1041,14 +1080,15 @@ void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, st
     assert(ug);
     size_t nx = ug->nx();
     size_t ny = ug->ny();
-    std::cerr << *bc << "\n";
+    // std::cerr << *bc << "\n";
+    // confusion ?? 0: x fix,  1: y fix ?
     if((*bc)[0][0]=="dir")
     {
-        if(bf[0][0].at("u"))
+        if(bf[0][0].at(_varname))
         {
             for(int ix=0;ix<nx;ix++)
             {
-                u.at(ix,0) = (*bf[0][0].at("u"))(ug->x(ix,0), ug->y(ix,0));            
+                u.at(ix,0) = (*bf[0][0].at(_varname))(ug->x(ix,0), ug->y(ix,0));            
             }                
         }
         else
@@ -1061,11 +1101,11 @@ void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, st
     }            
     if((*bc)[0][1]=="dir")
     {
-        if(bf[0][1].at("u"))
+        if(bf[0][1].at(_varname))
         {
             for(int ix=0;ix<nx;ix++)
             {
-                u.at(ix,ny-1) = (*bf[0][1].at("u"))(ug->x(ix,ny-1), ug->y(ix,ny-1));
+                u.at(ix,ny-1) = (*bf[0][1].at(_varname))(ug->x(ix,ny-1), ug->y(ix,ny-1));
             }                
         }
         else
@@ -1078,12 +1118,12 @@ void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, st
     }
     if((*bc)[1][0]=="dir")
     {
-        if(bf[1][0].at("u"))
+        if(bf[1][0].at(_varname))
         {
             for(int iy=0;iy<ny;iy++)
             {
                 {
-                    u.at(0,iy) = (*bf[1][0].at("u"))(ug->x(0,iy), ug->y(0,iy));
+                    u.at(0,iy) = (*bf[1][0].at(_varname))(ug->x(0,iy), ug->y(0,iy));
                 }                
             }
         }
@@ -1099,11 +1139,11 @@ void Q12d::boundary(GridVector& u, std::shared_ptr<GridInterface const> grid, st
     }  
     if((*bc)[1][1]=="dir")
     {
-        if(bf[1][1].at("u"))
+        if(bf[1][1].at(_varname))
         {
             for(int iy=0;iy<ny;iy++)
             {
-                u.at(nx-1,iy) = (*bf[1][1].at("u"))(ug->x(nx-1,iy), ug->y(nx-1,iy));
+                u.at(nx-1,iy) = (*bf[1][1].at(_varname))(ug->x(nx-1,iy), ug->y(nx-1,iy));
             }                
         }
         else

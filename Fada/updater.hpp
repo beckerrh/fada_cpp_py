@@ -23,8 +23,8 @@ protected:
   std::shared_ptr<MatrixInterface const> _mat;
 
 public:
-  UpdaterConstant(std::string name, double omega=1) : UpdaterInterface(name) {_omega=omega;}
-  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
+  UpdaterConstant(std::string name, double omega=1, bool print=false) : UpdaterInterface(name, print) {_omega=omega;}
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r);
   void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat);
 };
 
@@ -34,8 +34,8 @@ class UpdaterSimple : public UpdaterConstant
 protected:
     std::string _type;
 public:
-    UpdaterSimple(std::string name, std::string type) : UpdaterConstant(name), _type(type) {}
-  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
+    UpdaterSimple(std::string name, std::string type, bool print=false) : UpdaterConstant(name, print), _type(type) {}
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r);
 };
 
 /*-------------------------------------------------*/
@@ -59,11 +59,10 @@ protected:
   void restart();
 
 public:
-  Updater(std::string name, const std::string& droptype, const std::string& solutiontype, int nvectors);
-  Updater(const Updater& updater);
+  Updater(std::string name, const std::string& droptype, const std::string& solutiontype, int nvectors, bool print=false);
   Updater& operator=( const Updater& updater);
   void setParameters(const ModelInterface& model, std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface const> mat);
-  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r, bool print=false);
+  void addUpdate(std::shared_ptr<VectorInterface const> w, std::shared_ptr<VectorInterface> u, std::shared_ptr<VectorInterface> r);
 };
 
 #endif /* updater_h */

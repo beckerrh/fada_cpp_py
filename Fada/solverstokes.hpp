@@ -15,8 +15,8 @@
 #include  "modelinterface.hpp"
 #include  "sparsematrix.hpp"
 #include  "uniformmultigrid.hpp"
-#include  "model_p.hpp"
-#include  "model_v.hpp"
+#include  "q0.hpp"
+#include  "q1_shifted.hpp"
 #include  "model_stokes.hpp"
 #include  "stokesapplication.hpp"
 #include  "stokesvector.hpp"
@@ -65,19 +65,18 @@ protected:
     void make_chorin_solver();
     void make_coupled_solver();
     
-    const ModelP2d& getModelP() const
+    const Q02d& getQ0() const
     {
-        auto p = std::dynamic_pointer_cast<Model<ModelP2d, Vector<GridVector>> const>(_model_p);
+        auto p = std::dynamic_pointer_cast<Model<Q02d, Vector<GridVector>> const>(_model_p);
         assert(p);
         return(p->get());
     }
-    const ModelV2d& getModelV(int i) const
+    const Q1shifted2d& getModelV(int i) const
     {
-        auto p = std::dynamic_pointer_cast<Model<ModelV2d, Vector<GridVector>> const>(_model_v[i]);
+        auto p = std::dynamic_pointer_cast<Model<Q1shifted2d, Vector<GridVector>> const>(_model_v[i]);
         assert(p);
         return(p->get());
     }
-    // bool _directoryExists( std::string pzPath ) const;
 
     typedef std::vector<std::shared_ptr<GridVector>> VelocityVector;
     typedef std::shared_ptr<GridVector> PressureVector;

@@ -26,8 +26,8 @@
 #include  "transferbymatrix.hpp"
 #include  "transferinterface.hpp"
 #include  "model_stokes.hpp"
-#include  "model_p.hpp"
-#include  "model_v.hpp"
+#include  "q0.hpp"
+#include  "q1_shifted.hpp"
 #include  "stokesvector.hpp"
 #include  "smoother_chorin.hpp"
 
@@ -40,11 +40,13 @@ ModelStokes::ModelStokes(const std::map <std::string, std::string>& parameters, 
     _model_v.resize(dim);
     for(int i=0; i< dim;i++)
     {
+        std::stringstream ss;
+        ss << "v" << i; 
         std::map<std::string,std::string> parameters2(parameters.begin(), parameters.end());
         parameters2["direction"] =  std::to_string(i);
-        _model_v[i] = std::make_shared<ModelV2d>(parameters2, app);
+        _model_v[i] = std::make_shared<Q1shifted2d>(ss.str(), parameters2, app);
     }
-    _model_p = std::make_shared<ModelP2d>(parameters, app);    
+    _model_p = std::make_shared<Q02d>("p", parameters, app);    
 }
 
 /*-------------------------------------------------*/
@@ -143,10 +145,10 @@ PointDataMap ModelStokes::to_point_data(std::shared_ptr<VectorInterface const> v
 {
     int dim = grid->dim();
     auto pv = std::dynamic_pointer_cast<StokesVector const >(v);  
-    PointDataMap pdmap = _model_p->to_point_data(*(pv->get_p()), grid);
+    PointDataMap pdmap = _model_p->to_point_data(pv->get_p(), grid);
     for(int i=0;i<dim;i++)
     {
-      PointDataMap pdv = _model_v[i]->to_point_data(*(pv->get_v(i)), grid);
+      PointDataMap pdv = _model_v[i]->to_point_data(pv->get_v(i), grid);
       pdmap.insert(pdv.begin(), pdv.end());  
     }
     return pdmap;

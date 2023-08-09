@@ -25,7 +25,7 @@ typedef arma::Mat<int> armaimat;
 typedef double (*function2d)(double, double);
 typedef double (*function3d)(double, double, double);
 
-typedef std::map<std::string,std::shared_ptr<armavec>> PointDataMap;
+typedef std::map<std::string,std::shared_ptr<armavec const>> PointDataMap;
 
 inline void _not_written_(std::string msg="")
 {

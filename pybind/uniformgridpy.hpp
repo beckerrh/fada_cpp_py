@@ -17,7 +17,8 @@
 class UniformGridPy : public UniformGrid
 {
 public:
-  UniformGridPy() : UniformGrid() {}
+    UniformGridPy() : UniformGrid() {}
+    UniformGridPy(const UniformGrid& grid) : UniformGrid(grid) {}
   UniformGridPy(pybind11::array_t<int>& n);
   pybind11::array_t<int> get_dimensions() const;
 //  pybind11::array_t<int> n();

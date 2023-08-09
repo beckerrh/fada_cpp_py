@@ -61,7 +61,7 @@ public:
     {
         set_application(dim, name);
     }
-    // StokesApplicationInterface(const StokesApplication& application) : _name(application._name), _sol(application._sol), _rhs(application._rhs){}
+    // StokesApplicationInterface(const StokesApplication& application) : _name(application._name), _sol(application._sol), _Q1shiftedapplication._rhs){}
     // std::string toString() const;
     // virtual int get_dim()const {return _boundaryconditions->size();}
     // std::shared_ptr<BoundaryConditions const> get_bc() const {return _boundaryconditions;}
@@ -69,7 +69,7 @@ public:
     // {
     //     return _sol;
     // }
-    // std::shared_ptr<SystemAnalyticalFunction const> rhs() const
+    // std::shared_ptr<SystemAnalyticalFunction const> Q1shifted) const
     // {
     //     return _rhs;
     // }

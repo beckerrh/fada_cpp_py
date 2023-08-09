@@ -6,7 +6,7 @@
 //  Copyright © 2020 Roland Becker. All rights reserved.
 //
 
-#include  <omp.h>
+// #include  <omp.h>
 #include  <sstream>
 #include  <iomanip>
 #include  "solverstokes.hpp"
@@ -176,15 +176,10 @@ std::string SolverStokes::toString() const
 /*-------------------------------------------------*/
 void SolverStokes::make_coupled_solver()
 {
-    int updatelength(4);
     bool mgtimer=true, mgdebug=false;
     for(std::map<std::string,std::string>::const_iterator p = _parameters.begin(); p != _parameters.end(); p++)
     {
-        if(p->first=="updatelength")
-        {
-            updatelength = std::atoi(p->second.c_str());
-        }
-        else if(p->first=="mgtimer")
+        if(p->first=="mgtimer")
         {
             mgtimer = p->second=="true";
         }
@@ -193,36 +188,31 @@ void SolverStokes::make_coupled_solver()
     // _model_all = std::make_shared<Model<ModelStokes2d, StokesVector>>(_parameters, _boundaryconditions);
     _model_all = std::make_shared<ModelStokes2d>(_parameters, _application);    
     _mgsolver_all = std::make_shared<MgSolver>(mgtimer, mgdebug);    
-    _mgsolver_all->set_sizes(_mggrid, _model_all, updatelength);    
+    _mgsolver_all->set_sizes(_mggrid, _model_all);    
 }
 
 /*-------------------------------------------------*/
 void SolverStokes::make_chorin_solver()
 {
-    int updatelength(0);
     bool mgtimer=true, mgdebug=false;
     for(std::map<std::string,std::string>::const_iterator p = _parameters.begin(); p != _parameters.end(); p++)
     {
-        if(p->first=="updatelength")
-        {
-            updatelength = std::atoi(p->second.c_str());
-        }
-        else if(p->first=="mgtimer")
+        if(p->first=="mgtimer")
         {
             mgtimer = p->second=="true";
         }
     }
     
-    _model_p = std::make_shared<Model<ModelP2d, Vector<GridVector>>>("p",_parameters, _application);    
+    _model_p = std::make_shared<Model<Q02d, Vector<GridVector>>>("p",_parameters, _application);    
     _mgsolver_p = std::make_shared<MgSolver>(mgtimer, mgdebug);
-    _mgsolver_p->set_sizes(_mggrid, _model_p, updatelength);    
+    _mgsolver_p->set_sizes(_mggrid, _model_p);    
     _model_v.resize(_dim);
     _mgsolver_v.resize(_dim);
-    for(int i=0;i<_dim;i++)
-    {
-        _mgsolver_v[i] = std::make_shared<MgSolver>(mgtimer, mgdebug);
-        _mgsolver_v[i]->set_sizes(_mggrid, _model_p, updatelength);
-    }
+    // for(int i=0;i<_dim;i++)
+    // {
+    //     _mgsolver_v[i] = std::make_shared<MgSolver>(mgtimer, mgdebug);
+    //     // _mgsolver_v[i]->set_sizes(_mggrid, _model_p);
+    // }
     _B.resize(_dim);
     for(int i=0;i<_dim;i++)
     {
@@ -230,8 +220,9 @@ void SolverStokes::make_chorin_solver()
         ss << "v" << i;        
         std::map<std::string,std::string> parameters2(_parameters.begin(), _parameters.end());
         parameters2["direction"] =  std::to_string(i);
-        _model_v[i] =  std::make_shared<Model<ModelV2d, Vector<GridVector>>>(ss.str(),parameters2, _application); 
-        _mgsolver_v[i]->set_sizes(_mggrid, _model_v[i], updatelength);
+        _model_v[i] =  std::make_shared<Model<Q1shifted2d, Vector<GridVector>>>(ss.str(),parameters2, _application); 
+        _mgsolver_v[i] = std::make_shared<MgSolver>(mgtimer, mgdebug);
+        _mgsolver_v[i]->set_sizes(_mggrid, _model_v[i]);
         auto b = getModelV(i).newMatrixDivergence(_mggrid->get(0));
         _B[i] = std::dynamic_pointer_cast<SparseMatrix const>(b);
         assert(_B[i]);
@@ -457,11 +448,11 @@ StokesInfoSde SolverStokes::chorin_sde(bool print)
     info.err_p.fill(0.0);
     arma::arma_rng::set_seed_random();
     
-    omp_set_dynamic(0);     // Explicitly disable dynamic teams
-    omp_set_num_threads(11); // Use 4 threads for all consecutive parallel regions
-#pragma omp parallel
-    printf("Hello from process: %d %d\n", omp_get_thread_num(), omp_get_num_threads());
-#pragma omp parallel for
+//     omp_set_dynamic(0);     // Explicitly disable dynamic teams
+//     omp_set_num_threads(11); // Use 4 threads for all consecutive parallel regions
+// #pragma omp parallel
+//     printf("Hello from process: %d %d\n", omp_get_thread_num(), omp_get_num_threads());
+// #pragma omp parallel for
     for(int isample=0;isample<_nsamples;isample++)
     {
         armavec white_noise = arma::randn(_niter_out*n_inners[_nt-1]);
@@ -572,13 +563,13 @@ StokesInfo SolverStokes::solve_stationary(bool print)
     {
         sv->get_v(i)->project_mean();
     }
-    //     getModelV(i).rhs(get_rhs_v(i), _mggrid->get(0), _application->rhs_v(i));
-    //     getModelP().rhs(get_rhs_p(), _mggrid->get(0), _application->rhs_p());
+    //     _model_v[i].Q1shiftedget_rhs_v(i), _mggrid->get(0), _application->rhs_v(i));
+    //     getQ0().Q1shiftedget_rhs_p(), _mggrid->get(0), _application->rhs_p());
     // get_rhs_p().project_mean();
-    // // get_rhs().boundary_zero();
+    // // get_Q1shifted).boundary_zero();
     // for(int i=0;i<_dim;i++)
     // {
-    //     getModelV(i).rhs(get_rhs_v(i), _mggrid->get(0), _application->rhs_v(i));
+    //     _model_v[i].Q1shiftedget_rhs_v(i), _mggrid->get(0), _application->rhs_v(i));
     //     get_rhs_v(i).project_mean();
     // }
     // std::cerr << "f_p " << p->get_p()->min() << " " << p->get_p()->max() << "\n";
@@ -621,7 +612,7 @@ std::map<std::string,double> SolverStokes::compute_error() const
         return _model_all->compute_error(_mgsolver_all->getU(), _mggrid->get(0), _application);
     }
     std::map<std::string,double> err;
-    err["p"] = getModelP().compute_error(get_solution_p(), _mggrid->get(0), _application->solution("p")).at("p");
+    err["p"] = getQ0().compute_error(get_solution_p(), _mggrid->get(0), _application->solution("p")).at("p");
     for(int i=0;i<_dim;i++)
     {
         std::stringstream ss;

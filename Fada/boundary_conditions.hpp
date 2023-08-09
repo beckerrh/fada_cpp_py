@@ -38,6 +38,15 @@ public:
   }
   FunctionMap& get_bf(int i, int j) {return _bdry_fct[i][j];}
   const std::vector<std::vector<FunctionMap>>& get_bf() const {return _bdry_fct;}
+  bool all(std::string cond) const
+  {
+      for(auto p: *this)
+      {
+          if(p[0]!=cond) return false;
+          if(p[1]!=cond) return false;
+      }
+      return true;
+  }
 };
 static std::ostream& operator<<(std::ostream& os, const BoundaryConditions& v)
 {

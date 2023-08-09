@@ -8,13 +8,18 @@
 
 #include  "solverlaplace.hpp"
 #include  "q1.hpp"
+#include  "q1_shifted.hpp"
 #include  "tokenize.hpp"
-// #include  "../analyticalfunctioninterface.hpp"
 
 
 /*-------------------------------------------------*/
 double Linear2D::operator()(double x, double y) const {return 3.3+2.2*x-1.1*y;}
-double Sinus2D::operator()(double x, double y) const {return sin(2.2*x-1.1*y);}
+
+// double Sinus2D::operator()(double x, double y) const {return sin(2.2*x-1.1*y);}
+// double Sinus2D_rhs::operator()(double x, double y) const {return (2.2*2.2+1.1*1.1)*sin(2.2*x-1.1*y);}
+
+double Sinus2D::operator()(double x, double y) const {return sin(1.1*x-2.2*y);}
+double Sinus2D_rhs::operator()(double x, double y) const {return (2.2*2.2+1.1*1.1)*sin(1.1*x-2.2*y);}
 
 /*-------------------------------------------------*/
 void LaplaceApplication::set_application(int dim, std::string name)
@@ -33,7 +38,16 @@ void LaplaceApplication::set_application(int dim, std::string name)
         for(int i=0;i<dim;i++)
             for(int j=0;j<2;j++)
                 _boundaryconditions->get_bf(i,j)["u"] = _sol["u"];
-        std::cerr << "_boundaryconditions = " << *_boundaryconditions <<"\n";
+        // std::cerr << "_boundaryconditions = " << *_boundaryconditions <<"\n";
+    }
+    else if(tokens[0]=="Sinus")
+    {
+        _rhs["u"] = std::make_shared<Sinus2D_rhs>();
+        _sol["u"] = std::make_shared<Sinus2D>();
+        for(int i=0;i<dim;i++)
+            for(int j=0;j<2;j++)
+                _boundaryconditions->get_bf(i,j)["u"] = _sol["u"];
+        // std::cerr << "_boundaryconditions = " << *_boundaryconditions <<"\n";
     }
     else if(tokens[0]=="RhsOne")
     {
@@ -50,90 +64,62 @@ void LaplaceApplication::set_application(int dim, std::string name)
 }
 
 /*-------------------------------------------------*/
-std::string SolverLaplace::toString() const
+SolverLaplace::SolverLaplace(const std::map<std::string,std::string>& parameters) : Solver(parameters)
 {
-    std::stringstream ss;
-    ss << "fem=" << _model->toString();
-    ss << "mggrid=" << _mggrid->toString();
-    return(ss.str());
-}
-
-/*-------------------------------------------------*/
-SolverLaplace::SolverLaplace(std::shared_ptr <MultiGridInterface> mggrid, const std::map<std::string,std::string>& parameters)
-{
-    set_data(mggrid, parameters);
-}
-
-/*-------------------------------------------------*/
-void SolverLaplace::set_data(std::shared_ptr <MultiGridInterface> mggrid, const std::map<std::string,std::string>& parameters)
-{
-    int updatelength(0);
-    for(std::map<std::string,std::string>::const_iterator p = parameters.begin(); p != parameters.end(); p++)
+    // set_data(mggrid, parameters);
+    _application = std::make_shared<LaplaceApplication>(_dim, parameters.at("application"));
+    if (_dim == 2)
     {
-        if(p->first=="updatelength")
+        if(parameters.at("method")=="Q1")
         {
-            updatelength = std::atoi(p->second.c_str());
+            _model = std::make_shared<Model<Q12d, Vector<GridVector>>>("u", parameters, _application);
+        }
+        else if(parameters.at("method")=="Q1_0")
+        {
+            std::map<std::string,std::string> parameters2(parameters.begin(), parameters.end());
+            parameters2["dt"] = "0.0";
+            parameters2["direction"] = "0";
+            _model = std::make_shared<Model<Q1shifted2d, Vector<GridVector>>>("u", parameters2, _application);
+        }
+        else if(parameters.at("method")=="Q1_1")
+        {
+            std::map<std::string,std::string> parameters2(parameters.begin(), parameters.end());
+            parameters2["dt"] = "0.0";
+            parameters2["direction"] = "1";
+            _model = std::make_shared<Model<Q1shifted2d, Vector<GridVector>>>("u", parameters2, _application);
+        }
+        else
+        {
+            _not_written_("unknown method " +parameters.at("method"));
         }
     }
-    _mggrid = mggrid;
-    size_t dim = mggrid->dim();
-    _application = std::make_shared<LaplaceApplication>(dim, parameters.at("application"));
-    if (dim == 2)
-    {
-        _model = std::make_shared<Model<Q12d, Vector<GridVector>>>("u", parameters, _application);
-    }
-    else if (dim == 3)
+    else if (_dim == 3)
     {
         _model = std::make_shared<Model<Q13d, Vector<GridVector>>>("u", parameters, _application);
     }
-    // _model->set_grid(mggrid->get(0));
-    _mgsolver.set_sizes(_mggrid, _model, updatelength);
+    _mgsolver = std::make_shared<MgSolver>(_mgtimer, _mgdebug);
+    _mgsolver->set_sizes(_mggrid, _model);    
+    // _mgsolver.set_sizes(_mggrid, _model, updatelength);
 }
 
 /*-------------------------------------------------*/
-LaplaceInfo SolverLaplace::testsolve(bool print)
+LaplaceInfo SolverLaplace::testsolve(bool print, MgSolver::IterationInfo info)
 {
-    LaplaceInfo info;
-    _model->rhs(_mgsolver.getF(), _mggrid->get(0), _application);
-    _model->boundary(_mgsolver.getF(), _mggrid->get(0), _application->get_bc());
-    // // _u.set_size(_mggrid->get(0)->n());
-    // // _u.fill(0);
-    // // _f.set_size(_u);
-    // if (application == "DirichletRhsOne")
-    // {
-    //     auto p = std::make_shared<ConstantFunction>();
-    //     _model->rhs(get_rhs(), _mggrid->get(0), p);
-    //     _model->boundary_zero(get_rhs(), _mggrid->get(0));
-    //     _model->boundary_zero(get_u(), _mggrid->get(0));
-    // }
-    // else if (application == "Random")
-    // {
-    //     auto p = std::make_shared<RandomFunction>();
-    //     _model->rhs(get_rhs(), _mggrid->get(0), p);
-    //     _model->boundary_zero(get_rhs(), _mggrid->get(0));
-    //     _model->boundary_zero(get_u(), _mggrid->get(0));
-    // }
-    // else if (application == "Linear")
-    // {
-    //     get_rhs()->fill(0);
-    //     _model->boundary_linear(get_u(), _mggrid->get(0));
-    //     _model->boundary_linear(get_rhs(), _mggrid->get(0));
-    // }
-    // else
-    // {
-    //     std::cerr << "unknwon application " << application << "\n";
-    //     assert(0);
-    //     exit(1);
-    // }
-    //
-    std::shared_ptr <const GridVector> pf = std::dynamic_pointer_cast <const GridVector>(_mgsolver.getF());
+    LaplaceInfo result;
+    _model->rhs(_mgsolver->getF(), _mggrid->get(0), _application);
+    _model->boundary(_mgsolver->getF(), _mggrid->get(0), _application->get_bc());
+    std::shared_ptr <const GridVector> pf = std::dynamic_pointer_cast <const GridVector>(_mgsolver->getF());
+    std::shared_ptr <const GridVector> pu = std::dynamic_pointer_cast <const GridVector>(_mgsolver->getU());
+    // std::cerr << "f " << pf->min() << " " << pf->max() << "\n";
     std::cerr << "f " << pf->min() << " " << pf->max() << "\n";
-    info.niter = _mgsolver.solve(print);
-    std::cerr << "u " << get_solution().min() << " " << get_solution().max() << "\n";
+    // std::cerr << "f " << *pf << "\n";
+    result.niter = _mgsolver->solve(print, info);
+    std::cerr << "u " << pu->min() << " " << pu->max() << "\n";
+    // std::cerr << "f " << *pu << "\n";
     if(_application->has_solution())
     {
-        // std::shared_ptr <const GridVector> pu = std::dynamic_pointer_cast <const GridVector>(_mgsolver.getU());
-        info.err = _model->compute_error(_mgsolver.getU(), _mggrid->get(0), _application).at("u");
+        result.has_error = true;
+        result.err = _model->compute_error(_mgsolver->getU(), _mggrid->get(0), _application).at("u");
     }
-    return info;
+    return result;
 }

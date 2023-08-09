@@ -13,7 +13,9 @@
 
 #include  <string>
 #include  <vector>
+#ifdef GNU
 #include  <bits/stdc++.h>
+#endif
 
 static std::vector<std::string> tokenize(std::string s, std::string del) {
     std::vector<std::string> tokens;

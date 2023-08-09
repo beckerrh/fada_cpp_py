@@ -19,7 +19,7 @@ class FemAndMatrixAndSmootherInterface;
 class UniformGrid;
 
 /*-------------------------------------------------*/
-class ModelP : public ModelBase
+class Q0 : public ModelBase
 {
 protected:
   virtual void get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const=0;
@@ -27,15 +27,11 @@ protected:
   virtual void get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const=0;
 
 public:
-  ~ModelP()
+  ~Q0()
   {
   }
 
-  ModelP(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app=nullptr) : ModelBase(parameters, app)
-  {
-  }
-
-  ModelP(const ModelP& model) : ModelBase(model)
+  Q0(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app=nullptr) : ModelBase(varname, parameters, app)
   {
   }
 
@@ -51,7 +47,7 @@ public:
 };
 
 /*-------------------------------------------------*/
-class ModelP2d : public ModelP
+class Q02d : public Q0
 {
 protected:
     void get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
@@ -59,29 +55,25 @@ protected:
     void get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
     
 public:
-  ~ModelP2d()
+  ~Q02d()
   {
   }
 
-  ModelP2d(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : ModelP(parameters, app)
-  {
-  }
-
-  ModelP2d(const ModelP2d& model) : ModelP(model)
+  Q02d(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : Q0(varname, parameters, app)
   {
   }
 
   std::string toString() const
   {
-    return("ModelP2d");
+    return("Q02d");
   }
-  PointDataMap to_point_data(const GridVector& v, std::shared_ptr<GridInterface const> grid) const;
+  PointDataMap to_point_data(std::shared_ptr<GridVector const> v, std::shared_ptr<GridInterface const> grid) const;
   void rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const;
   std::map<std::string,double> compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const;
 };
 
 /*-------------------------------------------------*/
-class ModelP3d : public ModelP
+class Q03d : public Q0
 {
 protected:
     void get_locations_values_transfer_2(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
@@ -89,20 +81,16 @@ protected:
     void get_locations_values_matrix(arma::umat& locations, armavec& values, std::shared_ptr <GridInterface const>grid) const;
     
 public:
-  ~ModelP3d()
+  ~Q03d()
   {
   }
-  ModelP3d(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : ModelP(parameters, app)
-  {
-  }
-
-  ModelP3d(const ModelP3d& model) : ModelP(model)
+  Q03d(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : Q0(varname, parameters, app)
   {
   }
 
   std::string toString() const
   {
-    return("ModelP3d");
+    return("Q03d");
   }
 };
 

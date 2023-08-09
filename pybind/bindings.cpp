@@ -19,12 +19,23 @@ PYBIND11_MODULE(pyfada, m) {
     m.doc() = "fada plugin";
 #
     pybind11::class_<StokesInfo>(m, "StokesInfo")
+        .def("__repr__", &StokesInfo::toString)
         .def_readwrite("niter_mean_v", &StokesInfo::niter_mean_v)
         .def_readwrite("niter_mean_p", &StokesInfo::niter_mean_p)
         .def_readwrite("err_v", &StokesInfo::err_v)
         .def_readwrite("err_p", &StokesInfo::err_p)
-        .def("__repr__", &StokesInfo::toString)
         .def_readwrite("niter", &StokesInfo::niter);
+
+    pybind11::class_<LaplaceInfo>(m, "LaplaceInfo")
+        .def("__repr__", &LaplaceInfo::toString)
+        .def_readwrite("err", &LaplaceInfo::err)
+        .def_readwrite("niter", &LaplaceInfo::niter);
+
+    pybind11::class_<MgSolver::IterationInfo>(m, "MgSolver::IterationInfo")
+        .def("__repr__", &MgSolver::IterationInfo::toString)
+        .def_readwrite("maxiter", &MgSolver::IterationInfo::maxiter)
+        .def_readwrite("tol_rel", &MgSolver::IterationInfo::tol_rel)
+        .def_readwrite("tol_abs", &MgSolver::IterationInfo::tol_abs);
 
     // pybind11::class_<StokesInfoSde>(m, "StokesInfoSde")
     //     .def_readwrite("niter_mean_v", &StokesInfo::niter_mean_v)
@@ -54,9 +65,13 @@ PYBIND11_MODULE(pyfada, m) {
 #
     pybind11::class_<SolverLaplacePy>(m, "SolverLaplace")
       // py::bind_map<std::map<std::string, std::string>>(m, "StringStringMap");
-      .def(pybind11::init<const UniformMultiGridPy&, const std::map<std::string, std::string>&>(), pybind11::arg("umg"), pybind11::arg("parameters"))
-      .def("testsolve", &SolverLaplacePy::testsolve, pybind11::arg("print")=true)
-      .def("get_solution", &SolverLaplacePy::get_solution)
+      // .def(pybind11::init<const UniformMultiGridPy&, const std::map<std::string, std::string>&>(), pybind11::arg("umg"), pybind11::arg("parameters"))
+      .def(pybind11::init<const std::map<std::string, std::string>&>(), pybind11::arg("parameters"))
+      .def("testsolve", &SolverLaplacePy::testsolve, pybind11::arg("print")=true, pybind11::arg("info")=MgSolver::IterationInfo())
+      .def("save_for_visu", &SolverLaplacePy::save_for_visu)
+      .def("n_gridpoints", &SolverLaplacePy::n_gridpoints)
+      .def("get_grid", &SolverLaplacePy::get_grid)
+      .def("get_solution_nodes", &SolverLaplacePy::get_solution_nodes)
       .def("__repr__", &SolverLaplacePy::toString);
 #
     pybind11::class_<SolverStokesPy>(m, "SolverStokes")

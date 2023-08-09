@@ -19,15 +19,23 @@ class SolverLaplacePy : public SolverLaplace
 {
 protected:
 public:
-  SolverLaplacePy(const UniformMultiGridPy& umg, const std::map<std::string,std::string>& parameters)
+    // SolverLaplacePy(const UniformMultiGridPy& umg, const std::map<std::string,std::string>& parameters)
+  // SolverLaplacePy(const std::map<std::string,std::string>& parameters)
+  // {
+  //   // auto mggrid = std::make_shared<UniformMultiGrid>(umg);
+  //   // set_data(mggrid, parameters);
+  // }
+
+  UniformGridPy get_grid()
   {
-    auto mggrid = std::make_shared<UniformMultiGrid>(umg);
-    set_data(mggrid, parameters);
+      return UniformGridPy(*std::dynamic_pointer_cast<UniformGrid const>(SolverLaplace::get_mgrid()->get(0)));
   }
 
-  pybind11::array_t<double> get_solution()
+  pybind11::array_t<double> get_solution_nodes()
   {
-      return carma::mat_to_arr<double>(SolverLaplace::get_solution());      
+      auto p = SolverLaplace::get_solution_nodes();
+      assert(p);
+      return carma::mat_to_arr<double>(*p);
   }
 };
 

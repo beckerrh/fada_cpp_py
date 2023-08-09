@@ -25,8 +25,7 @@ int main(int argc, char** argv)
     T.enrol("all", false);
     T.start("all");
     std::map<std::string,std::string> parameters;
-    armaicvec n0;
-    int nlevels=-1, dim=2, n00=-1;
+    int nlevels=-1, dim=2, n0=-1;
     parameters["application"] = "Random_dir";
     if(argc%2!=1)
     {
@@ -36,7 +35,7 @@ int main(int argc, char** argv)
     }
     for(int i=1; i<argc;i++)
     {
-        std::cerr << "i="<<i<<" argv="<<argv[i]<<"\n";
+        std::cerr << "i="<<i<<" argv="<<argv[i]<<" "<<argv[i+1]<<"\n";
         if(!strcmp(argv[i], "-d"))
         {
             dim = atoi(argv[i+1]);
@@ -47,7 +46,7 @@ int main(int argc, char** argv)
         }
         else if(!strcmp(argv[i], "-n0"))
         {
-            n00 = atoi(argv[i+1]);
+            n0 = atoi(argv[i+1]);
         }
         else if(!strcmp(argv[i], "-st"))
         {
@@ -73,6 +72,10 @@ int main(int argc, char** argv)
         {
             parameters["transfertype"] = argv[i+1];
         }
+        else if(!strcmp(argv[i], "-method"))
+        {
+            parameters["method"] = argv[i+1];
+        }
         else
         {
             std::cerr << "unknown argument" << argv[i] << "\n";
@@ -80,33 +83,27 @@ int main(int argc, char** argv)
         }
         i++;
     }
-    if(n00=-1) n00 = 5;
+    if(n0==-1) n0 = 5;
     if(dim==2)
     {
-        n0 = {n00,n00};
         if(nlevels==-1) nlevels = 9;
     }
     else
     {
-        n0 = {n00,n00,n00};
         if(nlevels==-1) nlevels = 6;
     }
-    auto mggrid = std::make_shared<UniformMultiGrid>();
-    mggrid->set_size(nlevels, n0);
-    int updatemem = 0;
-    auto solver = std::make_shared<SolverLaplace>(mggrid, parameters);
-    LaplaceInfo info = solver->testsolve(true);
-    // const GridVector& u = solver->get_solution();
-    // printf("u = %10.4e  %10.4e\n", arma::mean(u.data()), arma::max(u.data()));
-    //
-    std::string filename("solution.hdf");
-    // u.output(filename);
-    arma::hdf5_name spec(filename);
-    solver->get_solution().save(spec);
-    mggrid->get(0)->savehdf5("grid.hdf");
+    parameters["nlevels"] = std::to_string(nlevels);
+    parameters["n0"] = std::to_string(n0);
+    // std::cerr << "n0="<<n0<<"\n";
+    // auto mggrid = std::make_shared<UniformMultiGrid>();
+    // mggrid->set_size(nlevels, n0);
+    // int updatemem = 0;
+    auto solver = std::make_shared<SolverLaplace>(parameters);
+    LaplaceInfo info = solver->testsolve(true, MgSolver::IterationInfo(30,1e-10));
+    solver->save_for_visu();
 
     T.stop("all");
-    printf("No. Iterations %3d (N = %6d dim = %2d)\n",info.niter, mggrid->get(0)->n_gridpoints(), (int)mggrid->dim());
+    printf("No. Iterations %3d (N = %6d dim = %2d)\n",info.niter,solver->n_gridpoints(), (int)solver->get_mgrid()->dim());
     printf("Total time: %6.2f\n", T.get("all"));
-    if(info.err) printf("Error: %12.3e\n", info.err);
+    if(info.has_error) printf("Error: %12.3e\n", info.err);
 }

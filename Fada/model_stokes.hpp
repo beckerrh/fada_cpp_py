@@ -12,8 +12,8 @@
 
 #include  "gridvector.hpp"
 #include  "modelinterface.hpp"
-#include  "model_p.hpp"
-#include  "model_v.hpp"
+#include  "q0.hpp"
+#include  "q1_shifted.hpp"
 
 class BoundaryConditions;
 class StokesVector;
@@ -25,8 +25,8 @@ class UniformGrid;
 class ModelStokes : public ModelInterface
 {
 protected:
-    std::shared_ptr<ModelP2d> _model_p;
-    std::vector<std::shared_ptr<ModelV2d>> _model_v;
+    std::shared_ptr<Q02d> _model_p;
+    std::vector<std::shared_ptr<Q1shifted2d>> _model_v;
 
 public:
   ~ModelStokes()
@@ -46,7 +46,7 @@ public:
   // void boundary_zero(StokesVector& v, std::shared_ptr<GridInterface const> grid) const{_not_written_();}
   // void boundary_linear(StokesVector& v, std::shared_ptr<GridInterface const> grid) const{_not_written_();}
   // void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt) {}
-  // void rhs(StokesVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const{_not_written_();}
+  // void Q1shiftedStokesVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const{_not_written_();}
   // PointDataMap to_point_data(const StokesVector& v, std::shared_ptr<GridInterface const> grid) const{_not_written_();}
 
   std::string toString() const {return "ModelStokes";}

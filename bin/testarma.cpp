@@ -37,15 +37,14 @@ void solve_umf(std::shared_ptr <MatrixInterface const> A, GridVector& x, GridVec
 /*-------------------------------------------------*/
 int main(int argc, char **argv)
 {
-  armaicvec n0     = { 3, 3 };
-  auto mggrid = std::make_shared <UniformMultiGrid>(1, n0);
   std::map<std::string,std::string> parameters;
+  parameters["n0"] = "3";
   parameters["matrixtype"] = "matrix";
   parameters["application"] = "Random";
-  auto solver = std::make_shared <SolverLaplace>(mggrid, parameters);
+  auto solver = std::make_shared <SolverLaplace>(parameters);
   auto u = std::make_shared <Vector <GridVector>>();
   auto f = std::make_shared <Vector <GridVector>>();
-
+  auto mggrid = solver->get_mgrid();
   u->set_size(mggrid->get(0)->n());
   u->fill(0);
   f->set_size(mggrid->get(0)->n());

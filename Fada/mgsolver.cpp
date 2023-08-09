@@ -14,15 +14,15 @@ std::string MgSolver::toString() const
     ss << "nlevels = " << _nlevels;
     return ss.str();
 }
+// /*-------------------------------------------------*/
+// void MgSolver::set_parameters(int maxiter, double tol_rel, double tol_abs)
+// {
+//     _maxiter = maxiter;
+//     _tol_rel = tol_rel;
+//     _tol_abs = tol_abs;
+// }
 /*-------------------------------------------------*/
-void MgSolver::set_parameters(int maxiter, double tol_rel, double tol_abs)
-{
-    _maxiter = maxiter;
-    _tol_rel = tol_rel;
-    _tol_abs = tol_abs;
-}
-/*-------------------------------------------------*/
-void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model, int updatemem)
+void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model)
 {
     _timer.enrol("smooth");
     _timer.enrol("transfer");
@@ -92,8 +92,8 @@ void MgSolver::set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_
         _mgupdate[l]->setParameters(*_model, mgrid->get(l), _mgmatrix[l]);
         _mgupdatesmooth[l]->setParameters(*_model, mgrid->get(l), _mgmatrix[l]);
     }
-    _niter_post = 2; 
-    _niter_pre = 2;
+    _niter_post = 1; 
+    _niter_pre = 1;
 }
 /*-------------------------------------------------*/
 void MgSolver::_set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, VectorMG& v) const
@@ -133,7 +133,7 @@ void MgSolver::update_coefficients(double dt)
 //     // r->save(std::cerr);
 // }
 /*-------------------------------------------------*/
-int MgSolver::solve(bool print)
+int MgSolver::solve(bool print, MgSolver::IterationInfo info)
 {
     VectorMG& umg = _mgmem[0];
     VectorMG& fmg = _mgmem[1];
@@ -148,7 +148,7 @@ int MgSolver::solve(bool print)
     // _maxiter=3;
   
   
-    for(iter=0; iter<this->_maxiter+1; iter++)
+    for(iter=0; iter<info.maxiter+1; iter++)
     {
         _timer.start("residual");
         // residual(finest_level, *d[finest_level], *umg[finest_level], *fmg[finest_level]);
@@ -164,7 +164,7 @@ int MgSolver::solve(bool print)
         if(iter==0)
         {
             resold = 2*res;
-            tol = fmax(this->_tol_abs, this->_tol_rel*res);
+            tol = fmax(info.tol_abs, info.tol_rel*res);
             if(print) printf("-mg- ---tol= %10.3e ---\n", tol);
         }
         if(print) printf("-mg- %3d %10.3e\n", iter, res);
@@ -200,7 +200,6 @@ void MgSolver::mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w,
         // u[l]->after_smooth();
         _mgcoarsesolver->solve(w[l], d[l]);
         w[l]->after_smooth();
-
         _mgupdatesmooth[l]->addUpdate(w[l], u[l], d[l]);
 
         // std::cerr << "\n AFTER u\n";

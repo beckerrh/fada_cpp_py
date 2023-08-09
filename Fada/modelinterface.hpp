@@ -60,10 +60,12 @@ protected:
   MODEL& get() { return static_cast<MODEL&>(*this); }
   const VECTOR& getVector(std::shared_ptr<VectorInterface const> u) const {return static_cast<const VECTOR&>(*u);}
   VECTOR& getVector(std::shared_ptr<VectorInterface> u) const{return static_cast<VECTOR&>(*u);}
+  std::shared_ptr<VECTOR const> getVectorPointer(std::shared_ptr<VectorInterface const> u) const {return std::static_pointer_cast<VECTOR const>(u);}
+  std::shared_ptr<VECTOR> getVectorPointer(std::shared_ptr<VectorInterface> u) const{return std::static_pointer_cast<VECTOR>(u);}
   
 public:
   Model<MODEL,VECTOR>(std::string varname) : MODEL(), ModelInterface(varname) {}
-  Model<MODEL,VECTOR>(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : MODEL(parameters, app), ModelInterface(varname) {}
+  Model<MODEL,VECTOR>(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : MODEL(varname, parameters, app), ModelInterface(varname) {}
   
   MODEL const& get() const { return static_cast<MODEL const&>(*this); }
   std::string toString() const {return get().toString();}
@@ -75,7 +77,8 @@ public:
   std::shared_ptr<CoarseSolverInterface> newCoarseSolver(std::string type,std::shared_ptr<GridInterface const>grid, std::shared_ptr<MatrixInterface const> matrix) const{return get().newCoarseSolver(type,grid, matrix);}
   std::shared_ptr<TransferInterface> newTransfer(std::shared_ptr<GridInterface const> grid, int ref_factor) const {return get().newTransfer(grid, ref_factor);}
   std::shared_ptr<VectorInterface> newVector(std::shared_ptr<GridInterface const> grid) const {return get().newVector(grid);}
-  PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const {return get().to_point_data(getVector(v), grid);}
+  // PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const {return get().to_point_data(getVector(v), grid);}
+  PointDataMap to_point_data(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid) const {return get().to_point_data(getVectorPointer(v), grid);}
   void update_coefficients(std::shared_ptr<GridInterface const> grid, std::shared_ptr<MatrixInterface> matrix, double dt){get().update_coefficients(grid, matrix, dt);}
   std::map<std::string,double> compute_error(std::shared_ptr<VectorInterface const> v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<ApplicationInterface const> app) const {return get().compute_error(getVector(v), grid, app->solution(_varname));}
 };

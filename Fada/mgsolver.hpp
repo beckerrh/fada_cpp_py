@@ -37,23 +37,31 @@ protected:
   std::vector<std::shared_ptr<TransferInterface> > _mgtransfer;
   std::shared_ptr<CoarseSolverInterface> _mgcoarsesolver;
   mutable std::vector<std::shared_ptr<UpdaterInterface> > _mgupdate, _mgupdatesmooth;
-  int _maxiter, _niter_post, _niter_pre;
-  double _tol_rel, _tol_abs;
+  int _niter_post, _niter_pre;
+  // int _maxiter, _niter_post, _niter_pre;
+  // double _tol_rel, _tol_abs;
   std::vector<VectorMG> _mgmem;
   void _set_size_vectormg(std::shared_ptr<MultiGridInterface> mgrid, VectorMG& v) const;
   // void residual(int l, std::shared_ptr<VectorInterface> r, std::shared_ptr<VectorInterface const> u, std::shared_ptr<VectorInterface const>  f) const;
   void mgstep(int l, VectorMG& u, VectorMG& f, VectorMG& d, VectorMG& w, double tol);
 
 public:
-  void set_parameters(int maxiter=30, double tol_rel = 1e-8, double tol_abs = 1e-12);
+    /*-------------------------------------------------*/
+    struct IterationInfo {
+        int maxiter;
+        double tol_rel, tol_abs;
+        std::string toString(){std::stringstream ss; ss << "maxiter: "<<maxiter<< "\n"; ss<<"tol_rel="<<tol_rel<<"\ttol_abs="<<tol_abs<<"\n"; return ss.str();}
+        IterationInfo(int maxiter_=30, double tol_rel_ = 1e-8, double tol_abs_ = 1e-12) : maxiter(maxiter_), tol_rel(tol_rel_), tol_abs(tol_abs_) {}
+    };
+  // void set_parameters(int maxiter=30, double tol_rel = 1e-8, double tol_abs = 1e-12);
   ~MgSolver() {}
   MgSolver(bool printtimer=true, bool debug=false): _model(nullptr), _timer(printtimer, debug)
   {
-    set_parameters();
+    // set_parameters();
   }
-  void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model, int updatemem=0);
+  void set_sizes(std::shared_ptr<MultiGridInterface> mgrid, std::shared_ptr<ModelInterface> model);
   std::string toString() const;
-  int solve(bool print=true);
+  int solve(bool print=true, IterationInfo info=IterationInfo());
   std::shared_ptr<MatrixInterface const> getMatrix(int level=0) const {return _mgmatrix[level];}
   std::shared_ptr<VectorInterface const> getU() const {return _mgmem[0][0];}
   std::shared_ptr<VectorInterface> getU() {return _mgmem[0][0];}

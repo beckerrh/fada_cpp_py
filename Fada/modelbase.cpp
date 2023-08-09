@@ -14,8 +14,9 @@
 #include  "gridvector.hpp"
 
 /*-------------------------------------------------*/
-ModelBase::ModelBase(const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : _app(app)
+ModelBase::ModelBase(std::string varname, const std::map <std::string, std::string>& parameters, std::shared_ptr<ApplicationInterface const> app) : _app(app)
 {
+    _varname = varname;
     _stenciltype  = "Trapez";
     _matrixtype   = "stencil";
     _smoothertype   = "matrix";
