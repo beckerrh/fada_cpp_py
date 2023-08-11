@@ -323,14 +323,6 @@ void Q03d::get_locations_values_matrix(arma::umat& locations, armavec& values, s
 }
 
 /*-------------------------------------------------*/
-// #define  C 1
-// #define  D 2
-// // double u_fct_p(double x, double y) {return cos(C*2*M_PI*x)*cos(D*2*M_PI*y);}
-// // double u_fct_p(double x, double y) {return 0.0;}
-// double u_fct_p(double x, double y) {return cos(2*M_PI*x)*cos(2*M_PI*y);}
-// double rhs_fct_p(double x, double y) {return  (C*C+D*D)*4*M_PI*M_PI*cos(C*2*M_PI*x)*cos(D*2*M_PI*y);}
-
-
 void Q02d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> fct) const
 {
     auto ug = std::dynamic_pointer_cast<UniformGrid const>(grid);
@@ -347,6 +339,7 @@ void Q02d::rhs(GridVector& v, std::shared_ptr<GridInterface const> grid, std::sh
         }
     }    
 }
+/*-------------------------------------------------*/
 std::map<std::string,double> Q02d::compute_error(const GridVector& v, std::shared_ptr<GridInterface const> grid, std::shared_ptr<AnalyticalFunctionInterface const> sol) const
 {
     std::map<std::string,double> err;
@@ -366,7 +359,7 @@ std::map<std::string,double> Q02d::compute_error(const GridVector& v, std::share
             err_glob += vol*err_loc*err_loc;
         }
     }
-    err["p"] = sqrt(err_glob);
+    err[_varname] = sqrt(err_glob);
     return err;    
 }
 

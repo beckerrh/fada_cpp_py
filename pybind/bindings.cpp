@@ -52,6 +52,8 @@ PYBIND11_MODULE(pyfada, m) {
       .def("__repr__", &UniformGridPy::toString)
       .def("savehdf5", &UniformGridPy::savehdf5)
       .def("n_gridpoints", &UniformGridPy::n_gridpoints)
+      .def("n", &UniformGridPy::n)
+      .def("dx", &UniformGridPy::dx)
       .def("loadhdf5", &UniformGridPy::loadhdf5,pybind11::arg("filename"));
 #
     pybind11::class_<UniformMultiGridPy>(m, "UniformMultiGrid")

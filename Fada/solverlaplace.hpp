@@ -33,6 +33,21 @@ class Sinus2D_rhs: public AnalyticalFunctionInterface
 public:
     double operator()(double x, double y) const;
 };
+class Sinus_per2D: public AnalyticalFunctionInterface
+{
+public:
+    double A,B;
+    Sinus_per2D(double A_, double B_) : AnalyticalFunctionInterface(), A(A_), B(B_) {}
+    double operator()(double x, double y) const;
+};
+class Sinus_per2D_rhs: public AnalyticalFunctionInterface
+{
+public:
+    double A,B;
+    Sinus_per2D_rhs(double A_, double B_) : AnalyticalFunctionInterface(), A(A_), B(B_) {}
+    double operator()(double x, double y) const;
+};
+
 class LaplaceApplication: public ApplicationInterface
 {
 protected:

@@ -7,6 +7,7 @@
 //
 
 #include  "solverlaplace.hpp"
+#include  "q0.hpp"
 #include  "q1.hpp"
 #include  "q1_shifted.hpp"
 #include  "tokenize.hpp"
@@ -20,6 +21,9 @@ double Linear2D::operator()(double x, double y) const {return 3.3+2.2*x-1.1*y;}
 
 double Sinus2D::operator()(double x, double y) const {return sin(1.1*x-2.2*y);}
 double Sinus2D_rhs::operator()(double x, double y) const {return (2.2*2.2+1.1*1.1)*sin(1.1*x-2.2*y);}
+
+double Sinus_per2D::operator()(double x, double y) const {return sin(2*A*M_PI*x)*sin(2*B*M_PI*y);}
+double Sinus_per2D_rhs::operator()(double x, double y) const {return 4*(A*A+B*B)*M_PI*M_PI*sin(2*A*M_PI*x)*sin(2*B*M_PI*y);}
 
 /*-------------------------------------------------*/
 void LaplaceApplication::set_application(int dim, std::string name)
@@ -42,8 +46,18 @@ void LaplaceApplication::set_application(int dim, std::string name)
     }
     else if(tokens[0]=="Sinus")
     {
-        _rhs["u"] = std::make_shared<Sinus2D_rhs>();
-        _sol["u"] = std::make_shared<Sinus2D>();
+        if(tokens[1]=="dir")
+        {
+            _rhs["u"] = std::make_shared<Sinus2D_rhs>();
+            _sol["u"] = std::make_shared<Sinus2D>();
+            
+        }
+        else
+        {
+            _rhs["u"] = std::make_shared<Sinus_per2D_rhs>(1.,1.);
+            _sol["u"] = std::make_shared<Sinus_per2D>(1.,1.);
+            
+        }
         for(int i=0;i<dim;i++)
             for(int j=0;j<2;j++)
                 _boundaryconditions->get_bf(i,j)["u"] = _sol["u"];
@@ -73,6 +87,10 @@ SolverLaplace::SolverLaplace(const std::map<std::string,std::string>& parameters
         if(parameters.at("method")=="Q1")
         {
             _model = std::make_shared<Model<Q12d, Vector<GridVector>>>("u", parameters, _application);
+        }
+        else if(parameters.at("method")=="Q0")
+        {
+            _model = std::make_shared<Model<Q02d, Vector<GridVector>>>("u", parameters, _application);
         }
         else if(parameters.at("method")=="Q1_0")
         {

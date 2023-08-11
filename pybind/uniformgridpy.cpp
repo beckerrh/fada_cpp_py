@@ -35,19 +35,19 @@ pybind11::array_t<int> UniformGridPy::get_dimensions() const
     // // std::cerr<< "dims" << dims << "\n";
     // return carma::col_to_arr<int>(dims, true);
 }
-//
-///*-------------------------------------------------*/
-//pybind11::array_t<int> UniformGridPy::n()
-//{
-//  return carma::mat_to_arr<int>(UniformMultiGrid::n(), true);
-//}
-//
-///*-------------------------------------------------*/
-//pybind11::array_t<double> UniformGridPy::dx()
-//{
-//  return carma::mat_to_arr<double>(UniformMultiGrid::dx(), true);
-//}
-//
+
+/*-------------------------------------------------*/
+pybind11::array_t<int> UniformGridPy::n()
+{
+ return carma::col_to_arr<int>(UniformGrid::n());
+}
+
+/*-------------------------------------------------*/
+pybind11::array_t<double> UniformGridPy::dx()
+{
+ return carma::col_to_arr<double>(UniformGrid::dx());
+}
+
 ///*-------------------------------------------------*/
 //pybind11::array_t<double> UniformGridPy::bounds()
 //{
